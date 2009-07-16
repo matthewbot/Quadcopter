@@ -1,15 +1,14 @@
-#include <stdint.h>
 #include <sys/reent.h>
 #include <errno.h>
 #include <sys/stat.h>
 #undef errno
 
 void *_sbrk_r(struct _reent *re, int amt) {
-	extern char _sheap, _eheap; // from linker script
-	static char *end_data_segment = &_sheap; // our current end data segment
+	extern char __heap_start, __heap_end; // from linker script
+	static char *end_data_segment = &__heap_start; // our current end data segment
 
 	char *prev_end = end_data_segment;
-	if (end_data_segment + amt >= &_eheap) {
+	if (end_data_segment + amt >= &__heap_end) {
 		re->_errno = ENOMEM;
 		return (void *)-1;
 	}
@@ -43,21 +42,5 @@ int _fstat_r(struct _reent *re, int fd, struct stat *st) {
 
 int _isatty_r(struct _reent *re, int fd) {
 	return 1;
-}
-
-void _exit(int val) {
-	while (1) { }
-}
-
-int _kill_r(struct _reent *re, int pid, int sig) {
-	return -1;
-}
-
-int _getpid_r(struct _reent *re) {
-	return 1;
-}
-
-void assert_failed(uint8_t* file, uint32_t line) {
-	while (1) { }
 }
 

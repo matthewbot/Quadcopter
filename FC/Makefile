@@ -1,24 +1,21 @@
 include gmsl
 
-sources := $(shell find src -name "*.c" -or -name "*.s" -or -name "*.cpp")
+sources := $(shell find src -name "*.c" )
 headers := $(shell find src -name "*.h" )
-objects := $(addprefix build/, $(patsubst src/%,%, $(patsubst %.cpp, %.o, $(patsubst %.s, %.o, $(patsubst %.c, %.o, $(sources))))))
+objects := $(addprefix build/, $(patsubst src/%,%, $(patsubst %.c, %.o, $(sources))))
 
 sharedflags := -Os -Isrc -Isrc/stm32 -msoft-float -mcpu=cortex-m3 -mthumb -Wall -DSTM32F10X_MD -DUSE_FULL_ASERT -ffunction-sections -fdata-sections -fomit-frame-pointer -pipe
 cflags := $(sharedflags) -std=gnu99 -fno-common 
 cppflags := $(sharedflags) -fno-exceptions -fno-rtti -fno-common
 
-ldflags := -lm -nostartfiles -Wall -msoft-float -mcpu=cortex-m3 -mthumb -Wl,--gc-sections -lstdc++
-
 prefix := arm-none-eabi
-cpp := $(prefix)-g++
 cc := $(prefix)-gcc
 ld := $(prefix)-gcc
 objdump := $(prefix)-objdump
 objcopy := $(prefix)-objcopy
 mkdirs = @mkdir -p $(dir $@) out
 
-all: out/flash.bin
+all: out/flash.bin 
 
 out/%.bin: build/%.out
 	$(mkdirs)
@@ -58,7 +55,6 @@ build/%.o: src/%.cpp
 	@sed -e 's/.*://' -e 's/\\$$//' < build/$*.d.tmp | fmt -1 | \
 	   sed -e 's/^ *//' -e 's/$$/:/' >> build/$*.d
 	@rm -f build/$*.d.tmp
-
 .PHONY: clean
 clean:
 	rm -rf build out

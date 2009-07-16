@@ -1,8 +1,8 @@
 /******************************************************************************
  * @file:    core_cm3.h
  * @purpose: CMSIS Cortex-M3 Core Peripheral Access Layer Header File
- * @version: V1.20
- * @date:    22. May 2009
+ * @version: V1.10
+ * @date:    24. Feb. 2009
  *----------------------------------------------------------------------------
  *
  * Copyright (C) 2009 ARM Limited. All rights reserved.
@@ -19,15 +19,15 @@
  *
  ******************************************************************************/
 
+
+
+
 #ifndef __CM3_CORE_H__
 #define __CM3_CORE_H__
 
-#ifdef __cplusplus
- extern "C" {
-#endif 
 
 #define __CM3_CMSIS_VERSION_MAIN  (0x01)                                                       /*!< [31:16] CMSIS HAL main version */
-#define __CM3_CMSIS_VERSION_SUB   (0x20)                                                       /*!< [15:0]  CMSIS HAL sub version  */
+#define __CM3_CMSIS_VERSION_SUB   (0x10)                                                       /*!< [15:0]  CMSIS HAL sub version  */
 #define __CM3_CMSIS_VERSION       ((__CM3_CMSIS_VERSION_MAIN << 16) | __CM3_CMSIS_VERSION_SUB) /*!< CMSIS HAL version number       */
 
 #define __CORTEX_M                (0x03)                                                       /*!< Cortex core                    */
@@ -102,11 +102,7 @@
  * define access restrictions to peripheral registers
  */
 
-#ifdef __cplusplus
-#define     __I     volatile                  /*!< defines 'read only' permissions      */
-#else
 #define     __I     volatile const            /*!< defines 'read only' permissions      */
-#endif
 #define     __O     volatile                  /*!< defines 'write only' permissions     */
 #define     __IO    volatile                  /*!< defines 'read / write' permissions   */
 
@@ -298,14 +294,11 @@ typedef struct
 #elif defined ( __ICCARM__ )
   #define __ASM           __asm                                       /*!< asm keyword for IAR Compiler           */
   #define __INLINE        inline                                      /*!< inline keyword for IAR Compiler. Only avaiable in High optimization mode! */
+  #define __NOP           __no_operation                              /*!< no operation intrinsic in IAR Compiler */
 
 #elif defined   (  __GNUC__  )
-  #define __ASM            __asm                                      /*!< asm keyword for GNU Compiler          */
+  #define __ASM            asm                                        /*!< asm keyword for GNU Compiler          */
   #define __INLINE         inline                                     /*!< inline keyword for GNU Compiler       */
-
-#elif defined   (  __TASKING__  )
-  #define __ASM            __asm                                      /*!< asm keyword for TASKING Compiler          */
-  #define __INLINE         inline                                     /*!< inline keyword for TASKING Compiler       */
 
 #endif
 
@@ -335,10 +328,10 @@ typedef struct
 #define __STREXW(value, ptr)              __strex(value, ptr)
 
 
-/* intrinsic unsigned long long __ldrexd(volatile void *ptr) */
-/* intrinsic int __strexd(unsigned long long val, volatile void *ptr) */
-/* intrinsic void __enable_irq();     */
-/* intrinsic void __disable_irq();    */
+  /* intrinsic unsigned long long __ldrexd(volatile void *ptr) */
+  /* intrinsic int __strexd(unsigned long long val, volatile void *ptr) */
+  /* intrinsic void __enable_irq();     */
+  /* intrinsic void __disable_irq();    */
 
 
 /**
@@ -637,24 +630,10 @@ static __INLINE void __set_CONTROL(uint32_t control)
 static __INLINE void __enable_fault_irq()         { __ASM ("cpsie f"); }
 static __INLINE void __disable_fault_irq()        { __ASM ("cpsid f"); }
 
-#define __NOP                                     __no_operation()          /*!< no operation intrinsic in IAR Compiler */ 
 static __INLINE  void __WFI()                     { __ASM ("wfi"); }
 static __INLINE  void __WFE()                     { __ASM ("wfe"); }
 static __INLINE  void __SEV()                     { __ASM ("sev"); }
 static __INLINE  void __CLREX()                   { __ASM ("clrex"); }
-
-/* intrinsic void __ISB(void)                                     */
-/* intrinsic void __DSB(void)                                     */
-/* intrinsic void __DMB(void)                                     */
-/* intrinsic void __set_PRIMASK();                                */
-/* intrinsic void __get_PRIMASK();                                */
-/* intrinsic void __set_FAULTMASK();                              */
-/* intrinsic void __get_FAULTMASK();                              */
-/* intrinsic uint32_t __REV(uint32_t value);                      */
-/* intrinsic uint32_t __REVSH(uint32_t value);                    */
-/* intrinsic unsigned long __STREX(unsigned long, unsigned long); */
-/* intrinsic unsigned long __LDREX(unsigned long *);              */
-
 
 /**
  * @brief  Return the Process Stack Pointer
@@ -783,23 +762,33 @@ extern uint32_t __STREXH(uint16_t value, uint16_t *addr);
 extern uint32_t __STREXW(uint32_t value, uint32_t *addr);
 
 
+/* intrinsic void __set_PRIMASK();                                    */
+/* intrinsic void __get_PRIMASK();                                    */
+/* intrinsic void __set_FAULTMASK();                                  */
+/* intrinsic void __get_FAULTMASK();                                  */
+/* intrinsic uint32_t __REV(uint32_t value);                          */
+/* intrinsic uint32_t __REVSH(uint32_t value);                        */
+/* intrinsic unsigned long __STREX(unsigned long, unsigned long);     */
+/* intrinsic unsigned long __LDREX(unsigned long *);                  */
+
+
 
 #elif (defined (__GNUC__)) /*------------------ GNU Compiler ---------------------*/
 /* GNU gcc specific functions */
 
+static __INLINE void __NOP()                      { __ASM volatile ("nop"); }
 static __INLINE void __enable_irq()               { __ASM volatile ("cpsie i"); }
 static __INLINE void __disable_irq()              { __ASM volatile ("cpsid i"); }
 
 static __INLINE void __enable_fault_irq()         { __ASM volatile ("cpsie f"); }
 static __INLINE void __disable_fault_irq()        { __ASM volatile ("cpsid f"); }
 
-static __INLINE void __NOP()                      { __ASM volatile ("nop"); }
-static __INLINE void __WFI()                      { __ASM volatile ("wfi"); }
-static __INLINE void __WFE()                      { __ASM volatile ("wfe"); }
-static __INLINE void __SEV()                      { __ASM volatile ("sev"); }
-static __INLINE void __ISB()                      { __ASM volatile ("isb"); }
-static __INLINE void __DSB()                      { __ASM volatile ("dsb"); }
-static __INLINE void __DMB()                      { __ASM volatile ("dmb"); }
+static __INLINE void __WFI()                      { __ASM volatile ("wfi");   }
+static __INLINE void __WFE()                      { __ASM volatile ("wfe");   }
+static __INLINE void __SEV()                      { __ASM volatile ("sev");   }
+static __INLINE void __ISB(int arg)                   { __ASM volatile ("isb");   }
+static __INLINE void __DSB(int arg)                   { __ASM volatile ("dsb");   }
+static __INLINE void __DMB(int arg)                   { __ASM volatile ("dmb");   }
 static __INLINE void __CLREX()                    { __ASM volatile ("clrex"); }
 
 
@@ -1031,57 +1020,30 @@ extern uint32_t __STREXH(uint16_t value, uint16_t *addr);
 extern uint32_t __STREXW(uint32_t value, uint32_t *addr);
 
 
-#elif (defined (__TASKING__)) /*------------------ TASKING Compiler ---------------------*/
-/* TASKING carm specific functions */
-
-/*
- * The CMSIS functions have been implemented as intrinsics in the compiler.
- * Please use "carm -?i" to get an up to date list of all instrinsics,
- * Including the CMSIS ones.
- */
-
 #endif
 
 
 
 /* ##########################   NVIC functions  #################################### */
 
-
 /**
  * @brief  Set the Priority Grouping in NVIC Interrupt Controller
  *
  * @param  uint32_t priority_grouping is priority grouping field
- * @return none 
+ * @return  
  *
  * Set the priority grouping field using the required unlock sequence.
  * The parameter priority_grouping is assigned to the field 
- * SCB->AIRCR [10:8] PRIGROUP field. Only values from 0..7 are used.
- * In case of a conflict between priority grouping and available
- * priority bits (__NVIC_PRIO_BITS) the smallest possible priority group is set.
+ * SCB->AIRCR [10:8] PRIGROUP field.
  */
-static __INLINE void NVIC_SetPriorityGrouping(uint32_t PriorityGroup)
+static __INLINE void NVIC_SetPriorityGrouping(uint32_t priority_grouping)
 {
-  uint32_t reg_value;
-  uint32_t PriorityGroupTmp = (PriorityGroup & 0x07);                         /* only values 0..7 are used          */
+  uint32_t reg_value=0;
   
-  reg_value  = SCB->AIRCR;                                                    /* read old register configuration    */
-  reg_value &= ~((0xFFFFU << 16) | (0x0F << 8));                              /* clear bits to change               */
-  reg_value  = ((reg_value | NVIC_AIRCR_VECTKEY | (PriorityGroupTmp << 8)));  /* Insert write key and priorty group */
+  reg_value  = SCB->AIRCR;                                                                            /* read old register configuration    */
+  reg_value &= ~((0xFFFFU << 16) | (0x0F << 8));                                                      /* clear bits to change               */
+  reg_value  = ((reg_value | NVIC_AIRCR_VECTKEY | (priority_grouping << 8)));                         /* Insert write key and priorty group */
   SCB->AIRCR = reg_value;
-}
-
-/**
- * @brief  Get the Priority Grouping from NVIC Interrupt Controller
- *
- * @param  none
- * @return uint32_t   priority grouping field 
- *
- * Get the priority grouping from NVIC Interrupt Controller.
- * priority grouping is SCB->AIRCR [10:8] PRIGROUP field.
- */
-static __INLINE uint32_t NVIC_GetPriorityGrouping(void)
-{
-  return ((SCB->AIRCR >> 8) & 0x07);                                          /* read priority grouping field */
 }
 
 /**
@@ -1095,77 +1057,79 @@ static __INLINE uint32_t NVIC_GetPriorityGrouping(void)
  */
 static __INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 {
-  NVIC->ISER[((uint32_t)(IRQn) >> 5)] = (1 << ((uint32_t)(IRQn) & 0x1F)); /* enable interrupt */
+  NVIC->ISER[((uint32_t)(IRQn) >> 5)] = (1 << ((uint32_t)(IRQn) & 0x1F));                             /* enable interrupt */
 }
 
 /**
  * @brief  Disable the interrupt line for external interrupt specified
  * 
  * @param  IRQn_Type IRQn is the positive number of the external interrupt
- * @return none
+ * @return  none
  * 
  * Disable a device specific interupt in the NVIC interrupt controller.
  * The interrupt number cannot be a negative value.
  */
 static __INLINE void NVIC_DisableIRQ(IRQn_Type IRQn)
 {
-  NVIC->ICER[((uint32_t)(IRQn) >> 5)] = (1 << ((uint32_t)(IRQn) & 0x1F)); /* disable interrupt */
+  NVIC->ICER[((uint32_t)(IRQn) >> 5)] = (1 << ((uint32_t)(IRQn) & 0x1F));                             /* disable interrupt */
 }
 
 /**
  * @brief  Read the interrupt pending bit for a device specific interrupt source
  * 
  * @param  IRQn_Type IRQn is the number of the device specifc interrupt
- * @return uint32_t 1 if pending interrupt else 0
+ * @return IRQn_Type Number of pending interrupt or zero
  *
- * Read the pending register in NVIC and return 1 if its status is pending, 
- * otherwise it returns 0
+ * Read the pending register in NVIC and return the number of the
+ * specified interrupt if its status is pending, otherwise it returns 
+ * zero. The interrupt number cannot be a negative value.
  */
-static __INLINE uint32_t NVIC_GetPendingIRQ(IRQn_Type IRQn)
+static __INLINE IRQn_Type NVIC_GetPendingIRQ(IRQn_Type IRQn)
 {
-  return((uint32_t) ((NVIC->ISPR[(uint32_t)(IRQn) >> 5] & (1 << ((uint32_t)(IRQn) & 0x1F)))?1:0)); /* Return 1 if pending else 0 */
+  return((IRQn_Type) (NVIC->ISPR[(uint32_t)(IRQn) >> 5] & (1 << ((uint32_t)(IRQn) & 0x1F))));         /* Return Interrupt bit or 'zero' */
 }
 
 /**
  * @brief  Set the pending bit for an external interrupt
  * 
  * @param  IRQn_Type IRQn is the Number of the interrupt
- * @return none
+ * @return  none
  *
  * Set the pending bit for the specified interrupt.
  * The interrupt number cannot be a negative value.
  */
 static __INLINE void NVIC_SetPendingIRQ(IRQn_Type IRQn)
 {
-  NVIC->ISPR[((uint32_t)(IRQn) >> 5)] = (1 << ((uint32_t)(IRQn) & 0x1F)); /* set interrupt pending */
+  NVIC->ISPR[((uint32_t)(IRQn) >> 5)] = (1 << ((uint32_t)(IRQn) & 0x1F));                             /* set interrupt pending */
 }
 
 /**
  * @brief  Clear the pending bit for an external interrupt
  *
  * @param  IRQn_Type IRQn is the Number of the interrupt
- * @return none
+ * @return  none
  *
  * Clear the pending bit for the specified interrupt. 
  * The interrupt number cannot be a negative value.
  */
 static __INLINE void NVIC_ClearPendingIRQ(IRQn_Type IRQn)
 {
-  NVIC->ICPR[((uint32_t)(IRQn) >> 5)] = (1 << ((uint32_t)(IRQn) & 0x1F)); /* Clear pending interrupt */
+  NVIC->ICPR[((uint32_t)(IRQn) >> 5)] = (1 << ((uint32_t)(IRQn) & 0x1F));                             /* Clear pending interrupt */
 }
 
 /**
  * @brief  Read the active bit for an external interrupt
  *
- * @param  IRQn_Type  IRQn is the Number of the interrupt
- * @return uint32_t   1 if active else 0
+ * @param  IRQn_Type IRQn is the Number of the interrupt
+ * @return IRQn_Type Number of pending interrupt or zero
  *
- * Read the active register in NVIC and returns 1 if its status is active, 
- * otherwise it returns 0.
+ * Read the active register in NVIC and returns the number of the
+ * specified interrupt if its status is active, otherwise it 
+ * returns zero. The interrupt number cannot be a negative value.
  */
-static __INLINE uint32_t NVIC_GetActive(IRQn_Type IRQn)
+static __INLINE IRQn_Type NVIC_GetActive(IRQn_Type IRQn)
 {
-  return((uint32_t)((NVIC->IABR[(uint32_t)(IRQn) >> 5] & (1 << ((uint32_t)(IRQn) & 0x1F)))?1:0)); /* Return 1 if active else 0 */
+  return((IRQn_Type)(NVIC->IABR[(uint32_t)(IRQn) >> 5] & (1 << ((uint32_t)(IRQn) & 0x1F))));                        /* Return Interruptnumber or 'zero' */
 }
 
 /**
@@ -1173,7 +1137,7 @@ static __INLINE uint32_t NVIC_GetActive(IRQn_Type IRQn)
  *
  * @param  IRQn_Type IRQn is the Number of the interrupt
  * @param  priority is the priority for the interrupt
- * @return none
+ * @return  none
  *
  * Set the priority for the specified interrupt. The interrupt 
  * number can be positive to specify an external (device specific) 
@@ -1181,19 +1145,19 @@ static __INLINE uint32_t NVIC_GetActive(IRQn_Type IRQn)
  *
  * Note: The priority cannot be set for every core interrupt.
  */
-static __INLINE void NVIC_SetPriority(IRQn_Type IRQn, uint32_t priority)
+static __INLINE void NVIC_SetPriority(IRQn_Type IRQn, int32_t priority)
 {
   if(IRQn < 0) {
-    SCB->SHP[((uint32_t)(IRQn) & 0xF)-4] = ((priority << (8 - __NVIC_PRIO_BITS)) & 0xff); } /* set Priority for Cortex-M3 System Interrupts */
+    SCB->SHP[((uint32_t)(IRQn) & 0xF)-4] = ((priority << (8 - __NVIC_PRIO_BITS)) & 0xff); }  /* set Priority for Cortex-M3 System Interrupts */
   else {
-    NVIC->IP[(uint32_t)(IRQn)] = ((priority << (8 - __NVIC_PRIO_BITS)) & 0xff);    }        /* set Priority for device specific Interrupts      */
+    NVIC->IP[(uint32_t)(IRQn)] = ((priority << (8 - __NVIC_PRIO_BITS)) & 0xff);    }         /* set Priority for device specific Interrupts      */
 }
 
 /**
  * @brief  Read the priority for an interrupt
  *
  * @param  IRQn_Type IRQn is the Number of the interrupt
- * @return uint32_t  priority is the priority for the interrupt
+ * @return priority is the priority for the interrupt
  *
  * Read the priority for the specified interrupt. The interrupt 
  * number can be positive to specify an external (device specific) 
@@ -1208,70 +1172,9 @@ static __INLINE uint32_t NVIC_GetPriority(IRQn_Type IRQn)
 {
 
   if(IRQn < 0) {
-    return((uint32_t)(SCB->SHP[((uint32_t)(IRQn) & 0xF)-4] >> (8 - __NVIC_PRIO_BITS)));  } /* get priority for Cortex-M3 system interrupts */
+    return((uint32_t)(SCB->SHP[((uint32_t)(IRQn) & 0xF)-4] >> (8 - __NVIC_PRIO_BITS)));  }              /* get priority for Cortex-M3 system interrupts   */
   else {
-    return((uint32_t)(NVIC->IP[(uint32_t)(IRQn)]           >> (8 - __NVIC_PRIO_BITS)));  } /* get priority for device specific interrupts  */
-}
-
-
-/**
- * @brief  Encode the priority for an interrupt
- *
- * @param  uint32_t PriorityGroup   is the used priority group
- * @param  uint32_t PreemptPriority is the preemptive priority value (starting from 0)
- * @param  uint32_t SubPriority     is the sub priority value (starting from 0)
- * @return uint32_t                    the priority for the interrupt
- *
- * Encode the priority for an interrupt with the given priority group,
- * preemptive priority value and sub priority value.
- * In case of a conflict between priority grouping and available
- * priority bits (__NVIC_PRIO_BITS) the samllest possible priority group is set.
- *
- * The returned priority value can be used for NVIC_SetPriority(...) function
- */
-static __INLINE uint32_t NVIC_EncodePriority (uint32_t PriorityGroup, uint32_t PreemptPriority, uint32_t SubPriority)
-{
-  uint32_t PriorityGroupTmp = (PriorityGroup & 0x07);                         /* only values 0..7 are used          */
-  uint32_t PreemptPriorityBits;
-  uint32_t SubPriorityBits;
-
-  PreemptPriorityBits = ((7 - PriorityGroupTmp) > __NVIC_PRIO_BITS) ? __NVIC_PRIO_BITS : 7 - PriorityGroupTmp;
-  SubPriorityBits     = ((PriorityGroupTmp + __NVIC_PRIO_BITS) < 7) ? 0 : PriorityGroupTmp - 7 + __NVIC_PRIO_BITS;
- 
-  return (
-           ((PreemptPriority & ((1 << (PreemptPriorityBits)) - 1)) << SubPriorityBits) |
-           ((SubPriority     & ((1 << (SubPriorityBits    )) - 1)))
-         );
-}
-
-
-/**
- * @brief  Decode the priority of an interrupt
- *
- * @param  uint32_t   Priority       the priority for the interrupt
- * @param  uint32_t   PrioGroup   is the used priority group
- * @param  uint32_t* pPreemptPrio is the preemptive priority value (starting from 0)
- * @param  uint32_t* pSubPrio     is the sub priority value (starting from 0)
- * @return none
- *
- * Decode an interrupt priority value with the given priority group to 
- * preemptive priority value and sub priority value.
- * In case of a conflict between priority grouping and available
- * priority bits (__NVIC_PRIO_BITS) the samllest possible priority group is set.
- *
- * The priority value can be retrieved with NVIC_GetPriority(...) function
- */
-static __INLINE void NVIC_DecodePriority (uint32_t Priority, uint32_t PriorityGroup, uint32_t* pPreemptPriority, uint32_t* pSubPriority)
-{
-  uint32_t PriorityGroupTmp = (PriorityGroup & 0x07);                         /* only values 0..7 are used          */
-  uint32_t PreemptPriorityBits;
-  uint32_t SubPriorityBits;
-
-  PreemptPriorityBits = ((7 - PriorityGroupTmp) > __NVIC_PRIO_BITS) ? __NVIC_PRIO_BITS : 7 - PriorityGroupTmp;
-  SubPriorityBits     = ((PriorityGroupTmp + __NVIC_PRIO_BITS) < 7) ? 0 : PriorityGroupTmp - 7 + __NVIC_PRIO_BITS;
-  
-  *pPreemptPriority = (Priority >> SubPriorityBits) & ((1 << (PreemptPriorityBits)) - 1);
-  *pSubPriority     = (Priority                   ) & ((1 << (SubPriorityBits    )) - 1);
+    return((uint32_t)(NVIC->IP[(uint32_t)(IRQn)]           >> (8 - __NVIC_PRIO_BITS)));  }              /* get priority for device specific interrupts    */
 }
 
 
@@ -1298,13 +1201,13 @@ static __INLINE void NVIC_DecodePriority (uint32_t Priority, uint32_t PriorityGr
  */
 static __INLINE uint32_t SysTick_Config(uint32_t ticks)
 { 
-  if (ticks > SYSTICK_MAXCOUNT)  return (1);                                             /* Reload value impossible */
+  if (ticks > SYSTICK_MAXCOUNT)  return (1);                                                /* Reload value impossible */
 
-  SysTick->LOAD  =  (ticks & SYSTICK_MAXCOUNT) - 1;                                      /* set reload register */
-  NVIC_SetPriority (SysTick_IRQn, (1<<__NVIC_PRIO_BITS) - 1);                            /* set Priority for Cortex-M0 System Interrupts */
-  SysTick->VAL   =  (0x00);                                                              /* Load the SysTick Counter Value */
-  SysTick->CTRL = (1 << SYSTICK_CLKSOURCE) | (1<<SYSTICK_ENABLE) | (1<<SYSTICK_TICKINT); /* Enable SysTick IRQ and SysTick Timer */
-  return (0);                                                                            /* Function successful */
+  SysTick->LOAD  =  (ticks & SYSTICK_MAXCOUNT) - 1;                                         /* set reload register */
+  NVIC_SetPriority (SysTick_IRQn, (1<<__NVIC_PRIO_BITS) - 1);                               /* set Priority for Cortex-M0 System Interrupts */
+  SysTick->VAL   =  (0x00);                                                                 /* Load the SysTick Counter Value */
+  SysTick->CTRL = (1 << SYSTICK_CLKSOURCE) | (1<<SYSTICK_ENABLE) | (1<<SYSTICK_TICKINT);    /* Enable SysTick IRQ and SysTick Timer */
+  return (0);                                                                               /* Function successful */
 }
 
 #endif
@@ -1325,9 +1228,7 @@ static __INLINE uint32_t SysTick_Config(uint32_t ticks)
  */
 static __INLINE void NVIC_SystemReset(void)
 {
-  SCB->AIRCR  = (NVIC_AIRCR_VECTKEY | (SCB->AIRCR & (0x700)) | (1<<NVIC_SYSRESETREQ)); /* Keep priority group unchanged */
-  __DSB();                                                                             /* Ensure completion of memory access */              
-  while(1);                                                                            /* wait until reset */
+  SCB->AIRCR  = (NVIC_AIRCR_VECTKEY | (SCB->AIRCR & (0x700)) | (1<<NVIC_SYSRESETREQ));      /* Keep priority group unchanged */
 }
 
 
@@ -1346,7 +1247,7 @@ static __INLINE void NVIC_SystemReset(void)
  */
 static __INLINE uint32_t ITM_SendChar (uint32_t ch)
 {
-  if (ch == '\n') ITM_SendChar('\r');
+  if(ch == '\n') ITM_SendChar('\r');
   
   if ((CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA)  &&
       (ITM->TCR & ITM_TCR_ITMENA)                  &&
@@ -1358,10 +1259,6 @@ static __INLINE uint32_t ITM_SendChar (uint32_t ch)
   return (ch);
 }
 
-#ifdef __cplusplus
-}
 #endif
-
-#endif /* __CM3_CORE_H__ */
 
 /*lint -restore */
