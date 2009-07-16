@@ -4,7 +4,7 @@ sources := $(shell find src -name "*.c" -or -name "*.s" -or -name "*.cpp")
 headers := $(shell find src -name "*.h" )
 objects := $(addprefix build/, $(patsubst src/%,%, $(patsubst %.cpp, %.o, $(patsubst %.s, %.o, $(patsubst %.c, %.o, $(sources))))))
 
-sharedflags := -Os -Isrc -Isrc/stm32 -msoft-float -mcpu=cortex-m3 -mthumb -Wall -DSTM32F10X_MD -DUSE_FULL_ASERT -ffunction-sections -fdata-sections 
+sharedflags := -Os -Isrc -Isrc/stm32 -msoft-float -mcpu=cortex-m3 -mthumb -Wall -DSTM32F10X_MD -DUSE_FULL_ASERT -ffunction-sections -fdata-sections -fomit-frame-pointer -pipe
 cflags := $(sharedflags) -std=gnu99 -fno-common 
 cppflags := $(sharedflags) -fno-exceptions -fno-rtti -fno-common
 
@@ -24,9 +24,9 @@ out/%.bin: build/%.out
 	$(mkdirs)
 	$(objcopy) --output-target=binary $< $@
 	
-build/%.out: $(objects) src/ld/%.ld
+build/%.out: $(objects) src/crt/%.ld
 	$(mkdirs)
-	$(ld) -Tsrc/ld/$*.ld $(objects) -o build/$*.out -Wl,-Map=out/$*.map $(ldflags)
+	$(ld) -Tsrc/crt/$*.ld $(objects) -o build/$*.out -Wl,-Map=out/$*.map $(ldflags)
 	$(objdump) -d build/$*.out > out/$*.dis
 
 build/%.o: src/%.c
@@ -52,7 +52,7 @@ build/%.o: src/%.s
 build/%.o: src/%.cpp
 	$(mkdirs)
 	$(cpp) $(cppflags) -c $< -o $@
-	@$(cpp) -MM $(cppflags) $< > build/$*.d
+	@$(cc) -MM $(cppflags) $< > build/$*.d
 	@mv -f build/$*.d build/$*.d.tmp
 	@sed -e 's|.*:|build/$*.o:|' < build/$*.d.tmp > build/$*.d
 	@sed -e 's/.*://' -e 's/\\$$//' < build/$*.d.tmp | fmt -1 | \
