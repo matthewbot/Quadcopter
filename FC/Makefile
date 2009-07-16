@@ -7,6 +7,7 @@ objects := $(addprefix build/, $(patsubst src/%,%, $(patsubst %.c, %.o, $(source
 sharedflags := -Os -Isrc -Isrc/stm32 -msoft-float -mcpu=cortex-m3 -mthumb -Wall -DSTM32F10X_MD -DUSE_FULL_ASERT -ffunction-sections -fdata-sections -fomit-frame-pointer -pipe
 cflags := $(sharedflags) -std=gnu99 -fno-common 
 cppflags := $(sharedflags) -fno-exceptions -fno-rtti -fno-common
+ldflags := -lm -nostartfiles -Wall -msoft-float -mcpu=cortex-m3 -mthumb
 
 prefix := arm-none-eabi
 cc := $(prefix)-gcc
