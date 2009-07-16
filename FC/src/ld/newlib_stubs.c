@@ -45,6 +45,18 @@ int _isatty_r(struct _reent *re, int fd) {
 	return 1;
 }
 
+void _exit(int val) {
+	while (1) { }
+}
+
+int _kill_r(struct _reent *re, int pid, int sig) {
+	return -1;
+}
+
+int _getpid_r(struct _reent *re) {
+	return 1;
+}
+
 void assert_failed(uint8_t* file, uint32_t line) {
 	while (1) { }
 }

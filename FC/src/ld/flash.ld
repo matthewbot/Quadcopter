@@ -12,11 +12,26 @@ MAIN_STACK_SIZE = 6k;
 SECTIONS {
 	.text : {
 		*(.isr_vector)
-		*(.text .text*)
-		*(.rodata .rodata*)
+		*(.text .text* .gnu.linkonce.t.*)
+		*(.rodata .rodata* .gnu.linkonce.r.*)
 		
-		. = ALIGN(4);
-		_etext = .;
+		KEEP (*crtbegin.o(.ctors))
+		KEEP (*(EXCLUDE_FILE (*crtend.o) .ctors))
+		KEEP (*(SORT(.ctors.*)))
+		KEEP (*crtend.o(.ctors))
+		KEEP (*crtbegin.o(.dtors))
+		KEEP (*(EXCLUDE_FILE (*crtend.o) .dtors))
+		KEEP (*(SORT(.dtors.*)))
+		KEEP (*crtend.o(.dtors))
+		
+		*(.init)
+		*(.fini)
+	} >flash
+	
+	.ARM.exidx : {
+		__exidx_start = .;
+		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
+		__exidx_end = .;
 	} >flash
 	
 	.data : {
@@ -25,7 +40,7 @@ SECTIONS {
 		. = ALIGN(4);
 		_sdata = .;
 		
-		*(.data .data*)
+		*(.data .data* .gnu.linkonce.d.*)
 		
 		. = ALIGN(4);
 		_edata = .;
@@ -35,7 +50,7 @@ SECTIONS {
 		. = ALIGN(4);
 		_sbss = .;
 		
-		*(.bss .bss*)
+		*(.bss .bss* .gnu.linkonce.b.*)
 		
 		. = ALIGN(4);
 		_ebss = .;

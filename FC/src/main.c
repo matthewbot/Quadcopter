@@ -1,8 +1,6 @@
 #include <stdio.h>
-#include "system.h"
 
 int main(int argc, char **argv) {
-	system_init();
-	
+	printf("Hai!\n");
 	return 0;
 }
