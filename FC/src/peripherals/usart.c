@@ -38,3 +38,7 @@ void usart_receive(int num, uint8_t *buf, size_t size) {
 		*buf++ = usart->DR;
 	}
 }
+
+void *usart_dma_address(int num) {
+	return &usarts[num]->DR;
+}

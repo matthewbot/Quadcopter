@@ -2,6 +2,7 @@
 #define FC_PERIPHERALS_DMA_H
 
 #include "stm32f10x.h"
+#include <stddef.h>
 
 enum dma_interrupt_type {
 	DMA_TRANSFER_COMPLETE,
@@ -28,9 +29,12 @@ enum dma_options {
 	DMA_OPTION_INTERRUPT = DMA_CCR1_TCIE
 };
 
+#define DMA_BASE_IRQn 10 // add the DMA channel number to this to get its IRQ ID
+
 void dma_configure(int chnum, enum dma_direction dir, enum dma_priority pri, int memsize, int persize, enum dma_options opts);
-void dma_start(int chnum, void *mem, void *periph, unsigned short count);
+void dma_start(int chnum, void *mem, void *periph, size_t count);
 void dma_disable(int chnum);
 void dma_enable(int chnum);
+size_t dma_get_remaining(int chnum);
 
 #endif

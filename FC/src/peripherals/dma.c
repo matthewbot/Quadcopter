@@ -27,7 +27,7 @@ void dma_configure(int chnum, enum dma_direction dir, enum dma_priority pri, int
 	channels[chnum]->CCR = val;
 }
 
-void dma_start(int chnum, void *mem, void *periph, unsigned short count) {
+void dma_start(int chnum, void *mem, void *periph, size_t count) {
 	DMA_Channel_TypeDef *ch = channels[chnum];
 	ch->CCR &= ~DMA_CCR1_EN;
 	ch->CNDTR = count;
@@ -42,4 +42,8 @@ void dma_disable(int chnum) {
 
 void dma_enable(int chnum) {
 	channels[chnum]->CCR |= DMA_CCR1_EN;
+}
+
+size_t dma_get_remaining(int chnum) {
+	return channels[chnum]->CNDTR;
 }
