@@ -1,13 +1,9 @@
-#include "peripherals/panel.h"
+#include "drivers/panel.h"
 #include "peripherals/gpio.h"
 #include "stm32f10x.h"
 #include <stdbool.h>
 
-static void status_on();
-static void status_off();
-
 void panel_init() {
-	status_off();
 	panel_set_status(PANEL_STATUS_BOOT);
 }
 
@@ -39,37 +35,4 @@ void panel_set_autopilot(bool autopilot) {
 
 void panel_set_positionlock(bool poslock) {
 	gpio_output(GPIO_PORT_B, 3, poslock);
-}
-
-static void delay();
-
-__attribute__ ((noreturn))
-void panel_blink_halt(int count) {
-	panel_set_status(PANEL_STATUS_FAULT);
-
-	while (true) {
-		int i;
-		for (i=0;i<count;i++) {
-			status_on();
-			delay();
-			status_off();
-			delay();
-		}
-		
-		delay();
-		delay();
-	}
-}
-
-static void delay() {
-	int i;
-	for (i=0;i<10000;i++) { asm("nop"); }
-}
-
-static void status_on() {
-	gpio_output(GPIO_PORT_C, 12, true);
-}
-
-static void status_off() {
-	gpio_output(GPIO_PORT_C, 12, false);
 }

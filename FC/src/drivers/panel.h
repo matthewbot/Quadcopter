@@ -18,10 +18,4 @@ void panel_set_status(enum panel_status status);
 void panel_set_autopilot(bool autopilot);
 void panel_set_positionlock(bool poslock);
 
-#define BLINK_COUNT_FAULT 1
-#define BLINK_COUNT_UNHANDLED 2
-
-__attribute__ ((noreturn))
-void panel_blink_halt(int count);
-
 #endif

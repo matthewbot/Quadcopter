@@ -89,3 +89,36 @@ void gpio_output(enum gpio_port port, int pin, bool val) {
 bool gpio_input(enum gpio_port port, int pin) {
 	return (gpios[port]->IDR >> pin) & 1;
 }
+
+static void status_on();
+static void status_off();
+static void delay();
+
+__attribute__ ((noreturn))
+void gpio_blink_halt(int count) {
+	while (true) {
+		int i;
+		for (i=0;i<count;i++) {
+			status_on();
+			delay();
+			status_off();
+			delay();
+		}
+		
+		delay();
+		delay();
+	}
+}
+
+static void delay() {
+	int i;
+	for (i=0;i<10000;i++) { asm("nop"); }
+}
+
+static void status_on() {
+	gpio_output(GPIO_PORT_C, 12, true);
+}
+
+static void status_off() {
+	gpio_output(GPIO_PORT_C, 12, false);
+}

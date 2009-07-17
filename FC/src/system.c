@@ -1,6 +1,6 @@
 #include "system.h"
+#include "drivers/panel.h"
 #include "peripherals/gpio.h"
-#include "peripherals/panel.h"
 #include "peripherals/rcc.h"
 #include <stdio.h>
 

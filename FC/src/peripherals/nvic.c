@@ -1,5 +1,5 @@
 #include "peripherals/nvic.h"
-#include "peripherals/panel.h"
+#include "peripherals/gpio.h"
 #include "stm32f10x.h"
 #include <stdio.h>
 
@@ -50,11 +50,11 @@ void nvic_set_priority(enum IRQn irq, int priority) {
 __attribute__ ((noreturn))
 static void fault() {
 	puts("Fault\n");
-	panel_blink_halt(BLINK_COUNT_FAULT);
+	gpio_blink_halt(BLINK_COUNT_FAULT);
 }
 
 __attribute__ ((noreturn))
 static void unhandled() {
 	puts("Unhandled IRQ\n");
-	panel_blink_halt(BLINK_COUNT_UNHANDLED);
+	gpio_blink_halt(BLINK_COUNT_UNHANDLED);
 }
