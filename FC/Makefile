@@ -34,6 +34,7 @@ flash: out/flash.bin
 out/%.bin: build/%.out
 	$(mkdirs)
 	$(objcopy) --output-target=binary $< $@
+	size $< -A
 	
 build/%.out: $(objects) src/crt/%.ld
 	$(mkdirs)
