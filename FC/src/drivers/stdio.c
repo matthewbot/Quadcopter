@@ -29,13 +29,11 @@ void stdio_init() {
 size_t stdio_read(uint8_t *buf, size_t len) {
 	dma_disable(DMA_RX);
 	
-	size_t avail = sizeof(readbuf) - dma_get_remaining(DMA_RX);
+	size_t avail;
+	do {
+		avail = sizeof(readbuf) - dma_get_remaining(DMA_RX);
+	} while (avail == 0);
 	size_t got = (avail > len) ? len : avail;
-	
-	if (got == 0) {
-		dma_enable(DMA_RX);
-		return 0;
-	}
 		
 	size_t new_avail = avail - got;
 
