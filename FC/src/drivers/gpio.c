@@ -50,18 +50,18 @@ void gpio_init() {
 	             PINLO(1, CNF_ANALOG, MODE_INPUT) | // Pot 3 (ADC12_IN9)
 	             PINLO(3, CNF_OPEN_DRAIN, MODE_OUTPUT_2MHZ) | // LED 4 (Blue)
 	             PINLO(4, CNF_INPUT_PULL, MODE_INPUT) | // Button 2
-	             PINLO(5, CNF_INPUT_FLOAT, MODE_INPUT) | // Compass reset (TODO, how to configure!)
+	             PINLO(5, CNF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // Compass reset (TODO, how to configure!)
                  PINLO(6, CNF_AF_OPEN_DRAIN, MODE_OUTPUT_2MHZ) | // I2C clock
                  PINLO(7, CNF_AF_OPEN_DRAIN, MODE_OUTPUT_2MHZ);  // I2C data
                  
-    GPIOB->CRH = PINHI(8, CNF_INPUT_FLOAT, MODE_INPUT) | // 16-bit ADC DRDY
-                 PINHI(9, CNF_INPUT_FLOAT, MODE_INPUT) | // US signal (TIM4_CH4)
+    GPIOB->CRH = PINHI(8, CNF_INPUT_FLOAT, MODE_INPUT) | // Compass DRDY
+                 PINHI(9, CNF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // Altimeter XCLR
                  PINHI(10, CNF_INPUT_FLOAT, MODE_INPUT) | // PPM Input (TIM2_CH3)
-                 PINHI(11, CNF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // Altimeter XCLR / US trigger
-                 PINHI(12, CNF_AF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // 16-bit ADC (SPI2_NSS)
-                 PINHI(13, CNF_AF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // 16-bit ADC (SPI2_SCK)
-                 PINHI(14, CNF_INPUT_FLOAT, MODE_INPUT) | // 16-bit ADC (SPI2_MISO)
-                 PINHI(15, CNF_AF_PUSH_PULL, MODE_OUTPUT_2MHZ); // 16-bit ADC (SPI2_MOSI)
+                 PINHI(11, CNF_INPUT_FLOAT, MODE_INPUT) | // US signal (TIM2_CH4)
+                 PINHI(12, CNF_AF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // Compass (SPI2_NSS)
+                 PINHI(13, CNF_AF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // Compass (SPI2_SCK)
+                 PINHI(14, CNF_INPUT_FLOAT, MODE_INPUT) | // Compass (SPI2_MISO)
+                 PINHI(15, CNF_AF_PUSH_PULL, MODE_OUTPUT_2MHZ); // Compass (SPI2_MOSI)
                  
 	GPIOC->CRL = PINLO(0, CNF_ANALOG, MODE_INPUT) | // Accel X (ADC12_IN10)
 	             PINLO(1, CNF_ANALOG, MODE_INPUT) | // Accel Y (ADC12_IN11)
