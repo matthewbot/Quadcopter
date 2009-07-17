@@ -96,6 +96,8 @@ static void delay();
 
 __attribute__ ((noreturn))
 void gpio_blink_halt(int count) {
+	__disable_irq();
+
 	while (true) {
 		int i;
 		for (i=0;i<count;i++) {
