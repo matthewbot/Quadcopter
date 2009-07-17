@@ -8,7 +8,8 @@ void rcc_init() {
 	FLASH->ACR |= FLASH_ACR_LATENCY_2; // set two flash wait states
 	RCC->CFGR = RCC_CFGR_PPRE1_DIV2 |  // set the APB Low-speed prescaler to divide HCLK by 2 (72 / 2 = 36, which is the max)
 	            RCC_CFGR_PLLSRC | // set PLL to multiply HSE by 9 (8Mhz * 9 = 72Mhz)
-	            RCC_CFGR_PLLMULL9; 
+	            RCC_CFGR_PLLMULL9 |
+	            RCC_CFGR_ADCPRE_DIV6; // set the ADC clock to divide PCLK2 by 6 (72Mhz / 6 = 12Mhz, max is 14Mhz)
 	            
 	RCC->CR |= RCC_CR_PLLON; // enable PLL
 	while (!(RCC->CR & RCC_CR_PLLRDY)) { } // wait for PLL to come up
@@ -18,6 +19,7 @@ void rcc_init() {
 	
 	RCC->AHBENR = RCC_AHBENR_DMA1EN; // enable DMA clock
 	RCC->APB1ENR = RCC_APB1ENR_I2C1EN | // enable I2C1
+		           RCC_APB1ENR_USART2EN | // enable USART2
 	               RCC_APB1ENR_USART3EN | // enable USART3
 	               RCC_APB1ENR_TIM2EN | // enable timer 2
 	               RCC_APB1ENR_TIM3EN | // enable timer 3
