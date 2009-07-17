@@ -4,10 +4,12 @@
 #include "peripherals/gpio.h"
 #include "peripherals/rcc.h"
 #include "peripherals/nvic.h"
+#include "peripherals/adc.h"
 #include <stdio.h>
 
 void system_init() {
 	rcc_init();
+	adc_init();
 	gpio_init();
 	nvic_init();
 	
