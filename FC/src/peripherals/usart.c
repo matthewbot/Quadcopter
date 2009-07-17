@@ -11,6 +11,7 @@ void usart_setup(int num, unsigned int baud) {
 	unsigned int mantissa = baseclk / baud;
 	unsigned int fraction = (unsigned int)(fmodf(baseclk, (float)baud) * 16);
 	
+	usart->CR1 = 0;
 	usart->BRR = (mantissa << 4) | fraction;
 	usart->CR1 = USART_CR1_UE | USART_CR1_TE | USART_CR1_RE;
 	usart->CR3 = USART_CR3_DMAT | USART_CR3_DMAR;
