@@ -9,7 +9,7 @@ struct vector_table {
 };
 
 __attribute__ ((aligned (128*4)))
-struct vector_table ram_vectors;
+static struct vector_table ram_vectors;
 
 static void fault();
 static void unhandled();
