@@ -1,7 +1,7 @@
 #include "system.h"
-#include "drivers/gpio.h"
-#include "drivers/panel.h"
-#include "drivers/rcc.h"
+#include "peripherals/gpio.h"
+#include "peripherals/panel.h"
+#include "peripherals/rcc.h"
 #include <stdio.h>
 
 void system_init() {

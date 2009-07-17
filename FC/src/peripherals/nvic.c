@@ -1,5 +1,5 @@
-#include "drivers/nvic.h"
-#include "drivers/panel.h"
+#include "peripherals/nvic.h"
+#include "peripherals/panel.h"
 #include "stm32f10x.h"
 #include <stdio.h>
 

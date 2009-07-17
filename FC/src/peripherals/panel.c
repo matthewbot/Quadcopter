@@ -1,5 +1,5 @@
-#include "drivers/panel.h"
-#include "drivers/gpio.h"
+#include "peripherals/panel.h"
+#include "peripherals/gpio.h"
 #include "stm32f10x.h"
 #include <stdbool.h>
 

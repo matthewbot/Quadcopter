@@ -1,5 +1,5 @@
+#include "peripherals/rcc.h"
 #include "stm32f10x.h"
-#include "drivers/rcc.h"
 
 void rcc_init() {
 	RCC->CR |= RCC_CR_HSEON; // enable HSE oscillator

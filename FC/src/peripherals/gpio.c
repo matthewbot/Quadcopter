@@ -1,4 +1,4 @@
-#include "drivers/gpio.h"
+#include "peripherals/gpio.h"
 #include "stm32f10x.h"
 
 #define CNF_ANALOG 0
