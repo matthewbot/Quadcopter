@@ -8,6 +8,7 @@
 
 #define DMA_TX 4
 #define DMA_RX 5
+#define DMA_RX_INTERRUPT (DMA_BASE_IRQn + DMA_RX)
 
 #define BUF_SIZE 128
 
@@ -17,7 +18,8 @@ static void readbuf_full_handler();
 static void start_rx_dma(size_t bufinuse);
 
 void stdio_init() {
-	nvic_register_handler(DMA_BASE_IRQn + DMA_RX, readbuf_full_handler);
+	nvic_register_handler(DMA_RX_INTERRUPT, readbuf_full_handler);
+	nvic_enable_interrupt(DMA_RX_INTERRUPT);
 	dma_configure(DMA_TX, DMA_DIR_MEM_TO_PERIPHERAL, DMA_PRIORITY_LOW, 8, 8, DMA_OPTION_MEMORY_INCREMENT);
 	dma_configure(DMA_RX, DMA_DIR_PERIPHERAL_TO_MEM, DMA_PRIORITY_LOW, 8, 8, DMA_OPTION_MEMORY_INCREMENT | DMA_OPTION_INTERRUPT);
 	start_rx_dma(0);
