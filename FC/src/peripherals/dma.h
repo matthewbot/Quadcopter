@@ -28,7 +28,6 @@ enum dma_options {
 	DMA_OPTION_INTERRUPT = DMA_CCR1_TCIE
 };
 
-void dma_init();
 void dma_configure(int chnum, enum dma_direction dir, enum dma_priority pri, int memsize, int persize, enum dma_options opts);
 void dma_start(int chnum, void *mem, void *periph, unsigned short count);
 void dma_disable(int chnum);
