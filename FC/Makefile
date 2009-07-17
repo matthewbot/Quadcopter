@@ -7,7 +7,7 @@ objects := $(addprefix build/, $(patsubst src/%,%, $(patsubst %.c, %.o, $(source
 sharedflags := -Os -Isrc -Isrc/stm32 -msoft-float -mcpu=cortex-m3 -mthumb -Wall -DSTM32F10X_MD -DUSE_FULL_ASERT -ffunction-sections -fdata-sections -fomit-frame-pointer -pipe
 cflags := $(sharedflags) -std=gnu99 -fno-common 
 cppflags := $(sharedflags) -fno-exceptions -fno-rtti -fno-common
-ldflags := -lm -nostartfiles -Wall -msoft-float -mcpu=cortex-m3 -mthumb
+ldflags := -lm -nostartfiles -Wall -msoft-float -mcpu=cortex-m3 -mthumb -Wl,--gc-sections
 
 prefix := arm-none-eabi
 cc := $(prefix)-gcc
@@ -15,6 +15,15 @@ ld := $(prefix)-gcc
 objdump := $(prefix)-objdump
 objcopy := $(prefix)-objcopy
 mkdirs = @mkdir -p $(dir $@) out
+
+define mkdeps 
+@$(cc) -MM $(cflags) $< > build/$*.d 
+@mv -f build/$*.d build/$*.d.tmp 
+@sed -e 's|.*:|build/$*.o:|' < build/$*.d.tmp > build/$*.d 
+@sed -e 's/.*://' -e 's/\\$$//' < build/$*.d.tmp | fmt -1 | \
+    sed -e 's/^ *//' -e 's/$$/:/' >> build/$*.d 
+@rm -f build/$*.d.tmp 
+endef
 
 all: out/flash.bin 
 
@@ -30,32 +39,18 @@ build/%.out: $(objects) src/crt/%.ld
 build/%.o: src/%.c
 	$(mkdirs)
 	$(cc) $(cflags) -c $< -o $@
-	@$(cc) -MM $(cflags) $< > build/$*.d
-	@mv -f build/$*.d build/$*.d.tmp
-	@sed -e 's|.*:|build/$*.o:|' < build/$*.d.tmp > build/$*.d
-	@sed -e 's/.*://' -e 's/\\$$//' < build/$*.d.tmp | fmt -1 | \
-	   sed -e 's/^ *//' -e 's/$$/:/' >> build/$*.d
-	@rm -f build/$*.d.tmp
+	$(mkdeps)
 	
 build/%.o: src/%.s
 	$(mkdirs)
 	$(cc) $(cflags) -c $< -o $@
-	@$(cc) -MM $(cflags) $< > build/$*.d
-	@mv -f build/$*.d build/$*.d.tmp
-	@sed -e 's|.*:|build/$*.o:|' < build/$*.d.tmp > build/$*.d
-	@sed -e 's/.*://' -e 's/\\$$//' < build/$*.d.tmp | fmt -1 | \
-	   sed -e 's/^ *//' -e 's/$$/:/' >> build/$*.d
-	@rm -f build/$*.d.tmp
+	$(mkdeps)
 	
 build/%.o: src/%.cpp
 	$(mkdirs)
 	$(cpp) $(cppflags) -c $< -o $@
-	@$(cc) -MM $(cppflags) $< > build/$*.d
-	@mv -f build/$*.d build/$*.d.tmp
-	@sed -e 's|.*:|build/$*.o:|' < build/$*.d.tmp > build/$*.d
-	@sed -e 's/.*://' -e 's/\\$$//' < build/$*.d.tmp | fmt -1 | \
-	   sed -e 's/^ *//' -e 's/$$/:/' >> build/$*.d
-	@rm -f build/$*.d.tmp
+	$(mkdeps)
+	
 .PHONY: clean
 clean:
 	rm -rf build out
