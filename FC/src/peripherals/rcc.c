@@ -6,9 +6,10 @@ void rcc_init() {
 	while (!(RCC->CR & RCC_CR_HSERDY)) { } // wait for it to come up
 	
 	FLASH->ACR |= FLASH_ACR_LATENCY_2; // set two flash wait states
-	RCC->CFGR |= RCC_CFGR_PPRE1_DIV2; // set the APB Low-speed prescaler to divide HCLK by 2 (72 / 2 = 36, which is the max)
-	
-	RCC->CFGR |= RCC_CFGR_PLLSRC | RCC_CFGR_PLLMULL9; // set PLL to multiply HSE by 9 (8Mhz * 9 = 72Mhz)
+	RCC->CFGR = RCC_CFGR_PPRE1_DIV2 |  // set the APB Low-speed prescaler to divide HCLK by 2 (72 / 2 = 36, which is the max)
+	            RCC_CFGR_PLLSRC | // set PLL to multiply HSE by 9 (8Mhz * 9 = 72Mhz)
+	            RCC_CFGR_PLLMULL9; 
+	            
 	RCC->CR |= RCC_CR_PLLON; // enable PLL
 	while (!(RCC->CR & RCC_CR_PLLRDY)) { } // wait for PLL to come up
 	
