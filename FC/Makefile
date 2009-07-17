@@ -25,7 +25,11 @@ define mkdeps
 @rm -f build/$*.d.tmp 
 endef
 
-all: out/flash.bin 
+all: out/flash.bin
+
+.PHONY: flash
+flash: out/flash.bin
+	./stm32loader.py -ewvV -p /dev/ttyS0 out/flash.bin
 
 out/%.bin: build/%.out
 	$(mkdirs)
