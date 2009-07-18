@@ -4,7 +4,7 @@
 
 static USART_TypeDef *const usarts[] = { 0, USART1, USART2, USART3 };
 
-void usart_setup(int num, unsigned int baud) {
+void usart_setup(int num, unsigned int baud, bool dma) {
 	USART_TypeDef *usart = usarts[num];
 	
 	unsigned int baseclk = (num == 1) ? 4500000 : 2250000;
@@ -14,7 +14,8 @@ void usart_setup(int num, unsigned int baud) {
 	usart->CR1 = 0;
 	usart->BRR = (mantissa << 4) | fraction;
 	usart->CR1 = USART_CR1_UE | USART_CR1_TE | USART_CR1_RE;
-	usart->CR3 = USART_CR3_DMAT | USART_CR3_DMAR;
+	if (dma)
+		usart->CR3 = USART_CR3_DMAT | USART_CR3_DMAR;
 }
 
 void usart_disable(int num) {
@@ -40,5 +41,5 @@ void usart_receive(int num, uint8_t *buf, size_t size) {
 }
 
 void *usart_dma_address(int num) {
-	return &usarts[num]->DR;
+	return (void *)&usarts[num]->DR; // discard volatile, doesn't matter cause we're just writing it to a DMA register
 }
