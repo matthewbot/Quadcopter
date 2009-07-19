@@ -1,5 +1,6 @@
 #include "peripherals/nvic.h"
 #include "peripherals/gpio.h"
+#include "crt/vectors.h"
 #include "stm32f10x.h"
 #include <stdio.h>
 
@@ -16,6 +17,9 @@ static void unhandled();
 
 void nvic_init() {
 	int i;
+	
+	ram_vectors.initial_sp = &__main_stack_top;
+	ram_vectors.handlers[0] = &reset;
 	
 	for (i=1;i<=6;i++) {
 		ram_vectors.handlers[i] = &fault;

@@ -1,20 +1,7 @@
+#include "crt/vectors.h"
+#include "stm32f10x.h"
 #include <stdint.h>
 #include <stdbool.h>
-#include "stm32f10x.h"
-
-// defined by linker
-
-extern uint32_t __main_stack_top;
-
-extern uint32_t __data_start;
-extern uint32_t __data_end;
-extern uint32_t __data_load;
-
-extern uint32_t __bss_start;
-extern uint32_t __bss_end;
-
-extern uint32_t __heap_start;
-extern uint32_t __heap_end;
 
 // defined elsewhere
 
@@ -22,7 +9,6 @@ extern void main();
 
 // predeclares
 
-static void reset();
 static void fault();
 
 // utilities
@@ -53,7 +39,7 @@ const struct vector_table flash_vector = {
 // reset function
 
 __attribute__ ((noreturn))
-static void reset() {
+void reset() {
 	status_init();
 	// copy data from flash into ram
 	copy(&__data_start, &__data_end, &__data_load);
