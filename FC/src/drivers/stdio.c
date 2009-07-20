@@ -33,9 +33,9 @@ size_t stdio_read(uint8_t *buf, size_t len) {
 	do {
 		avail = sizeof(readbuf) - dma_get_remaining(DMA_RX);
 	} while (avail == 0);
-	size_t got = (avail > len) ? len : avail;
-		
-	size_t new_avail = avail - got;
+	
+	const size_t got = (avail > len) ? len : avail;
+	const size_t new_avail = avail - got;
 
 	memcpy(buf, readbuf, got);
 	if (new_avail > 0)

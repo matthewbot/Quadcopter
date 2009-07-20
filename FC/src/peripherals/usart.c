@@ -7,9 +7,9 @@ static USART_TypeDef *const usarts[] = { 0, USART1, USART2, USART3 };
 void usart_setup(int num, unsigned int baud, bool dma) {
 	USART_TypeDef *usart = usarts[num];
 	
-	unsigned int baseclk = (num == 1) ? 4500000 : 2250000;
-	unsigned int mantissa = baseclk / baud;
-	unsigned int fraction = (unsigned int)(fmodf(baseclk, (float)baud) * 16);
+	const unsigned int baseclk = (num == 1) ? 4500000 : 2250000;
+	const unsigned int mantissa = baseclk / baud;
+	const unsigned int fraction = (unsigned int)(fmodf(baseclk, (float)baud) * 16);
 	
 	usart->CR1 = 0;
 	usart->BRR = (mantissa << 4) | fraction;
