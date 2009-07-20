@@ -11,7 +11,7 @@ void spi_setup(int num, enum spi_baud_div baud, bool dma) {
 }
 
 void spi_disable(int num) {
-	spis[num]->CR1 &= ~SPI_CR1_MSTR;
+	spis[num]->CR1 &= ~SPI_CR1_SPE;
 }
 
 void spi_send_receive(int num, uint8_t *data_in, const uint8_t *data_out, size_t len) {
