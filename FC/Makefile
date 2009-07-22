@@ -29,7 +29,7 @@ all: out/flash.bin
 
 .PHONY: flash
 flash: out/flash.bin
-	./stm32loader.py -ewvV -p /dev/ttyS0 out/flash.bin
+	./stm32loader.py -ewv -p /dev/ttyS0 out/flash.bin
 
 out/%.bin: build/%.out
 	$(mkdirs)

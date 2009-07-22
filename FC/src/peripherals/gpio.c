@@ -58,7 +58,7 @@ void gpio_init() {
                  PINHI(9, CNF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // Altimeter XCLR
                  PINHI(10, CNF_INPUT_FLOAT, MODE_INPUT) | // PPM Input (TIM2_CH3)
                  PINHI(11, CNF_INPUT_FLOAT, MODE_INPUT) | // US signal (TIM2_CH4)
-                 PINHI(12, CNF_AF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // Compass (SPI2_NSS)
+                 PINHI(12, CNF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // Compass (SPI2_NSS)
                  PINHI(13, CNF_AF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // Compass (SPI2_SCK)
                  PINHI(14, CNF_INPUT_FLOAT, MODE_INPUT) | // Compass (SPI2_MISO)
                  PINHI(15, CNF_AF_PUSH_PULL, MODE_OUTPUT_2MHZ); // Compass (SPI2_MOSI)

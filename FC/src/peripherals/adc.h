@@ -23,5 +23,6 @@ void adc_dual_scan(const int *chans1, size_t count1, const int *chans2, size_t c
 void adc_set_sampletimes(const enum adc_sample_time *times);
 bool adc_scan_finished();
 void adc_disable_scan();
+void *adc_dma_address();
 
 #endif

@@ -1,6 +1,8 @@
 #include "system.h"
 #include "drivers/panel.h"
 #include "drivers/stdio.h"
+#include "drivers/micromag.h"
+#include "drivers/imu.h"
 #include "peripherals/gpio.h"
 #include "peripherals/rcc.h"
 #include "peripherals/nvic.h"
@@ -17,6 +19,8 @@ void system_init() {
 	adc_init();
 
 	stdio_init();
+	micromag_init();
+	imu_init();
 	
 	puts("System Initialized");
 		
