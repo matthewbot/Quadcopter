@@ -19,15 +19,17 @@ void *_sbrk_r(struct _reent *re, int amt) {
 	return prev_end;
 }
 
+#include "crt/status.h"
+
 int _read_r(struct _reent *re, int fd, void *data, size_t len) {
-	if (fd == 1) 
+	if (fd == 0) 
 		return stdio_read(data, len);
 
 	return 0;
 }
 
 int _write_r(struct _reent *re, int fd, const void *data, size_t len) {
-	if (fd == 2 || fd == 3)
+	if (fd == 1 || fd == 2)
 		return stdio_write(data, len);
 	
 	return len;
