@@ -3,7 +3,7 @@ OUTPUT_ARCH(arm)
 ENTRY(flash_vector)
 
 MEMORY {
-	flash (rw) : org = 0x80000000, len = 128k
+	flash (rw) : org = 0x00000000, len = 128k
 	sram (rwx) : org = 0x20000000, len = 20k
 }
 

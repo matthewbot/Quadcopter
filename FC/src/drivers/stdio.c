@@ -12,6 +12,7 @@
 
 #define BUF_SIZE 128
 
+/*
 static uint8_t readbuf[BUF_SIZE], writebuf[BUF_SIZE];
 
 static void readbuf_full_handler();
@@ -67,4 +68,17 @@ static void readbuf_full_handler() {
 static void start_rx_dma(size_t bufinuse) {
 	dma_start(DMA_RX, &readbuf[bufinuse], usart_dma_address(1), sizeof(readbuf) - bufinuse);
 }
+*/
 	
+void stdio_init() {
+	usart_setup(1, 9600, false);
+}
+
+size_t stdio_read(uint8_t *buf, size_t len) {
+	return 0;
+}
+
+size_t stdio_write(const uint8_t *buf, size_t len) {
+	usart_send(1, buf, len);
+	return len;
+}

@@ -76,7 +76,7 @@ void gpio_init() {
 	             PINHI(9, CNF_AF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // West ESC (TIM3_CH4)
 	             PINHI(10, CNF_AF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // XBC (USART3_TX)
 	             PINHI(11, CNF_AF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // XBC (USART3_RX)
-	             PINHI(12, CNF_OPEN_DRAIN, MODE_OUTPUT_2MHZ) | // LED
+	             PINHI(12, CNF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // LED
 	             PINHI(13, CNF_INPUT_FLOAT, MODE_INPUT) | // Future
 	             PINHI(14, CNF_INPUT_FLOAT, MODE_INPUT) | // OSC32_IN
 	             PINHI(15, CNF_INPUT_FLOAT, MODE_INPUT); // OSC32_OUT           
@@ -90,37 +90,3 @@ bool gpio_input(enum gpio_port port, int pin) {
 	return (gpios[port]->IDR >> pin) & 1;
 }
 
-static void status_on();
-static void status_off();
-static void delay();
-
-__attribute__ ((noreturn))
-void gpio_blink_halt(int count) {
-	__disable_irq();
-
-	while (true) {
-		int i;
-		for (i=0;i<count;i++) {
-			status_on();
-			delay();
-			status_off();
-			delay();
-		}
-		
-		delay();
-		delay();
-	}
-}
-
-static void delay() {
-	int i;
-	for (i=0;i<10000;i++) { asm("nop"); }
-}
-
-static void status_on() {
-	gpio_output(GPIO_PORT_C, 12, true);
-}
-
-static void status_off() {
-	gpio_output(GPIO_PORT_C, 12, false);
-}

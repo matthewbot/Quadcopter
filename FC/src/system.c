@@ -8,13 +8,15 @@
 #include <stdio.h>
 
 void system_init() {
-	rcc_init();
-	adc_init();
 	gpio_init();
-	nvic_init();
-	
 	panel_init();
+	panel_set_status(PANEL_STATUS_BOOT);
+	
+	rcc_init();
+	nvic_init();
+	adc_init();
+
 	stdio_init();
 	
-	puts("FC initialized\n");
+	panel_set_status(PANEL_STATUS_READY);
 }

@@ -6,13 +6,15 @@ static USART_TypeDef *const usarts[] = { 0, USART1, USART2, USART3 };
 
 void usart_setup(int num, unsigned int baud, bool dma) {
 	USART_TypeDef *usart = usarts[num];
-	
-	const unsigned int baseclk = (num == 1) ? 4500000 : 2250000;
-	const unsigned int mantissa = baseclk / baud;
-	const unsigned int fraction = (unsigned int)(fmodf(baseclk, (float)baud) * 16);
+
+	const unsigned int pclk = (num == 1) ? 72000000 : 36000000;
+	const unsigned int usartdiv = pclk / baud;
 	
 	usart->CR1 = 0;
-	usart->BRR = (mantissa << 4) | fraction;
+	usart->CR2 = 0;
+	usart->CR3 = 0;
+	
+	usart->BRR = usartdiv;
 	usart->CR1 = USART_CR1_UE | USART_CR1_TE | USART_CR1_RE;
 	if (dma)
 		usart->CR3 = USART_CR3_DMAT | USART_CR3_DMAR;
