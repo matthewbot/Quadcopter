@@ -25,8 +25,10 @@ class MainFrame(wx.Frame):
 		bottom_buttons_box.Add(self.gauge, 1, wx.EXPAND)
 		bottom_buttons_box.Add(self.flash, 0)
 		
-		self.gauge.SetValue(25)
+		self.output.Bind(wx.EVT_CHAR, self.OnKeyChar)
+		self.output.SetFocus()
 		
+		self.gauge.SetValue(25)
 		self.Write("Hello World!")
 		
 	def Write(self, txt):
@@ -35,6 +37,11 @@ class MainFrame(wx.Frame):
 		self.output.write(txt)
 		end = self.output.GetInsertionPoint()
 		self.output.SetStyle(start, end, wx.TextAttr(font = wx.Font(12, wx.FONTFAMILY_TELETYPE, 0, wx.FONTWEIGHT_NORMAL)))
+		
+	def OnKeyChar(self, event):
+		char = chr(event.GetKeyCode())
+		self.Write(char)
+		event.StopPropagation()
 		
 class QuadCommApp(wx.App):
 	def OnInit(self):
