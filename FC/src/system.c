@@ -3,6 +3,7 @@
 #include "drivers/stdio.h"
 #include "drivers/micromag.h"
 #include "drivers/imu.h"
+#include "drivers/vexrc.h"
 #include "peripherals/gpio.h"
 #include "peripherals/rcc.h"
 #include "peripherals/nvic.h"
@@ -21,6 +22,7 @@ void system_init() {
 	stdio_init();
 	micromag_init();
 	imu_init();
+	vexrc_init();
 	
 	puts("System Initialized");
 		

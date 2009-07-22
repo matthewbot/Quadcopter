@@ -42,7 +42,7 @@ void nvic_init() {
 }
 
 void nvic_register_handler(int id, nvic_handler handler) {
-	ram_vectors.handlers[id] = handler;
+	ram_vectors.handlers[id+15] = handler;
 }
 
 void nvic_enable_interrupt(enum IRQn irq) {

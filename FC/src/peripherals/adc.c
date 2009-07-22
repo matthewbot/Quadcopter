@@ -38,11 +38,8 @@ void adc_scan(const int *chans, size_t count) {
 
 	size_t countremaining = count;
 	ADC1->SQR3 = buildreg(&chans, &countremaining);
-	printf("SQR3 %d Count %d\n", (int)ADC1->SQR3, (int)countremaining);
 	ADC1->SQR2 = buildreg(&chans, &countremaining);
-	printf("SQR2 %d Count %d\n", (int)ADC1->SQR2, (int)countremaining);
 	ADC1->SQR1 = buildreg(&chans, &countremaining) | ((count-1) << 20);
-	printf("SQR1 %d Count %d\n", (int)ADC1->SQR1, (int)countremaining);
 	
 	ADC1->CR1 = ADC_CR1_SCAN; 
 	ADC1->CR2 = ADC_CR2_TSVREFE | 
@@ -52,8 +49,6 @@ void adc_scan(const int *chans, size_t count) {
 	            ADC_CR2_EXTTRIG | 
 	            ADC_CR2_EXTSEL_SWSTART | 
 	            ADC_CR2_SWSTART; // start conversion
-	
-	printf("SR %d\n", (int)ADC1->SR);
 }
 
 void adc_dual_scan(const int *chans1, size_t count1, const int *chans2, size_t count2) {
