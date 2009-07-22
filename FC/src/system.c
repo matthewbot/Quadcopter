@@ -18,5 +18,7 @@ void system_init() {
 
 	stdio_init();
 	
+	puts("System Initialized");
+		
 	panel_set_status(PANEL_STATUS_READY);
 }
