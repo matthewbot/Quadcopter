@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 static DMA_Channel_TypeDef *const channels[] = { 
-	DMA1_Channel1, DMA1_Channel2, DMA1_Channel3, DMA1_Channel4, DMA1_Channel5, DMA1_Channel6, DMA1_Channel7
+	0, DMA1_Channel1, DMA1_Channel2, DMA1_Channel3, DMA1_Channel4, DMA1_Channel5, DMA1_Channel6, DMA1_Channel7
 };
 
 void dma_configure(int chnum, enum dma_direction dir, enum dma_priority pri, int memsize, int persize, enum dma_options opts) {
