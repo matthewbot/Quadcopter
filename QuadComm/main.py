@@ -1,10 +1,14 @@
 #!/usr/bin/python
 
 import wx
+import serialthread
+import bootloader
+import string
+import threading
 
 class MainFrame(wx.Frame):
 	def __init__(self):
-		wx.Frame.__init__(self, None, title='QuadCom', size=wx.Size(600, 500))
+		wx.Frame.__init__(self, None, title='QuadComm', size=wx.Size(600, 500))
 		
 		panel = wx.Panel(self, -1)
 		bottom_buttons = wx.Panel(panel, -1)
@@ -25,23 +29,72 @@ class MainFrame(wx.Frame):
 		bottom_buttons_box.Add(self.gauge, 1, wx.EXPAND)
 		bottom_buttons_box.Add(self.flash, 0)
 		
+		self.flash.Bind(wx.EVT_BUTTON, self.OnFlash)
 		self.output.Bind(wx.EVT_CHAR, self.OnKeyChar)
 		self.output.SetFocus()
 		
-		self.gauge.SetValue(25)
-		self.Write("Hello World!")
+		self.StartIOThread()
 		
-	def Write(self, txt):
+	def StartIOThread(self):
+		self.iothread = serialthread.SerialIOThread("/dev/ttyS0", 9600, self.WriteCallback)
+		
+	def WriteCallback(self, txt, kind="output"):
+		wx.CallAfter(self.Write, txt, kind)
+		
+	def Write(self, txt, kind="output"):
 		self.output.SetInsertionPointEnd()
 		start = self.output.GetInsertionPoint()
-		self.output.write(txt)
+		self.output.write(unicode(txt, 'ascii', errors="replace"))
 		end = self.output.GetInsertionPoint()
-		self.output.SetStyle(start, end, wx.TextAttr(font = wx.Font(12, wx.FONTFAMILY_TELETYPE, 0, wx.FONTWEIGHT_NORMAL)))
+		
+		if kind == "input":
+			color = 'BLUE'
+		elif kind == "error" or kind == "system":
+			color = 'RED'
+		else:
+			color = 'BLACK'
+		
+		self.output.SetStyle(start, end, wx.TextAttr(color, font = wx.Font(12, wx.FONTFAMILY_TELETYPE, 0, wx.FONTWEIGHT_NORMAL)))
 		
 	def OnKeyChar(self, event):
-		char = chr(event.GetKeyCode())
-		self.Write(char)
+		if self.iothread != None:
+			char = chr(event.GetKeyCode())
+			self.Write(char, "input")
+			self.iothread.Write(char)
 		event.StopPropagation()
+		
+	def OnFlash(self, event):
+		self.Write("\nFlashing...\n", "system")
+		
+		self.flashthread = threading.Thread(target=self.DoFlash, name="Flash Thread")
+		self.flashthread.daemon = True
+		self.flashthread.start()
+		
+	def DoFlash(self):
+		self.iothread.Close()
+		self.iothread = None
+		
+		def callback(mode, pos, tot):
+			self.gauge.SetRange(tot)
+			self.gauge.SetValue(pos)
+		
+		def callbackwrap(mode, pos, tot):
+			wx.CallAfter(callback, mode, pos, tot)
+		
+		result = False
+		try:
+			result = bootloader.write("../FC/out/flash.bin", "/dev/ttyS0", callback=callbackwrap, go=True)
+		except Exception as err:
+			result = err
+		
+		if result == True:
+			self.WriteCallback("Flash complete!\n", "system")
+		elif result == False:
+			self.WriteCallback("Flash verifaction error\n", "error")
+		else:
+			self.WriteCallback("Flash exception: " + str(result) + "\n", "error")
+			
+		self.StartIOThread()
 		
 class QuadCommApp(wx.App):
 	def OnInit(self):
