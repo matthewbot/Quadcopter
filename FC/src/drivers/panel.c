@@ -27,3 +27,12 @@ void panel_set_status(enum panel_status status) {
 	gpio_output(GPIO_PORT_A, 13, config.yellowA);
 	gpio_output(GPIO_PORT_A, 15, config.yellowB);
 }
+
+bool panel_get_button() {
+	return gpio_input(GPIO_PORT_C, 13);
+}
+
+void panel_wait_button() {
+	while (!panel_get_button()) { }
+	while (panel_get_button()) { }
+}

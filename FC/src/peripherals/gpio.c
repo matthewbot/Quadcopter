@@ -53,7 +53,7 @@ void gpio_init() {
 	             PINLO(5, CNF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // Compass reset (TODO, how to configure!)
                  PINLO(6, CNF_AF_OPEN_DRAIN, MODE_OUTPUT_2MHZ) | // I2C clock
                  PINLO(7, CNF_AF_OPEN_DRAIN, MODE_OUTPUT_2MHZ);  // I2C data
-                 
+    
     GPIOB->CRH = PINHI(8, CNF_INPUT_FLOAT, MODE_INPUT) | // Compass DRDY
                  PINHI(9, CNF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // Altimeter XCLR
                  PINHI(10, CNF_INPUT_FLOAT, MODE_INPUT) | // PPM Input (TIM2_CH3)
@@ -77,7 +77,7 @@ void gpio_init() {
 	             PINHI(10, CNF_AF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // XBC (USART3_TX)
 	             PINHI(11, CNF_AF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // XBC (USART3_RX)
 	             PINHI(12, CNF_PUSH_PULL, MODE_OUTPUT_2MHZ) | // LED
-	             PINHI(13, CNF_INPUT_FLOAT, MODE_INPUT) | // Future
+	             PINHI(13, CNF_INPUT_PULL, MODE_INPUT) | // Button (pull-down resistor)
 	             PINHI(14, CNF_INPUT_FLOAT, MODE_INPUT) | // OSC32_IN
 	             PINHI(15, CNF_INPUT_FLOAT, MODE_INPUT); // OSC32_OUT           
 }

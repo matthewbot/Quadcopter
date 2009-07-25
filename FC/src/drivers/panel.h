@@ -14,5 +14,7 @@ enum panel_status {
 };
 
 void panel_set_status(enum panel_status status);
+bool panel_get_button();
+void panel_wait_button();
 
 #endif
