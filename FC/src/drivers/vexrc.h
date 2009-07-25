@@ -4,14 +4,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-struct vexrc_data {
-	bool connected;
-	uint32_t channels[6];
-};
+struct vexrc_channels = {
+	bool synced;
+	uint8_t channels[6];
+}
 
 void vexrc_init();
-
-struct vexrc_data vexrc_read();
-const uint32_t *vexrc_read_raw();
+struct vexrc_channels vexrc_get_channels();
 
 #endif

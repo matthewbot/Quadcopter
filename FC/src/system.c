@@ -8,6 +8,7 @@
 #include "peripherals/rcc.h"
 #include "peripherals/nvic.h"
 #include "peripherals/adc.h"
+#include "peripherals/timer.h"
 #include <stdio.h>
 
 void system_init() {
@@ -18,6 +19,7 @@ void system_init() {
 	rcc_init();
 	nvic_init();
 	adc_init();
+	timer_init();
 
 	stdio_init();
 	micromag_init();
