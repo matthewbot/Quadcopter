@@ -38,6 +38,7 @@ void timer_setup(int timer, int microsec, uint16_t maxval, enum timer_direction 
 	tim->PSC = 72 * microsec;
 	tim->ARR = maxval;
 	tim->CR1 = TIM_CR1_CEN | (dir << 4);
+	tim->DIER |= TIM_DIER_UIE;
 	
 	if (timer > 1)
 		nvic_enable_interrupt(TIM2_IRQn + timer-2);
@@ -97,7 +98,10 @@ static void timer_irq_handler(int timer) {
 	struct channel_callback_config *callconf;
 	uint16_t CCR;
 
-	if (sr & TIM_SR_CC1IF) {
+	if (sr & TIM_SR_UIF) {
+		timer_irq_overflow(timer);
+		return;
+	} else if (sr & TIM_SR_CC1IF) {
 		callconf = &chancallbacks[timer-2][0];
 		CCR = tim->CCR1;
 	} else if (sr & TIM_SR_CC2IF) {
@@ -109,9 +113,6 @@ static void timer_irq_handler(int timer) {
 	} else if (sr & TIM_SR_CC4IF) {
 		callconf = &chancallbacks[timer-2][3];
 		CCR = tim->CCR4;
-	} else if (sr & TIM_SR_UIF) {
-		timer_irq_overflow(timer);
-		return;
 	} else {
 		return;
 	}
@@ -124,7 +125,6 @@ static void timer_irq_handler(int timer) {
 	if (callconf->input) {
 		callconf->callback.capture(CCR);
 	} else {
-		tim->SR = 0; // clear interrupt 
 		callconf->callback.output();
 	}
 }
@@ -132,8 +132,8 @@ static void timer_irq_handler(int timer) {
 static void timer_irq_overflow(int timer) {
 	int channel;
 	for (channel=0; channel<4; channel++) {
-		struct channel_callback_config *callconf = &chancallbacks[timer-1][channel];
-		if (callconf->input)
+		struct channel_callback_config *callconf = &chancallbacks[timer-2][channel];
+		if (callconf->input && callconf->callback.ptr)
 			callconf->callback.capture(TIMER_IC_OVERFLOW);
 	}
 }

@@ -2,10 +2,14 @@
 #include <stdbool.h>
 #include "drivers/micromag.h"
 #include "drivers/imu.h"
+#include "drivers/panel.h"
+#include "drivers/vexrc.h"
 #include "peripherals/dma.h"
 #include "peripherals/gpio.h"
+#include "crt/status.h"
 #include "stm32f10x.h"
 #include "system.h"
+#include <string.h>
 
 static void pause() {
 	unsigned long val;
@@ -13,32 +17,23 @@ static void pause() {
 }
 
 extern int vexrc_capture;
+extern unsigned int gpioa, gpiob;
 
 int main(int argc, char **argv) {
 	system_init();
-	
-	printf("Waiting for pin\n");
-	while (!gpio_input(GPIO_PORT_B, 10)) { }
-	
+
 	while (true) {
 		pause();
-		printf("Timer: %d\n Capture: %d\n CCR3: %d\n Pin: %d\n", (int)TIM2->CNT, vexrc_capture, (int)TIM2->CCR3, gpio_input(GPIO_PORT_B, 10));
-	}
 	
-	/*
-	while (true) {
-		pause();
-		const uint16_t *raw = imu_read_raw();
-		
-		printf("Readings: ");
-		
+		struct vexrc_channels chan = vexrc_get_channels();
+		printf("Synced %d\n", (int)chan.synced);
 		int i;
 		for (i=0; i < 6; i++) {
-			printf("%d ", (int)raw[i]);
+			printf("%u ", (unsigned int)chan.channels[i]);
 		}
 		printf("\n");
 	}
-	*/
+	
 	return 0;
 }
 
