@@ -16,9 +16,6 @@ static void pause() {
 	for (val=0;val<5000000;val++) { asm("nop"); }
 }
 
-extern int vexrc_capture;
-extern unsigned int gpioa, gpiob;
-
 int main(int argc, char **argv) {
 	system_init();
 
