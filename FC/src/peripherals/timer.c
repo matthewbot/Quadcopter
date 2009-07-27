@@ -80,37 +80,46 @@ void timer_channel_setup_ic(int timer, int channel, enum timer_ic_filter filter,
 		tim->CCER = CCER; // write register back
 	}
 	
-	struct channel_callback_config *chanconf = &chancallbacks[timer-2][channel];
+	struct channel_callback_config *chanconf = &chancallbacks[timer-2][channel-1];
 	chanconf->input = true;
 	chanconf->callback.capture = callback;
+	
+	tim->DIER |= (1 << channel);
 }
+
+#include <stdio.h>
 
 static void timer_irq_handler(int timer) {
 	TIM_TypeDef *tim = timers[timer];
 	uint16_t sr = tim->SR;
+	tim->SR = 0;
 		
 	struct channel_callback_config *callconf;
 	uint16_t CCR;
 
 	if (sr & TIM_SR_CC1IF) {
-		callconf = &chancallbacks[timer-1][0];
+		callconf = &chancallbacks[timer-2][0];
 		CCR = tim->CCR1;
 	} else if (sr & TIM_SR_CC2IF) {
-		callconf = &chancallbacks[timer-1][1];
+		callconf = &chancallbacks[timer-2][1];
 		CCR = tim->CCR2;
 	} else if (sr & TIM_SR_CC3IF) {
-		callconf = &chancallbacks[timer-1][2];
+		callconf = &chancallbacks[timer-2][2];
 		CCR = tim->CCR3;
 	} else if (sr & TIM_SR_CC4IF) {
-		callconf = &chancallbacks[timer-1][3];
+		callconf = &chancallbacks[timer-2][3];
 		CCR = tim->CCR4;
 	} else if (sr & TIM_SR_UIF) {
 		timer_irq_overflow(timer);
 		return;
-	}
-		
-	if (callconf->callback.ptr == NULL)
+	} else {
 		return;
+	}
+	
+		
+	if (callconf->callback.ptr == NULL) {
+		return;
+	}
 		
 	if (callconf->input) {
 		callconf->callback.capture(CCR);
@@ -125,7 +134,7 @@ static void timer_irq_overflow(int timer) {
 	for (channel=0; channel<4; channel++) {
 		struct channel_callback_config *callconf = &chancallbacks[timer-1][channel];
 		if (callconf->input)
-			callconf->callback.input(TIMER_IC_OVERFLOW);
+			callconf->callback.capture(TIMER_IC_OVERFLOW);
 	}
 }
 
