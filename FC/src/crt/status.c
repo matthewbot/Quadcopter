@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 void status_init() {
-	RCC->APB2ENR |= RCC_APB2ENR_IOPCEN | RCC_APB2ENR_IOPAEN | RCC_APB2ENR_AFIOEN; 
+	RCC->APB2ENR = RCC_APB2ENR_IOPCEN; 
 	GPIOC->CRH = 0x44434444; // make pin 12 open drain output 
 	status_off();
 }
