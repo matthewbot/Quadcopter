@@ -22,19 +22,16 @@ extern unsigned int gpioa, gpiob;
 int main(int argc, char **argv) {
 	system_init();
 
+	printf("Query %d\n", (int)micromag_sample(MICROMAG_AXIS_X, MICROMAG_PERIOD_4096));
+
+	micromag_scan(MICROMAG_PERIOD_4096);
+
 	while (true) {
 		pause();
-	
-		struct vexrc_channels chan = vexrc_get_channels();
-		printf("Synced %d\n", (int)chan.synced);
-		int i;
-		for (i=0; i < 6; i++) {
-			printf("%u ", (unsigned int)chan.channels[i]);
-		}
-		printf("\n");
+		struct micromag_scan_results results = micromag_get_scan();
+		
+		printf("%d %d %d\n", (int)results.x, (int)results.y, (int)results.z);
 	}
-	
-	return 0;
 }
 
 

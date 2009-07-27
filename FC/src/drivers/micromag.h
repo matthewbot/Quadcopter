@@ -20,8 +20,14 @@ enum micromag_period {
 	MICROMAG_PERIOD_4096
 };
 
+struct micromag_scan_results {
+	int16_t x, y, z;
+};
+
 void micromag_init();
 int16_t micromag_sample(enum micromag_axis axis, enum micromag_period period);
+void micromag_scan(enum micromag_period period);
+struct micromag_scan_results micromag_get_scan();
 
 
 #endif

@@ -2,41 +2,86 @@
 #include "peripherals/spi.h"
 #include "peripherals/gpio.h"
 #include "peripherals/delay.h"
+#include "peripherals/nvic.h"
+#include "peripherals/exti.h"
 #include <stdint.h>
+#include <stdio.h>
 
 #define MICROMAG_SPI 2
+#define MICROMAG_DRDY_PORT GPIO_PORT_B
+#define MICROMAG_DRDY_PIN 8
+#define MICROMAG_RESET_PORT GPIO_PORT_B
+#define MICROMAG_RESET_PIN 5
 
-static void micromag_reset();
-static void micromag_set_reset_output(bool reset);
+static enum micromag_period scan_period;
+static enum micromag_axis scan_axis; // 0 = no scan, 1-3 = current scan channel
+static struct micromag_scan_results scan_results;
+
+static void micromag_query(enum micromag_axis axis, enum micromag_period period);
+static int16_t micromag_read_response();
+static void micromag_drdy_handler();
+static void micromag_pulse_reset();
 static bool micromag_get_drdy_input();
 
 void micromag_init() {
 	spi_setup(MICROMAG_SPI, SPI_BAUD_DIV_128, false);
+	exti_setup(MICROMAG_DRDY_PIN, MICROMAG_DRDY_PORT, EXTI_EDGE_RISING, micromag_drdy_handler);
 }
 
 int16_t micromag_sample(enum micromag_axis axis, enum micromag_period period) {
-	micromag_reset();
+	scan_axis = 0; // shut off any in-progress scan
+	
+	micromag_query(axis, period); // query the micromag
+	while (!micromag_get_drdy_input()) { } // wait for data ready
+	return micromag_read_response(); // read its response
+}
+
+struct micromag_scan_results micromag_get_scan() {
+	return scan_results;
+}
+
+void micromag_scan(enum micromag_period period) {
+	scan_period = period;
+	micromag_query(MICROMAG_AXIS_X, period);
+	scan_axis = MICROMAG_AXIS_X;
+}
+
+static void micromag_drdy_handler() {
+	int16_t response = micromag_read_response(); // read the current response
+	
+	if (scan_axis == MICROMAG_AXIS_X) {
+		scan_results.x = response;
+	} else if (scan_axis == MICROMAG_AXIS_Y) {
+		scan_results.y = response;
+	} else {
+		scan_results.z = response;
+		scan_axis = 0; // reset to 0, so the following bump will make it 1, MICROMAG_X
+	}
+	
+	scan_axis++;
+		
+	micromag_query(scan_axis, scan_period);
+}
+
+static void micromag_query(enum micromag_axis axis, enum micromag_period period) {
+	micromag_pulse_reset();
 	
 	uint8_t command_byte = axis | (period << 4);
 	spi_send_receive(MICROMAG_SPI, NULL, &command_byte, 1);
-	
-	while (!micromag_get_drdy_input()) { }
-	
+}
+
+static int16_t micromag_read_response() {
 	uint8_t bytes[2];
 	spi_send_receive(MICROMAG_SPI, bytes, NULL, 2);
 	
 	return (int16_t)((bytes[0] << 8) | bytes[1]);
 }
 
-static void micromag_reset() {
-	micromag_set_reset_output(true);
-	micromag_set_reset_output(false);
-}
-
 static bool micromag_get_drdy_input() {
-	return gpio_input(GPIO_PORT_B, 8);
+	return gpio_input(MICROMAG_DRDY_PORT, MICROMAG_DRDY_PIN);
 }
 
-static void micromag_set_reset_output(bool reset) {
-	gpio_output(GPIO_PORT_B, 5, reset);
+static void micromag_pulse_reset() {
+	gpio_output(MICROMAG_RESET_PORT, MICROMAG_RESET_PIN, true);
+	gpio_output(MICROMAG_RESET_PORT, MICROMAG_RESET_PIN, false);
 }
