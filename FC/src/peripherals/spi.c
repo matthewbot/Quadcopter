@@ -15,8 +15,6 @@ void spi_disable(int num) {
 	spis[num]->CR1 &= ~SPI_CR1_SPE;
 }
 
-#include <stdio.h>
-
 void spi_send_receive(int num, uint8_t *data_in, const uint8_t *data_out, size_t len) {
 	SPI_TypeDef *spi = spis[num];
 	

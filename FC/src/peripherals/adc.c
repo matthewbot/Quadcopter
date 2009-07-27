@@ -1,6 +1,5 @@
 #include "peripherals/adc.h"
 #include "stm32f10x.h"
-#include <stdio.h>
 
 #define ADC_CR2_EXTSEL_SWSTART (ADC_CR2_EXTSEL_0 | ADC_CR2_EXTSEL_1 | ADC_CR2_EXTSEL_2)
 #define ADC_CR1_DUALMOD_REGULAR (ADC_CR1_DUALMOD_1 | ADC_CR1_DUALMOD_2)
