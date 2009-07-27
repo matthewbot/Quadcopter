@@ -4,10 +4,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-struct vexrc_channels = {
+struct vexrc_channels {
 	bool synced;
 	uint8_t channels[6];
-}
+};
 
 void vexrc_init();
 struct vexrc_channels vexrc_get_channels();
