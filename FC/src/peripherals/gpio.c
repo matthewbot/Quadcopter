@@ -15,7 +15,7 @@
 #define MODE_OUTPUT_2MHZ 2
 #define MODE_OUTPUT_50MHZ 3
 
-#define PINLO(num, cnf, mode) (((cnf) << 2) | (mode)) << ((num)*4)
+#define PINLO(num, cnf, mode) (cnf << ((num)*4 + 2)) | (mode << ((num)*4))
 #define PINHI(num, cnf, mode) PINLO(num-8, cnf, mode)
 
 static GPIO_TypeDef *const gpios[] = { GPIOA, GPIOB, GPIOC, GPIOD };
