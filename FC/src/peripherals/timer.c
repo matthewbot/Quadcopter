@@ -88,8 +88,6 @@ void timer_channel_setup_ic(int timer, int channel, enum timer_ic_filter filter,
 	tim->DIER |= (1 << channel);
 }
 
-#include <stdio.h>
-
 static void timer_irq_handler(int timer) {
 	TIM_TypeDef *tim = timers[timer];
 	uint16_t sr = tim->SR;
