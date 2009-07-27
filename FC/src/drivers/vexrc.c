@@ -45,8 +45,8 @@ static void vexrc_capture_callback(int timerval) {
 	last_timerval = timerval;
 	
 	if (val > 900) { // sync pulses are longer than 9ms
-		if (current_channel != 0) 
-			synced = false;
+		if (current_channel != 0) // if we weren't expecting a sync pulse
+			synced = false; // we're still out of sync some how
 		current_channel = 1; // put channel back to 1
 		return;
 	} 
@@ -56,8 +56,8 @@ static void vexrc_capture_callback(int timerval) {
 		return; // skip
 	}
 	
-	val -= 100;
-	if (val < 0)
+	val -= 100; // adjust value to be 0 - 100
+	if (val < 0) 
 		val = 0;
 	if (val > 100)
 		val = 100;
