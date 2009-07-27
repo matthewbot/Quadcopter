@@ -11,7 +11,7 @@ static void micromag_set_reset_output(bool reset);
 static bool micromag_get_drdy_input();
 
 void micromag_init() {
-	spi_setup(MICROMAG_SPI, SPI_BAUD_DIV_256, false);
+	spi_setup(MICROMAG_SPI, SPI_BAUD_DIV_128, false);
 }
 
 int16_t micromag_sample(enum micromag_axis axis, enum micromag_period period) {
