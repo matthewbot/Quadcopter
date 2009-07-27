@@ -21,7 +21,7 @@ enum micromag_period {
 };
 
 void micromag_init();
-uint16_t micromag_sample(enum micromag_axis axis, enum micromag_period period);
+int16_t micromag_sample(enum micromag_axis axis, enum micromag_period period);
 
 
 #endif
