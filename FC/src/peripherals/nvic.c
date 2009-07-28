@@ -57,11 +57,13 @@ void nvic_set_priority(enum IRQn irq, int priority) {
 	NVIC_SetPriority(irq, priority);
 }
 
-static void beginhandler(const char *msg) {
+static int beginhandler(const char *msg) {
 	panel_set_status(PANEL_STATUS_FAULT);
 
 	int irq = (int)(SCB->ICSR & SCB_ICSR_VECTACTIVE) - 15;
 	printf("%s IRQ %d\n", msg, irq);
+	
+	return irq;
 }
 
 __attribute__ ((noreturn))
@@ -69,7 +71,7 @@ static void fault() {
 	uint32_t *sp;
 	asm volatile ("mov %0, %%sp" : "=r" (sp)); // copy the stack pointer into our sp variable
 
-	beginhandler("Fault");
+	int irq = beginhandler("Fault");
 	
 	printf("PC 0x%08X\n", (unsigned int)sp[6]);
 	printf("CFSR %u\n", (unsigned int)(SCB->CFSR));
