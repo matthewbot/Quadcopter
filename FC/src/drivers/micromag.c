@@ -1,4 +1,5 @@
 #include "drivers/micromag.h"
+#include "drivers/time.h"
 #include "peripherals/spi.h"
 #include "peripherals/gpio.h"
 #include "peripherals/delay.h"
@@ -16,6 +17,8 @@
 static volatile enum micromag_period scan_period;
 static volatile enum micromag_axis scan_axis; // 0 = no scan, 1-3 = current scan channel
 static volatile struct micromag_scan_results scan_results;
+static volatile unsigned long scan_prevtime;
+static volatile unsigned long scan_tottime;
 
 static void micromag_query(enum micromag_axis axis, enum micromag_period period);
 static int16_t micromag_read_response();
@@ -41,9 +44,14 @@ struct micromag_scan_results micromag_get_scan() {
 }
 
 void micromag_scan(enum micromag_period period) {
+	scan_prevtime = time_get();
 	scan_period = period;
 	micromag_query(MICROMAG_AXIS_X, period);
 	scan_axis = MICROMAG_AXIS_X;
+}
+
+unsigned long micromag_get_scan_time() {
+	return scan_tottime;
 }
 
 static void micromag_drdy_handler() {
@@ -59,6 +67,10 @@ static void micromag_drdy_handler() {
 	}
 	
 	scan_axis++;
+	
+	unsigned curtime = time_get();
+	scan_tottime = curtime - scan_prevtime;
+	scan_prevtime = curtime;
 		
 	micromag_query(scan_axis, scan_period);
 }

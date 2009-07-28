@@ -28,6 +28,7 @@ void micromag_init();
 int16_t micromag_sample(enum micromag_axis axis, enum micromag_period period);
 void micromag_scan(enum micromag_period period);
 struct micromag_scan_results micromag_get_scan();
+unsigned long micromag_get_scan_time(); // in ms
 
 
 #endif
