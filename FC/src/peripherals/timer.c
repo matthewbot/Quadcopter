@@ -16,6 +16,9 @@ static void timer_irq_handler_4();
 static void timer_irq_handler(int timer);
 static void timer_irq_overflow(int timer);
 
+static void setup_ccmr(TIM_TypeDef *tim, int channel, uint16_t val);
+static void setup_ccer(TIM_TypeDef *tim, int channel, uint16_t val);
+
 struct channel_callback_config {
 	bool input;
 	union {
@@ -47,45 +50,82 @@ void timer_setup(int timer, int microsec, uint16_t maxval, enum timer_direction 
 void timer_channel_setup_ic(int timer, int channel, enum timer_ic_filter filter, enum timer_ic_edge edge, timer_capture_callback callback) {
 	TIM_TypeDef *tim = timers[timer];
 	
-	{ // do nothing block to scope variables
-		// CCMR1 has channel 1 in the lower 8 bits, channel 2 in the upper 8 bits
-		// CCMR2 has channel 3 and 4
-	
-		uint16_t val = TIM_CCMR_INPUT_IC1_TI1 | (filter << 4); // compute the 8 bit value
-		uint16_t mask = 0xFF; // mask for our bits
-	
-		__IO uint16_t *const CCMR_addr = channel < 3 ? &tim->CCMR1 : &tim->CCMR2; // channels 1 and 2 in CCMR1, 3 and 4 in CCMR2
-	
-		if ((channel & 1) == 0) { // if the channel is 2 or 4 (and thus in the upper 8 bits)
-			val <<= 8; // shift the val and mask by 8
-			mask <<= 8;
-		}
-	
-		uint16_t CCMR = *CCMR_addr; // read original register value
-		CCMR &= ~mask; // clear our bits
-		CCMR |= val; // set our bits
-		*CCMR_addr = CCMR; // write register back
-	}
-	
-	{
-		uint16_t val = TIM_CCER_CC1E | (edge << 1); // compute our 4-bit value
-		uint16_t mask = 0x0F; // mask for our bits
-		
-		const int shiftamt = (channel-1)*4;
-		val <<= shiftamt; // shift our value to put it in the correct channel
-		mask <<= shiftamt; // shift our mask accordingly
-		
-		uint16_t CCER = tim->CCER; // read original value
-		CCER &= ~mask; // clear our bits
-		CCER |= val; // set our bits
-		tim->CCER = CCER; // write register back
-	}
-	
 	struct channel_callback_config *chanconf = &chancallbacks[timer-2][channel-1];
+	chanconf->callback.ptr = NULL;
+	
+	setup_ccmr(tim, channel, TIM_CCMR_INPUT_IC1_TI1 | (filter << 4)); // set CCMR register
+	setup_ccer(tim, channel, TIM_CCER_CC1E | (edge << 1)); // compute our 4-bit value
+
 	chanconf->input = true;
 	chanconf->callback.capture = callback;
 	
 	tim->DIER |= (1 << channel);
+}
+
+void timer_channel_setup_oc(int timer, int channel, enum timer_oc_mode mode, timer_output_callback callback) {
+	TIM_TypeDef *tim = timers[timer];
+	
+	struct channel_callback_config *chanconf = &chancallbacks[timer-2][channel-1];
+	chanconf->callback.ptr = NULL;
+	
+	setup_ccmr(tim, channel, TIM_CCMR1_OC1PE | (mode << 4));
+	setup_ccer(tim, channel, TIM_CCER_CC1E);
+	
+	chanconf->input = false;
+	chanconf->callback.capture = callback;
+	
+	tim->DIER |= (1 << channel);
+}
+
+void timer_channel_set_ccr(int timer, int channel, uint16_t ccr) {
+	TIM_TypeDef *tim = timers[timer];
+	
+	switch (channel) {
+		case 1:
+			tim->CCR1 = ccr;
+			break;
+			
+		case 2:
+			tim->CCR2 = ccr;
+			break;
+			
+		case 3:
+			tim->CCR3 = ccr;
+			break;
+			
+		case 4:
+			tim->CCR4 = ccr;
+			break;
+	}
+}
+
+static void setup_ccmr(TIM_TypeDef *tim, int channel, uint16_t val) {
+	uint16_t mask = 0xFF; // mask for our bits
+
+	__IO uint16_t *const CCMR_addr = channel < 3 ? &tim->CCMR1 : &tim->CCMR2; // channels 1 and 2 in CCMR1, 3 and 4 in CCMR2
+
+	if ((channel & 1) == 0) { // if the channel is 2 or 4 (and thus in the upper 8 bits)
+		val <<= 8; // shift the val and mask by 8
+		mask <<= 8;
+	}
+
+	uint16_t CCMR = *CCMR_addr; // read original register value
+	CCMR &= ~mask; // clear our bits
+	CCMR |= val; // set our bits
+	*CCMR_addr = CCMR; // write register back	
+}
+
+static void setup_ccer(TIM_TypeDef *tim, int channel, uint16_t val) {
+	uint16_t mask = 0x0F; // mask for our bits
+	
+	const int shiftamt = (channel-1)*4;
+	val <<= shiftamt; // shift our value to put it in the correct channel
+	mask <<= shiftamt; // shift our mask accordingly
+	
+	uint16_t CCER = tim->CCER; // read original value
+	CCER &= ~mask; // clear our bits
+	CCER |= val; // set our bits
+	tim->CCER = CCER; // write register back
 }
 
 static void timer_irq_handler(int timer) {
