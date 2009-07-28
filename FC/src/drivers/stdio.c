@@ -12,7 +12,7 @@
 
 #define BUF_SIZE 128
 
-static uint8_t readbuf[BUF_SIZE], writebuf[BUF_SIZE];
+static volatile uint8_t readbuf[BUF_SIZE], writebuf[BUF_SIZE];
 
 static void readbuf_full_handler();
 static void start_rx_dma(size_t bufinuse);

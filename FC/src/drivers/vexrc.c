@@ -5,8 +5,8 @@
 
 static void vexrc_capture_callback(int val);
 
-static uint8_t channels[6]; // stored 0-100
-static bool synced;
+static volatile uint8_t channels[6]; // stored 0-100
+static volatile bool synced;
 
 #define TIMER_MAX 3000
 

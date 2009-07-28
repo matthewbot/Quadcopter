@@ -13,9 +13,9 @@
 #define MICROMAG_RESET_PORT GPIO_PORT_B
 #define MICROMAG_RESET_PIN 5
 
-static enum micromag_period scan_period;
-static enum micromag_axis scan_axis; // 0 = no scan, 1-3 = current scan channel
-static struct micromag_scan_results scan_results;
+static volatile enum micromag_period scan_period;
+static volatile enum micromag_axis scan_axis; // 0 = no scan, 1-3 = current scan channel
+static volatile struct micromag_scan_results scan_results;
 
 static void micromag_query(enum micromag_axis axis, enum micromag_period period);
 static int16_t micromag_read_response();

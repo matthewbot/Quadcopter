@@ -6,7 +6,7 @@
 
 #define DMA_ADC 1
 
-static uint16_t imu_buf[6];
+static volatile uint16_t imu_buf[6];
 
 static const int imu_chans[] = { 
 	13, 1, 9, // Roll Pitch Yaw gyros
