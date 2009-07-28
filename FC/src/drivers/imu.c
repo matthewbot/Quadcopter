@@ -43,6 +43,6 @@ void imu_init() {
 	adc_scan(imu_chans, sizeof(imu_chans) / sizeof(imu_chans[0]));
 }
 
-const uint16_t *imu_read_raw() {
+const volatile uint16_t *imu_read_raw() {
 	return imu_buf;
 }

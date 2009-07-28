@@ -13,7 +13,7 @@ struct imu_data {
 };
 
 void imu_init();
-const uint16_t *imu_read_raw();
+const volatile uint16_t *imu_read_raw();
 struct imu_data imu_read();
 
 #endif

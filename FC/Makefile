@@ -4,7 +4,7 @@ sources := $(shell find src -name "*.c" )
 headers := $(shell find src -name "*.h" )
 objects := $(addprefix build/, $(patsubst src/%,%, $(patsubst %.c, %.o, $(sources))))
 
-sharedflags := -Os -Isrc -Isrc/stm32 -msoft-float -mcpu=cortex-m3 -mthumb -Wall -DSTM32F10X_MD -DUSE_FULL_ASERT -ffunction-sections -fdata-sections -fomit-frame-pointer -pipe
+sharedflags := -Werror -Os -Isrc -Isrc/stm32 -msoft-float -mcpu=cortex-m3 -mthumb -Wall -DSTM32F10X_MD -DUSE_FULL_ASERT -ffunction-sections -fdata-sections -fomit-frame-pointer -pipe
 cflags := $(sharedflags) -std=gnu99 -fno-common 
 cppflags := $(sharedflags) -fno-exceptions -fno-rtti -fno-common
 ldflags := -lm -nostartfiles -Wall -msoft-float -mcpu=cortex-m3 -mthumb -Wl,--gc-sections

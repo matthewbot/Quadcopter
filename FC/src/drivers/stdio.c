@@ -30,14 +30,16 @@ size_t stdio_read(uint8_t *buf, size_t len) {
 	size_t avail;
 	do {
 		avail = sizeof(readbuf) - dma_get_remaining(DMA_RX);
-	} while (avail == 0);
+	} while (avail == 0); 
+	
+	// possible timing issue, a byte could be DMAed right here. Need to study DMA more
 	
 	const size_t got = (avail > len) ? len : avail;
 	const size_t new_avail = avail - got;
 
-	memcpy(buf, readbuf, got);
+	memcpy(buf, (void *)readbuf, got);
 	if (new_avail > 0)
-		memmove(readbuf, &readbuf[got], new_avail);
+		memmove((void *)readbuf, (void *)&readbuf[got], new_avail); 
 		
 	start_rx_dma(new_avail);
 	
@@ -50,7 +52,7 @@ size_t stdio_write(const uint8_t *buf, size_t len) {
 	
 	while (dma_get_remaining(DMA_TX) > 0) { }
 	
-	memcpy(writebuf, buf, len);
+	memcpy((void *)writebuf, (void *)buf, len);
 	dma_start(DMA_TX, writebuf, usart_dma_address(1), len);
 	
 	return len;
@@ -58,7 +60,7 @@ size_t stdio_write(const uint8_t *buf, size_t len) {
 
 #define DROP_BYTES 4
 static void readbuf_full_handler() {
-	memmove(readbuf, &readbuf[DROP_BYTES], sizeof(readbuf) - DROP_BYTES); // drop the first few bytes
+	memmove((void *)readbuf, (void *)&readbuf[DROP_BYTES], sizeof(readbuf) - DROP_BYTES); // drop the first few bytes
 	start_rx_dma(sizeof(readbuf) - DROP_BYTES); // restart DMA in the new free space
 }
 	

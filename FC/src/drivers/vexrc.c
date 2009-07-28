@@ -18,7 +18,7 @@ void vexrc_init() {
 struct vexrc_channels vexrc_get_channels() {
 	struct vexrc_channels ret;
 	ret.synced = synced;
-	memcpy(ret.channels, channels, sizeof(channels));
+	memcpy(ret.channels, (void *)channels, sizeof(channels));
 	
 	return ret;
 }
