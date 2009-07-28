@@ -64,13 +64,13 @@ static void micromag_drdy_handler() {
 	} else {
 		scan_results.z = response;
 		scan_axis = 0; // reset to 0, so the following bump will make it 1, MICROMAG_X
+			
+		unsigned curtime = time_get(); // update time
+		scan_tottime = curtime - scan_prevtime;
+		scan_prevtime = curtime;
 	}
 	
 	scan_axis++;
-	
-	unsigned curtime = time_get();
-	scan_tottime = curtime - scan_prevtime;
-	scan_prevtime = curtime;
 		
 	micromag_query(scan_axis, scan_period);
 }
