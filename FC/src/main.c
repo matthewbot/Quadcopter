@@ -4,6 +4,7 @@
 #include "drivers/imu.h"
 #include "drivers/panel.h"
 #include "drivers/vexrc.h"
+#include "drivers/time.h"
 #include "peripherals/dma.h"
 #include "peripherals/gpio.h"
 #include "crt/status.h"
@@ -12,8 +13,7 @@
 #include <string.h>
 
 static void pause() {
-	unsigned long val;
-	for (val=0;val<5000000;val++) { asm("nop"); }
+	time_sleep(500);
 }
 
 int main(int argc, char **argv) {

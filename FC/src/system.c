@@ -4,6 +4,7 @@
 #include "drivers/micromag.h"
 #include "drivers/imu.h"
 #include "drivers/vexrc.h"
+#include "drivers/time.h"
 #include "peripherals/gpio.h"
 #include "peripherals/rcc.h"
 #include "peripherals/nvic.h"
@@ -20,6 +21,7 @@ void system_init() {
 	panel_init();
 	panel_set_status(PANEL_STATUS_BOOT);
 
+	time_init();
 	adc_init();
 	timer_init();
 	exti_init();
