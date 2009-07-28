@@ -57,16 +57,35 @@ void nvic_set_priority(enum IRQn irq, int priority) {
 	NVIC_SetPriority(irq, priority);
 }
 
+static void beginhandler(const char *msg) {
+	panel_set_status(PANEL_STATUS_FAULT);
+
+	int irq = (int)(SCB->ICSR & SCB_ICSR_VECTACTIVE) - 15;
+	printf("%s IRQ %d\n", msg, irq);
+}
+
 __attribute__ ((noreturn))
 static void fault() {
-	puts("Fault\n");
-	panel_set_status(PANEL_STATUS_FAULT);
+	uint32_t *sp;
+	asm volatile ("mov %0, %%sp" : "=r" (sp)); // copy the stack pointer into our sp variable
+
+	beginhandler("Fault");
+	
+	printf("PC 0x%08X\n", (unsigned int)sp[6]);
+	printf("CFSR %u\n", (unsigned int)(SCB->CFSR));
+	
+	if (irq == MemoryManagement_IRQn) {
+		printf("MMFAR 0x%08X\n", (unsigned int)SCB->MMFAR);
+	} else if (irq == BusFault_IRQn) {
+		printf("BFAR 0x%08X\n", (unsigned int)SCB->BFAR);
+	}
+	
 	status_blink_halt(BLINK_COUNT_FAULT);
 }
 
 __attribute__ ((noreturn))
 static void unhandled() {
-	puts("Unhandled IRQ\n");
-	panel_set_status(PANEL_STATUS_FAULT);
+	beginhandler("Unhandled");
+	
 	status_blink_halt(BLINK_COUNT_UNHANDLED);
 }
