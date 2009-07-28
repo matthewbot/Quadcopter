@@ -3,10 +3,11 @@
 #include "stm32f10x.h"
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 // defined elsewhere
 
-extern void main();
+extern int main(int argc, char **argv);
 
 // predeclares
 
@@ -51,7 +52,7 @@ void reset() {
 	// fill heap with sentinel
 	fill(&__heap_start, &__heap_end, 0xDEADBEEF);
 	
-	main();
+	main(0, NULL);
 	
 	while (true) { }
 }
@@ -75,5 +76,4 @@ static void fill(uint32_t *start, const uint32_t *end, uint32_t val) {
 	while (start != end)
 		*start++ = val;
 }
-
 	
