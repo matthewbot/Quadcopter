@@ -83,14 +83,14 @@ class MainFrame(wx.Frame):
 		
 		result = False
 		try:
-			result = bootloader.write("../FC/out/flash.bin", "/dev/ttyS0", callback=callbackwrap, go=True)
+			result = bootloader.write("../FC/out/FC.bin", "/dev/ttyS0", callback=callbackwrap, go=True)
 		except Exception as err:
 			result = err
 		
 		if result == True:
 			self.WriteCallback("Flash complete!\n", "system")
 		elif result == False:
-			self.WriteCallback("Flash verifaction error\n", "error")
+			self.WriteCallback("Flash verification error\n", "error")
 		else:
 			self.WriteCallback("Flash exception: " + str(result) + "\n", "error")
 			

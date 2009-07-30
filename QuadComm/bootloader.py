@@ -199,7 +199,7 @@ def write(filename, port, verify=True, go=False, callback=None):
 		retval = True
 		
 	if go:
-		conn.Go(0x08000000)
+		conn.Go(0x80000000)
 		
 	conn.Close()
 	callback("complete", 0, 1)
