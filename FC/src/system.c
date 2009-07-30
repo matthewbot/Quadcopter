@@ -5,6 +5,7 @@
 #include "drivers/imu.h"
 #include "drivers/vexrc.h"
 #include "drivers/time.h"
+#include "drivers/sharedinit.h"
 #include "peripherals/gpio.h"
 #include "peripherals/rcc.h"
 #include "peripherals/nvic.h"
@@ -17,15 +18,14 @@ void system_init() {
 	rcc_init();
 	gpio_init();
 	nvic_init();
-		
 	panel_init();
-	panel_set_status(PANEL_STATUS_BOOT);
-
+	
 	time_init();
 	adc_init();
 	timer_init();
 	exti_init();
 
+	sharedinit_init();
 	stdio_init();
 	micromag_init();
 	imu_init();
@@ -34,3 +34,4 @@ void system_init() {
 	panel_set_status(PANEL_STATUS_READY);
 	puts("System Initialized");
 }
+

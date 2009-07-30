@@ -28,6 +28,18 @@ int main(int argc, char **argv) {
 		printf("%d %d %d\n", (int)results.x, (int)results.y, (int)results.z);
 		printf("Scan time: %u ms\n", (unsigned int)micromag_get_scan_time());
 		
+		struct vexrc_channels chan = vexrc_get_channels();
+		
+		if (chan.synced)
+			printf("S ");
+		else
+			printf("NS ");
+			
+		int i;
+		for (i=0; i<6; i++) {
+			printf("%d ", (int)chan.channels[i]);
+		}
+		printf("\n");
 	}
 }
 

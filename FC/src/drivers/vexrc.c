@@ -1,4 +1,5 @@
 #include "drivers/vexrc.h"
+#include "drivers/sharedinit.h"
 #include "peripherals/timer.h"
 #include <stdint.h>
 #include <string.h>
@@ -8,10 +9,7 @@ static void vexrc_capture_callback(int val);
 static volatile uint8_t channels[6]; // stored 0-100
 static volatile bool synced;
 
-#define TIMER_MAX 3000
-
 void vexrc_init() {
-	timer_setup(2, 10, TIMER_MAX, TIMER_DIRECTION_UP); // 10 microsecond or .01 ms per tick. Overflow at 30ms
 	timer_channel_setup_ic(2, 3, TIMER_IC_FILTER_DTS8_8, TIMER_IC_EDGE_RISING, vexrc_capture_callback);
 }
 
@@ -41,7 +39,7 @@ static void vexrc_capture_callback(int timerval) {
 	
 	int val = timerval - last_timerval; // compute the real value, which is the change in timer
 	if (val < 0) // handle timer wrap-arounds
-		val += TIMER_MAX;	
+		val += TIMER2_MAXVAL;	
 	last_timerval = timerval;
 	
 	if (val > 900) { // sync pulses are longer than 9ms
