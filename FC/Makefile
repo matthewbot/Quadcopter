@@ -2,15 +2,20 @@ include gmsl
 
 sources := $(shell find src -name "*.c" )
 headers := $(shell find src -name "*.h" )
-objects := $(addprefix build/, $(patsubst src/%,%, $(patsubst %.c, %.o, $(sources))))
+objects := $(addprefix build/, $(patsubst src/%,%, $(sources:.c=.o)))
 
-sharedflags := -Werror -Os -Isrc -Isrc/stm32 -msoft-float -mcpu=cortex-m3 -mthumb -Wall -DSTM32F10X_MD -DUSE_FULL_ASERT -ffunction-sections -fdata-sections -fomit-frame-pointer -pipe
-cflags := $(sharedflags) -std=gnu99 -fno-common 
-cppflags := $(sharedflags) -fno-exceptions -fno-rtti -fno-common
-ldflags := -lm -nostartfiles -Wall -msoft-float -mcpu=cortex-m3 -mthumb -Wl,--gc-sections
+cpuflags := -mcpu=cortex-m3 -msoft-float -mthumb
+sharedflags := \
+	-Isrc -Isrc/stm32 -Wall -Werror \
+	-ffunction-sections -fdata-sections -pipe \
+	-Os -ffast-math -fomit-frame-pointer 
+cflags := $(cpuflags) $(sharedflags) -std=gnu99 
+cppflags := $(cpuflags) $(sharedflags) -fno-exceptions -fno-rtti
+ldflags := $(cpuflags) -lm -nostartfiles -Wall -Wl,--gc-sections
 
 prefix := arm-none-eabi
 cc := $(prefix)-gcc
+cpp := $(prefix)-g++
 ld := $(prefix)-gcc
 objdump := $(prefix)-objdump
 objcopy := $(prefix)-objcopy
@@ -25,21 +30,17 @@ define mkdeps
 @rm -f build/$*.d.tmp 
 endef
 
-all: out/flash.bin
+all: out/FC.bin
 
-.PHONY: flash
-flash: out/flash.bin
-	./stm32loader.py -ewv -p /dev/ttyS0 out/flash.bin
-
-out/%.bin: build/%.out
+out/FC.bin: build/FC.out
 	$(mkdirs)
 	$(objcopy) --output-target=binary $< $@
 	size $< -A
 	
-build/%.out: $(objects) src/crt/%.ld
+build/FC.out: $(objects) src/crt/FC.ld
 	$(mkdirs)
-	$(ld) -Tsrc/crt/$*.ld $(objects) -o build/$*.out -Wl,-Map=out/$*.map $(ldflags)
-	$(objdump) -d build/$*.out > out/$*.dis
+	$(ld) -Tsrc/crt/FC.ld $(objects) -o build/FC.out -Wl,-Map=out/FC.map $(ldflags)
+	$(objdump) -d build/FC.out > out/FC.dis
 
 build/%.o: src/%.c
 	$(mkdirs)
