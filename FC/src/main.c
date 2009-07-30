@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "drivers/micromag.h"
-#include "drivers/imu.h"
+#include "drivers/analog.h"
 #include "drivers/panel.h"
 #include "drivers/vexrc.h"
 #include "drivers/time.h"
@@ -25,19 +25,22 @@ int main(int argc, char **argv) {
 		pause();
 		struct micromag_scan_results results = micromag_get_scan();
 		
-		printf("%d %d %d\n", (int)results.x, (int)results.y, (int)results.z);
-		printf("Scan time: %u ms\n", (unsigned int)micromag_get_scan_time());
-		
+		printf("Micromag %d %d %d\n", (int)results.x, (int)results.y, (int)results.z);
 		struct vexrc_channels chan = vexrc_get_channels();
-		
 		if (chan.synced)
-			printf("S ");
+			printf("VexRC S ");
 		else
-			printf("NS ");
-			
+			printf("VexRC NS ");
 		int i;
 		for (i=0; i<6; i++) {
 			printf("%d ", (int)chan.channels[i]);
+		}
+		printf("\n");
+		
+		printf("Analog ");
+		const volatile uint16_t *analog_raw = analog_get_raw();
+		for (i=0; i<6; i++) {
+			printf("%d ", (int)analog_raw[i]);
 		}
 		printf("\n");
 	}
