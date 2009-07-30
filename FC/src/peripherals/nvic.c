@@ -46,17 +46,24 @@ void nvic_register_handler(int id, nvic_handler handler) {
 }
 
 void nvic_enable_interrupt(enum IRQn irq) {
-	NVIC_EnableIRQ(irq);
+	NVIC->ISER[irq >> 5] = 1 << (irq & 0x1F);
 }
 
 void nvic_disable_interrupt(enum IRQn irq) {
-	NVIC_DisableIRQ(irq);
+	NVIC->ICER[irq >> 5] = 1 << (irq & 0x1F);
 }
 
 void nvic_set_priority(enum IRQn irq, int priority) {
-	NVIC_SetPriority(irq, priority);
+	priority <<= NVIC_PRIORITY_DEAD_BITS; // the hardware doesn't actually use the lower bits of the priority, 
+	// so we pretend they don't exit
+
+	if (irq < 0) 
+		SCB->SHP[irq + 12] = priority; // set priority for system interrupts 
+	else 
+		NVIC->IP[irq] = priority; // set priority for device interrupts
 }
 
+// begins every handler
 static int beginhandler(const char *msg) {
 	panel_set_status(PANEL_STATUS_FAULT);
 
@@ -74,13 +81,12 @@ static void fault() {
 	int irq = beginhandler("Fault");
 	
 	printf("PC 0x%08X\n", (unsigned int)sp[6]);
-	printf("CFSR %u\n", (unsigned int)(SCB->CFSR));
+	printf("CFSR %u\n", (unsigned int)SCB->CFSR);
 	
-	if (irq == MemoryManagement_IRQn) {
+	if (irq == MemoryManagement_IRQn)
 		printf("MMFAR 0x%08X\n", (unsigned int)SCB->MMFAR);
-	} else if (irq == BusFault_IRQn) {
+	else if (irq == BusFault_IRQn)
 		printf("BFAR 0x%08X\n", (unsigned int)SCB->BFAR);
-	}
 	
 	status_blink_halt(BLINK_COUNT_FAULT);
 }
