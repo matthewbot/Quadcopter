@@ -1,6 +1,8 @@
 include gmsl
 
 sources := $(shell find src -name "*.c" )
+not-sources := src/math/test.c
+sources := $(filter-out $(not-sources), $(sources))
 headers := $(shell find src -name "*.h" )
 objects := $(addprefix build/, $(patsubst src/%,%, $(sources:.c=.o)))
 
@@ -8,7 +10,7 @@ cpuflags := -mcpu=cortex-m3 -msoft-float -mthumb
 sharedflags := \
 	-Isrc -Isrc/stm32 -Wall -Werror \
 	-ffunction-sections -fdata-sections -pipe \
-	-Os -ffast-math -fomit-frame-pointer 
+	-Os -ffast-math -fomit-frame-pointer -fstrict-aliasing
 cflags := $(cpuflags) $(sharedflags) -std=gnu99 
 cppflags := $(cpuflags) $(sharedflags) -fno-exceptions -fno-rtti
 ldflags := $(cpuflags) -lm -nostartfiles -Wall -Wl,--gc-sections
@@ -35,7 +37,7 @@ all: out/FC.bin
 out/FC.bin: build/FC.out
 	$(mkdirs)
 	$(objcopy) --output-target=binary $< $@
-	size $< -A
+	du out/FC.bin -h
 	
 build/FC.out: $(objects) src/crt/FC.ld
 	$(mkdirs)
