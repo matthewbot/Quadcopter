@@ -35,7 +35,7 @@ void analog_setup(analog_update_handler handler) {
 		nvic_enable_interrupt(ANALOG_DMA_IRQ);
 	}
 	
-	dma_configure(ANALOG_DMA, DMA_DIR_PERIPHERAL_TO_MEM, DMA_PRIORITY_HIGH, 16, 16, 
+	dma_configure(ANALOG_DMA, DMA_DIR_PERIPHERAL_TO_MEM, DMA_PRIORITY_LOW, 16, 16, 
 		DMA_OPTION_MEMORY_INCREMENT | DMA_OPTION_CIRCULAR | DMA_OPTION_INTERRUPT);
 	dma_start(ANALOG_DMA, data.raw, adc_dma_address(), ANALOG_READINGS_COUNT);
 
