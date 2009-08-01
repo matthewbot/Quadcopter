@@ -31,14 +31,14 @@ struct channel_callback_config {
 };
 
 #define MAX_OVERFLOW_CALLBACKS 4
-timer_overflow_callback overflowcallbacks[4][MAX_OVERFLOW_CALLBACKS];
+static timer_overflow_callback overflowcallbacks[4][MAX_OVERFLOW_CALLBACKS];
 static struct channel_callback_config chancallbacks[4][4];
 
 void timer_init() {
-	nvic_register_handler(TIM1_CC_IRQn, timer_irq_handler_1, true);
-	nvic_register_handler(TIM2_IRQn, timer_irq_handler_2, true);
-	nvic_register_handler(TIM3_IRQn, timer_irq_handler_3, true);
-	nvic_register_handler(TIM4_IRQn, timer_irq_handler_4, true);
+	nvic_register_handler(TIM1_CC_IRQn, timer_irq_handler_1, false);
+	nvic_register_handler(TIM2_IRQn, timer_irq_handler_2, false);
+	nvic_register_handler(TIM3_IRQn, timer_irq_handler_3, false);
+	nvic_register_handler(TIM4_IRQn, timer_irq_handler_4, false);
 }
 
 void timer_setup(int timer, int microsec, uint16_t maxval, enum timer_direction dir) {
@@ -50,6 +50,8 @@ void timer_setup(int timer, int microsec, uint16_t maxval, enum timer_direction 
 	
 	if (timer > 1)
 		nvic_enable_interrupt(TIM2_IRQn + timer-2);
+	else
+		nvic_enable_interrupt(TIM1_CC_IRQn);
 }
 
 void timer_add_overflow_callback(int timer, timer_overflow_callback callback) {
@@ -158,7 +160,7 @@ static void timer_irq_handler(int timer) {
 	TIM_TypeDef *tim = timers[timer];
 	uint16_t sr = tim->SR;
 	tim->SR = 0;
-		
+
 	struct channel_callback_config *callconf;
 	uint16_t CCR;
 
@@ -203,7 +205,7 @@ static void timer_irq_overflow(int timer) {
 	
 	int i;
 	for (i=0; i<MAX_OVERFLOW_CALLBACKS; i++) {
-		timer_overflow_callback callback = overflowcallbacks[timer][i];
+		timer_overflow_callback callback = overflowcallbacks[timer-1][i];
 		if (callback)
 			callback();
 	}
