@@ -15,7 +15,7 @@ cflags := $(cpuflags) $(sharedflags) -std=gnu99
 cppflags := $(cpuflags) $(sharedflags) -fno-exceptions -fno-rtti
 ldflags := $(cpuflags) -lm -nostartfiles -Wall -Wl,--gc-sections
 
-prefix := arm-none-eabi
+prefix := arm-elf
 cc := $(prefix)-gcc
 cpp := $(prefix)-g++
 ld := $(prefix)-gcc

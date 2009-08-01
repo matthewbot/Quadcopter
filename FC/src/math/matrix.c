@@ -94,16 +94,20 @@ void matrix_invert(float *restrict mat, int m) {
 	}
 }
 
-void matrix_multiply(const float *restrict mat_a, const float *restrict mat_b, int m, int n, int p, float *restrict mat_out) {
+void matrix_multiply(const float *restrict mat_a, const float *restrict mat_b, int m, const int n, const int p, float *restrict mat_out) {
 	int i, j, k;
 	for (i=0; i<m; i++) {
 		for (j=0; j<p; j++) {
 			float acc=0;
 			
-			const float *restrict mat_a_ptr = &M(mat_a, i, 0); // we're reading this entire row, so lets incremenent a pointer across it
-			for (k=0; k<n; k++, mat_a_ptr++) {
-				acc += *mat_a_ptr * M(mat_b, k, j);
-			}
+			// premature optimization is the root of all evil!! 
+			// ARM must have an instruction making the M() macro very efficient
+			// replacing it with a pointer and incrementing it actually decreases performance
+			// (probably due to additional pressure on the register allocator)
+			for (k=0; k<n; k++) {
+				float tmp = M(mat_a, i, k) * M(mat_b, k, j);
+				acc += tmp;
+			}			
 			
 			M(mat_out, i, j) = acc;
 		}
