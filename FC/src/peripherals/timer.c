@@ -30,6 +30,8 @@ struct channel_callback_config {
 	} callback;
 };
 
+#define MAX_OVERFLOW_CALLBACKS 4
+timer_overflow_callback overflowcallbacks[4][MAX_OVERFLOW_CALLBACKS];
 static struct channel_callback_config chancallbacks[4][4];
 
 void timer_init() {
@@ -48,6 +50,18 @@ void timer_setup(int timer, int microsec, uint16_t maxval, enum timer_direction 
 	
 	if (timer > 1)
 		nvic_enable_interrupt(TIM2_IRQn + timer-2);
+}
+
+void timer_add_overflow_callback(int timer, timer_overflow_callback callback) {
+	timer_overflow_callback *callbacks = overflowcallbacks[timer];
+	
+	int i;
+	for (i=0; i<MAX_OVERFLOW_CALLBACKS;i++) {
+		if (callbacks[i] == NULL) {
+			callbacks[i] = callback;
+			break;
+		}
+	}
 }
 
 void timer_channel_setup_ic(int timer, int channel, enum timer_ic_filter filter, enum timer_ic_edge edge, timer_capture_callback callback) {
@@ -185,6 +199,13 @@ static void timer_irq_overflow(int timer) {
 		struct channel_callback_config *callconf = &chancallbacks[timer-1][channel];
 		if (callconf->input && callconf->callback.ptr)
 			callconf->callback.capture(TIMER_IC_OVERFLOW);
+	}
+	
+	int i;
+	for (i=0; i<MAX_OVERFLOW_CALLBACKS; i++) {
+		timer_overflow_callback callback = overflowcallbacks[timer][i];
+		if (callback)
+			callback();
 	}
 }
 

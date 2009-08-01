@@ -53,9 +53,11 @@ enum timer_oc_mode {
 
 typedef void (*timer_capture_callback)(int);
 typedef void (*timer_output_callback)();
+typedef void (*timer_overflow_callback)();
 
 void timer_init();
 void timer_setup(int timer, int microsec, uint16_t maxval, enum timer_direction dir);
+void timer_add_overflow_callback(int timer, timer_overflow_callback callback);
 void timer_channel_setup_ic(int timer, int channel, enum timer_ic_filter filter, enum timer_ic_edge edge, timer_capture_callback callback);
 void timer_channel_setup_oc(int timer, int channel, enum timer_oc_mode mode, timer_output_callback callback, uint16_t ccr);
 void timer_channel_set_ccr(int timer, int channel, uint16_t ccr);
