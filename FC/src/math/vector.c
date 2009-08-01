@@ -30,9 +30,9 @@ struct vector_crossprod_pair {
 
 void vector_crossprod(const float *restrict vec_a, const float *restrict vec_b, float *restrict vec_out) {
 	static const struct vector_crossprod_pair pairs[] = {
-		{2, 3},
-		{3, 1},
-		{1, 2}
+		{1, 2},
+		{2, 0},
+		{0, 1}
 	};
 	
 	const struct vector_crossprod_pair *curpair = pairs;
@@ -58,10 +58,7 @@ float vector_magnitude(const float *restrict vec, int n) {
 
 void vector_normalize(const float *vec, int n, float *vec_out) {
 	float magnitude = vector_magnitude(vec, n);
-	
-	while (n--) {
-		*vec_out++ /= magnitude;
-	}
+	vector_scale(vec, 1 / magnitude, n, vec_out);
 }
 
 void vector_scale(const float *vec, float scalar, int n, float *vec_out) {
@@ -70,7 +67,7 @@ void vector_scale(const float *vec, float scalar, int n, float *vec_out) {
 	}
 }
 
-void print_vector(const float *vec, int n) {
+void vector_print(const float *vec, int n) {
 	while (n--) {
 		printf("%f ", *vec++);
 	}

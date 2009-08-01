@@ -4,6 +4,17 @@
 
 #define M(mat, row, col) mat[(row)*n + col]
 
+void matrix_set_identity(int m, float *restrict mat_out) {
+	const int n = m; // for M macro to work
+	
+	int i, j;
+	for (i=0; i < m; i++) {
+		for (j=0; j < n; j++) {
+			*mat_out++ = (m == n) ? 1 : 0;
+		}
+	}
+}
+
 void matrix_add(const float *mat_a, const float *mat_b, int m, int n, float *mat_out) {
 	vector_add(mat_a, mat_b, m*n, mat_out);
 }
@@ -92,6 +103,22 @@ void matrix_invert(float *restrict mat, int m) {
 			M(mat, j, i) = sum;
 		}
 	}
+}
+
+void matrix_cross_prod_vec(const float *restrict vec, float *restrict mat_out) {
+	const int n=3; // for M macro
+	
+	int i;
+	for (i=0;i<3;i++) {
+		M(mat_out, i, i) = 0;
+	}
+	
+	M(mat_out, 1, 0) = vec[2];
+	M(mat_out, 0, 1) = -vec[2];
+	M(mat_out, 2, 0) = vec[1];
+	M(mat_out, 0, 2) = -vec[1];
+	M(mat_out, 2, 1) = vec[0];
+	M(mat_out, 1, 2) = -vec[0];
 }
 
 void matrix_multiply(const float *restrict mat_a, const float *restrict mat_b, int m, const int n, const int p, float *restrict mat_out) {
