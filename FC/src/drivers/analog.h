@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+#define ANALOG_READINGS_COUNT 6
 struct analog_readings {
 	uint16_t roll_rate;
 	uint16_t pitch_rate;
@@ -12,7 +13,9 @@ struct analog_readings {
 	uint16_t z_accel;
 };
 
-void analog_init();
+typedef void (*analog_update_handler)(struct analog_readings);
+
+void analog_setup(analog_update_handler handler);
 const volatile uint16_t *analog_get_raw();
 struct analog_readings analog_get_readings();
 

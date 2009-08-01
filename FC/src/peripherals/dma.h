@@ -36,5 +36,6 @@ void dma_start(int chnum, volatile void *mem, volatile void *periph, size_t coun
 void dma_disable(int chnum);
 void dma_enable(int chnum);
 size_t dma_get_remaining(int chnum);
+void dma_clear_interrupt(int chnum);
 
 #endif

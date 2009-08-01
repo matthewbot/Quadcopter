@@ -62,6 +62,7 @@ size_t stdio_write(const uint8_t *buf, size_t len) {
 static void readbuf_full_handler() {
 	memmove((void *)readbuf, (void *)&readbuf[DROP_BYTES], sizeof(readbuf) - DROP_BYTES); // drop the first few bytes
 	start_rx_dma(sizeof(readbuf) - DROP_BYTES); // restart DMA in the new free space
+	dma_clear_interrupt(DMA_RX);
 }
 	
 static void start_rx_dma(size_t bufinuse) {

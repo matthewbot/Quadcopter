@@ -2,7 +2,6 @@
 #include "drivers/panel.h"
 #include "drivers/stdio.h"
 #include "drivers/micromag.h"
-#include "drivers/analog.h"
 #include "drivers/vexrc.h"
 #include "drivers/time.h"
 #include "drivers/sharedinit.h"
@@ -28,7 +27,6 @@ void system_init() {
 	sharedinit_init();
 	stdio_init();
 	micromag_init();
-	analog_init();
 	vexrc_init();
 		
 	panel_set_status(PANEL_STATUS_READY);

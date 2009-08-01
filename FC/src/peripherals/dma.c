@@ -47,3 +47,7 @@ void dma_enable(int chnum) {
 size_t dma_get_remaining(int chnum) {
 	return channels[chnum]->CNDTR;
 }
+
+void dma_clear_interrupt(int chnum) {
+	DMA1->IFCR = 1 << (chnum-1)*4;
+}
