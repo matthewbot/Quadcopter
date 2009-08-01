@@ -1,18 +1,19 @@
 #include "math/matrix.h"
-#include "drivers/analog.h"
+#include "drivers/micromag.h"
 #include "drivers/time.h"
+#include "drivers/panel.h"
 #include "system.h"
 #include <stdio.h>
 
 int main(int argc, char **argv) {
 	system_init();
+	printf("Eh?\n");
 
+	micromag_scan(MICROMAG_PERIOD_1024, NULL);
+	
 	for (;;) {
 		time_sleep(500);
-		struct analog_readings readings = analog_get_readings();
-		
-		printf("RL %4u PT %4u YW %4u X %4u Y %4u Z %4u\n",
-			readings.roll_rate, readings.pitch_rate, readings.yaw_rate, readings.x_accel, readings.y_accel, readings.z_accel);
+		printf("Micromag ok: %d\n", (int)micromag_scan_ok());
 	}
 }
 

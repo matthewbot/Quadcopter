@@ -2,6 +2,7 @@
 #define FC_DRIVERS_MICROMAG_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 enum micromag_axis {
 	MICROMAG_AXIS_X=1,
@@ -24,11 +25,14 @@ struct micromag_scan_results {
 	int16_t x, y, z;
 };
 
+typedef void (*micromag_scan_handler)(struct micromag_scan_results);
+
 void micromag_init();
 int16_t micromag_sample(enum micromag_axis axis, enum micromag_period period);
-void micromag_scan(enum micromag_period period);
+void micromag_scan(enum micromag_period period, micromag_scan_handler handler);
 struct micromag_scan_results micromag_get_scan();
 unsigned long micromag_get_scan_time(); // in ms
+bool micromag_scan_ok(); // returns false if our automatic scan locks up
 
 
 #endif
