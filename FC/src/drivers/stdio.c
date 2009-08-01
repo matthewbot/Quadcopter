@@ -10,9 +10,7 @@
 #define DMA_RX 5
 #define DMA_RX_INTERRUPT (DMA_BASE_IRQn + DMA_RX)
 
-#define BUF_SIZE 128
-
-static volatile uint8_t readbuf[BUF_SIZE], writebuf[BUF_SIZE];
+static volatile uint8_t readbuf[16], writebuf[64];
 
 static void readbuf_full_handler();
 static void start_rx_dma(size_t bufinuse);
