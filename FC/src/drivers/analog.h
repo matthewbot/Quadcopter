@@ -3,16 +3,17 @@
 
 #include <stdint.h>
 
-struct analog_data {
-	float roll_rate;
-	float pitch_rate;
-	float yaw_rate;
-	float roll_angle;
-	float pitch_angle;
+struct analog_readings {
+	uint16_t roll_rate;
+	uint16_t pitch_rate;
+	uint16_t yaw_rate;
+	uint16_t x_accel;
+	uint16_t y_accel;
+	uint16_t z_accel;
 };
 
 void analog_init();
 const volatile uint16_t *analog_get_raw();
-struct analog_data analog_read();
+struct analog_readings analog_get_readings();
 
 #endif
