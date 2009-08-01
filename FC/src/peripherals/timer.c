@@ -9,7 +9,8 @@
 
 #define TIM_CCMR_INPUT_IC1_TI1 TIM_CCMR1_CC1S_0
 
-static TIM_TypeDef *const timers[] = { 0, 0, TIM2, TIM3, TIM4 };
+static TIM_TypeDef *const timers[] = { 0, TIM1, TIM2, TIM3, TIM4 };
+static void timer_irq_handler_1();
 static void timer_irq_handler_2();
 static void timer_irq_handler_3();
 static void timer_irq_handler_4();
@@ -18,6 +19,7 @@ static void timer_irq_overflow(int timer);
 
 static void setup_ccmr(TIM_TypeDef *tim, int channel, uint16_t val);
 static void setup_ccer(TIM_TypeDef *tim, int channel, uint16_t val);
+static void setup_dier(TIM_TypeDef *tim, int channel, bool enable);
 
 struct channel_callback_config {
 	bool input;
@@ -28,9 +30,10 @@ struct channel_callback_config {
 	} callback;
 };
 
-static struct channel_callback_config chancallbacks[3][4];
+static struct channel_callback_config chancallbacks[4][4];
 
 void timer_init() {
+	nvic_register_handler(TIM1_CC_IRQn, timer_irq_handler_1, true);
 	nvic_register_handler(TIM2_IRQn, timer_irq_handler_2, true);
 	nvic_register_handler(TIM3_IRQn, timer_irq_handler_3, true);
 	nvic_register_handler(TIM4_IRQn, timer_irq_handler_4, true);
@@ -50,7 +53,7 @@ void timer_setup(int timer, int microsec, uint16_t maxval, enum timer_direction 
 void timer_channel_setup_ic(int timer, int channel, enum timer_ic_filter filter, enum timer_ic_edge edge, timer_capture_callback callback) {
 	TIM_TypeDef *tim = timers[timer];
 	
-	struct channel_callback_config *chanconf = &chancallbacks[timer-2][channel-1];
+	struct channel_callback_config *chanconf = &chancallbacks[timer-1][channel-1];
 	chanconf->callback.ptr = NULL;
 	
 	setup_ccmr(tim, channel, TIM_CCMR_INPUT_IC1_TI1 | (filter << 4)); // set CCMR register
@@ -59,16 +62,13 @@ void timer_channel_setup_ic(int timer, int channel, enum timer_ic_filter filter,
 	chanconf->input = true;
 	chanconf->callback.capture = callback;
 	
-	if (callback)
-		tim->DIER |= (1 << channel);
-	else
-		tim->DIER &= ~(1 << channel);
+	setup_dier(tim, channel, callback != 0);
 }
 
 void timer_channel_setup_oc(int timer, int channel, enum timer_oc_mode mode, timer_output_callback callback, uint16_t ccr) {
 	TIM_TypeDef *tim = timers[timer];
 	
-	struct channel_callback_config *chanconf = &chancallbacks[timer-2][channel-1];
+	struct channel_callback_config *chanconf = &chancallbacks[timer-1][channel-1];
 	chanconf->callback.ptr = NULL;
 	
 	setup_ccmr(tim, channel, TIM_CCMR1_OC1PE | (mode << 4));
@@ -77,10 +77,7 @@ void timer_channel_setup_oc(int timer, int channel, enum timer_oc_mode mode, tim
 	chanconf->input = false;
 	chanconf->callback.capture = callback;
 	
-	if (callback)
-		tim->DIER |= (1 << channel);
-	else
-		tim->DIER &= ~(1 << channel);
+	setup_dier(tim, channel, callback != 0);
 		
 	timer_channel_set_ccr(timer, channel, ccr);
 }
@@ -136,6 +133,13 @@ static void setup_ccer(TIM_TypeDef *tim, int channel, uint16_t val) {
 	tim->CCER = CCER; // write register back
 }
 
+static void setup_dier(TIM_TypeDef *tim, int channel, bool enable) {
+	if (enable)
+		tim->DIER |= (1 << channel);
+	else
+		tim->DIER &= ~(1 << channel);
+}
+
 static void timer_irq_handler(int timer) {
 	TIM_TypeDef *tim = timers[timer];
 	uint16_t sr = tim->SR;
@@ -148,16 +152,16 @@ static void timer_irq_handler(int timer) {
 		timer_irq_overflow(timer);
 		return;
 	} else if (sr & TIM_SR_CC1IF) {
-		callconf = &chancallbacks[timer-2][0];
+		callconf = &chancallbacks[timer-1][0];
 		CCR = tim->CCR1;
 	} else if (sr & TIM_SR_CC2IF) {
-		callconf = &chancallbacks[timer-2][1];
+		callconf = &chancallbacks[timer-1][1];
 		CCR = tim->CCR2;
 	} else if (sr & TIM_SR_CC3IF) {
-		callconf = &chancallbacks[timer-2][2];
+		callconf = &chancallbacks[timer-1][2];
 		CCR = tim->CCR3;
 	} else if (sr & TIM_SR_CC4IF) {
-		callconf = &chancallbacks[timer-2][3];
+		callconf = &chancallbacks[timer-1][3];
 		CCR = tim->CCR4;
 	} else {
 		return;
@@ -178,10 +182,14 @@ static void timer_irq_handler(int timer) {
 static void timer_irq_overflow(int timer) {
 	int channel;
 	for (channel=0; channel<4; channel++) {
-		struct channel_callback_config *callconf = &chancallbacks[timer-2][channel];
+		struct channel_callback_config *callconf = &chancallbacks[timer-1][channel];
 		if (callconf->input && callconf->callback.ptr)
 			callconf->callback.capture(TIMER_IC_OVERFLOW);
 	}
+}
+
+static void timer_irq_handler_1() {
+	timer_irq_handler(1);
 }
 
 static void timer_irq_handler_2() {
