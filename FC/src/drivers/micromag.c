@@ -14,6 +14,9 @@
 #define MICROMAG_RESET_PORT GPIO_PORT_B
 #define MICROMAG_RESET_PIN 5
 
+// TODO timeout/error handling in scan mode
+
+// holds scan (automatic interrupt driven reading) settings
 static volatile enum micromag_period scan_period;
 static volatile enum micromag_axis scan_axis; // 0 = no scan, 1-3 = current scan channel
 static volatile struct micromag_scan_results scan_results;
