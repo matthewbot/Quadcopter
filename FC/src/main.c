@@ -1,5 +1,6 @@
 #include "math/matrix.h"
 #include "drivers/micromag.h"
+#include "drivers/vexrc.h"
 #include "drivers/time.h"
 #include "drivers/panel.h"
 #include "system.h"
@@ -13,7 +14,7 @@ int main(int argc, char **argv) {
 	
 	for (;;) {
 		time_sleep(500);
-		printf("Micromag ok: %d\n", (int)micromag_scan_ok());
+		printf("Micromag ok: %d Vex synced: %d\n", (int)micromag_scan_ok(), (int)vexrc_get_synced());
 	}
 }
 

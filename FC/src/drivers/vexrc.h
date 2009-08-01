@@ -11,5 +11,6 @@ struct vexrc_channels {
 
 void vexrc_init();
 struct vexrc_channels vexrc_get_channels();
+bool vexrc_get_synced();
 
 #endif
