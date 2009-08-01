@@ -1,4 +1,6 @@
 #include "math/matrix.h"
+#include "drivers/analog.h"
+#include "drivers/time.h"
 #include "system.h"
 #include <stdio.h>
 
@@ -15,6 +17,16 @@ int main(int argc, char **argv) {
 	
 	matrix_multiply(matrixa, matrixa, 3, 3, 3, matrix_out);
 	matrix_print(matrix_out, 3, 3);
+	
+	for (;;) {
+		time_sleep(500);
+		const volatile uint16_t *raw = analog_get_raw();
+		
+		int i;
+		for (i=0;i<6;i++) {
+			printf("%d ", (int)raw[i]);
+		}
+		printf("\n");
+	}
 }
-
 

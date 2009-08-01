@@ -4,7 +4,7 @@
 #define ADC_CR2_EXTSEL_SWSTART (ADC_CR2_EXTSEL_0 | ADC_CR2_EXTSEL_1 | ADC_CR2_EXTSEL_2)
 #define ADC_CR1_DUALMOD_REGULAR (ADC_CR1_DUALMOD_1 | ADC_CR1_DUALMOD_2)
 
-static uint32_t buildreg(const int **chanptr, size_t *count);
+static uint32_t buildreg(const chan_t **chanptr, size_t *count);
 static void adc_off();
 
 void adc_init() {
@@ -15,7 +15,7 @@ void adc_init() {
 	while (ADC2->CR2 & ADC_CR2_CAL) { }
 }
 
-uint16_t adc_capture(int chan) {
+uint16_t adc_capture(chan_t chan) {
 	adc_off();
 	
 	ADC1->SQR1 = 0; // set sequence length to 1 conversion
@@ -32,7 +32,7 @@ uint16_t adc_capture(int chan) {
 	return ADC1->DR; 
 }
 
-void adc_scan(const int *chans, size_t count) {
+void adc_scan(const chan_t *chans, size_t count) {
 	adc_off();
 
 	size_t countremaining = count;
@@ -50,7 +50,7 @@ void adc_scan(const int *chans, size_t count) {
 	            ADC_CR2_SWSTART; // start conversion
 }
 
-void adc_dual_scan(const int *chans1, size_t count1, const int *chans2, size_t count2) {
+void adc_dual_scan(const chan_t *chans1, size_t count1, const chan_t *chans2, size_t count2) {
 	adc_off();
 
 	ADC2->SQR3 = buildreg(&chans2, &count2); // ADC2 first because ADC1 must be given start signal
@@ -95,12 +95,12 @@ void *adc_dma_address() {
 	return (void *)&ADC1->DR;
 }
 
-static uint32_t buildreg(const int **chanptr, size_t *count) { // I miss references
+static uint32_t buildreg(const chan_t **chanptr, size_t *count) { // I miss references
 	uint32_t reg=0;
 	int i;
 	
 	for (i=0; *count && i < 6; (*count)--, i++) { 
-		reg |= *(*chanptr)++ << i*5; // C++ invented references to deal with this
+		reg |= (uint32_t)*(*chanptr)++ << i*5; // C++ invented references to deal with this
 	}
 	
 	return reg;

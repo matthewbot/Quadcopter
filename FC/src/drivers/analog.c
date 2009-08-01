@@ -9,7 +9,7 @@
 #define READINGS_COUNT 6
 static volatile uint16_t readings[READINGS_COUNT];
 
-static const int chans[] = { 
+static const uint8_t chans[] = { 
 	13, 1, 9, // Roll Pitch Yaw gyros
 	12, 14, 15 // Accel X Y and Z
 };
