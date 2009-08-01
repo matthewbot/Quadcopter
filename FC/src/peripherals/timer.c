@@ -59,7 +59,10 @@ void timer_channel_setup_ic(int timer, int channel, enum timer_ic_filter filter,
 	chanconf->input = true;
 	chanconf->callback.capture = callback;
 	
-	tim->DIER |= (1 << channel);
+	if (callback)
+		tim->DIER |= (1 << channel);
+	else
+		tim->DIER &= ~(1 << channel);
 }
 
 void timer_channel_setup_oc(int timer, int channel, enum timer_oc_mode mode, timer_output_callback callback) {
@@ -74,7 +77,10 @@ void timer_channel_setup_oc(int timer, int channel, enum timer_oc_mode mode, tim
 	chanconf->input = false;
 	chanconf->callback.capture = callback;
 	
-	tim->DIER |= (1 << channel);
+	if (callback)
+		tim->DIER |= (1 << channel);
+	else
+		tim->DIER &= ~(1 << channel);
 }
 
 void timer_channel_set_ccr(int timer, int channel, uint16_t ccr) {

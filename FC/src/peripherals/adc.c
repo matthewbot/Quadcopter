@@ -32,7 +32,7 @@ uint16_t adc_capture(chan_t chan) {
 	return ADC1->DR; 
 }
 
-void adc_scan(const chan_t *chans, size_t count) {
+void adc_scan(const chan_t *chans, size_t count, enum adc_trigger trigger) {
 	adc_off();
 
 	size_t countremaining = count;
@@ -41,54 +41,42 @@ void adc_scan(const chan_t *chans, size_t count) {
 	ADC1->SQR1 = buildreg(&chans, &countremaining) | ((count-1) << 20);
 	
 	ADC1->CR1 = ADC_CR1_SCAN; 
-	ADC1->CR2 = ADC_CR2_TSVREFE | 
-	            ADC_CR2_DMA | 
-	            ADC_CR2_ADON | 
-	            ADC_CR2_CONT | 
-	            ADC_CR2_EXTTRIG | 
-	            ADC_CR2_EXTSEL_SWSTART | 
-	            ADC_CR2_SWSTART; // start conversion
+	if (trigger == ADC_TRIGGER_CONT) {
+		ADC1->CR2 = ADC_CR2_TSVREFE | 
+			        ADC_CR2_DMA | 
+			        ADC_CR2_ADON | 
+			        ADC_CR2_CONT | 
+			        ADC_CR2_EXTTRIG | 
+			        ADC_CR2_EXTSEL_SWSTART | 
+			        ADC_CR2_SWSTART;
+	} else {
+		ADC1->CR2 = ADC_CR2_TSVREFE | 
+			        ADC_CR2_DMA | 
+			        ADC_CR2_ADON | 
+			        ADC_CR2_EXTTRIG | 
+			        ADC_CR2_SWSTART |
+			        (trigger << 17);
+	}
 }
 
-void adc_dual_scan(const chan_t *chans1, size_t count1, const chan_t *chans2, size_t count2) {
+void adc_set_sampletime(chan_t chan, enum adc_sample_time time) {
 	adc_off();
-
-	ADC2->SQR3 = buildreg(&chans2, &count2); // ADC2 first because ADC1 must be given start signal
-	ADC2->SQR2 = buildreg(&chans2, &count2);
-	ADC2->SQR1 = buildreg(&chans2, &count2) | (count2 << 20);
-	ADC2->CR1 = ADC_CR1_SCAN;
-	ADC2->CR2 = ADC_CR2_TSVREFE | ADC_CR2_DMA | ADC_CR2_ADON;
-		
-	ADC1->SQR3 = buildreg(&chans1, &count1);
-	ADC1->SQR2 = buildreg(&chans1, &count1);
-	ADC1->SQR1 = buildreg(&chans1, &count1) | (count1 << 20);
-	ADC1->CR1 = ADC_CR1_SCAN | ADC_CR1_DUALMOD_REGULAR;
-	ADC1->CR2 = ADC_CR2_TSVREFE | ADC_CR2_DMA | ADC_CR2_ADON | ADC_CR2_CONT; // start conversion
-}
-
-void adc_set_sampletimes(const enum adc_sample_time *times) {
-	adc_off();
-
-	int i;
-	uint32_t reg;
 	
-	for (reg=0, i=0; i < 10; i++) {
-		reg |= *times++ << i*3;
+	__IO uint32_t *SMPR_addr1, *SMPR_addr2;
+	
+	if (chan > 9) {
+		SMPR_addr1 = &ADC1->SMPR1;
+		SMPR_addr2 = &ADC2->SMPR1;
+		chan -= 10;
+	} else {
+		SMPR_addr1 = &ADC1->SMPR2;
+		SMPR_addr2 = &ADC2->SMPR2;
 	}
 	
-	ADC1->SMPR2 = reg;
-	ADC2->SMPR2 = reg;
-
-	for (reg=0, i=0; i < 8; i++) {
-		reg |= *times++ << i*3;
-	}
-	
-	ADC1->SMPR1 = reg;
-	ADC2->SMPR1 = reg;
-}
-
-bool adc_scan_finished() {
-	return (ADC1->SR & ADC_SR_EOC) != 0;
+	uint32_t reg = *SMPR_addr1;
+	reg &= ~(0x3 << chan*3);
+	reg |= time << chan*3;
+	*SMPR_addr2 = *SMPR_addr1 = reg;
 }
 
 void *adc_dma_address() {

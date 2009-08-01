@@ -16,14 +16,23 @@ enum adc_sample_time {
 	ADC_SAMPLE_TIME_239
 };	
 	
+enum adc_trigger {
+	ADC_TRIGGER_TIM1_CC1,
+	ADC_TRIGGER_TIM1_CC2,
+	ADC_TRIGGER_TIM1_CC3,
+	ADC_TRIGGER_TIM2_CC2,
+	ADC_TRIGGER_TIM3_TRGO,
+	ADC_TRIGGER_TIM4_CC4,
+	ADC_TRIGGER_CONT, // instead of EXTI line 11
+	ADC_TRIGGER_NOW
+};
+	
 typedef uint8_t chan_t;
 	
 void adc_init();
 uint16_t adc_capture(chan_t chan);
-void adc_scan(const chan_t *chans, size_t count); // DMA mode, async
-void adc_dual_scan(const chan_t *chans1, size_t count1, const chan_t *chans2, size_t count2); // DMA mode, async
-void adc_set_sampletimes(const enum adc_sample_time *times);
-bool adc_scan_finished();
+void adc_scan(const chan_t *chans, size_t count, enum adc_trigger trigger); // DMA mode
+void adc_set_sampletime(chan_t chan, enum adc_sample_time time);
 void adc_disable_scan();
 void *adc_dma_address();
 

@@ -12,4 +12,5 @@ void sharedinit_init() {
 	nvic_set_priority(DMA1_Channel4_IRQn, pri_med); // handles receive buffer overruns on serial port
 	
 	timer_setup(2, 1000 / TIMER2_TPMS, TIMER2_MAXVAL, TIMER_DIRECTION_UP); // 10 microsecond or .01 ms per tick. Overflow at 40ms
+	timer_setup(4, 1000 / TIMER4_TPMS, TIMER4_MAXVAL, TIMER_DIRECTION_UP); // Overflow at 5ms. Used to time adc
 }

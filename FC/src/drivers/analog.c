@@ -1,6 +1,7 @@
 #include "drivers/analog.h"
 #include "peripherals/adc.h"
 #include "peripherals/dma.h"
+#include "peripherals/timer.h"
 #include "peripherals/nvic.h"
 #include "stm32f10x.h"
 #include <stdint.h>
@@ -8,30 +9,12 @@
 #define ADC_DMA 1
 #define ADC_DMA_IRQ (DMA1_Channel1_IRQn + ADC_DMA - 1)
 
+#define ADC_TIMER 4
+#define ADC_TIMER_CH 4
+
 static const uint8_t chans[ANALOG_READINGS_COUNT] = { 
 	13, 1, 9, // Roll Pitch Yaw gyros
 	12, 14, 15 // Accel X Y and Z
-};
-
-static const enum adc_sample_time sampletimes[] = {
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239,
-	ADC_SAMPLE_TIME_239
 };
 
 static volatile union {
@@ -50,11 +33,13 @@ void analog_setup(analog_update_handler handler) {
 		DMA_OPTION_MEMORY_INCREMENT | DMA_OPTION_CIRCULAR | DMA_OPTION_INTERRUPT);
 	dma_start(ADC_DMA, data.raw, adc_dma_address(), ANALOG_READINGS_COUNT);
 
+	timer_channel_setup_oc(ADC_TIMER, ADC_TIMER_CH, TIMER_OC_MODE_PWM_1, NULL);
+	timer_channel_set_ccr(ADC_TIMER, ADC_TIMER_CH, 1000);
+
 	nvic_register_handler(ADC_DMA_IRQ, analog_dma_handler);
 	nvic_enable_interrupt(ADC_DMA_IRQ);
 	
-	adc_set_sampletimes(sampletimes);
-	adc_scan(chans, ANALOG_READINGS_COUNT);
+	adc_scan(chans, ANALOG_READINGS_COUNT, ADC_TRIGGER_TIM4_CC4);
 }
 
 struct analog_readings analog_get_readings() {
@@ -67,3 +52,4 @@ static void analog_dma_handler() {
 		
 	dma_clear_interrupt(ADC_DMA);
 }
+
