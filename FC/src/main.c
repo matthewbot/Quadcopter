@@ -4,8 +4,6 @@
 #include "system.h"
 #include <stdio.h>
 
-extern unsigned long tottime;
-
 int main(int argc, char **argv) {
 	system_init();
 
@@ -16,7 +14,6 @@ int main(int argc, char **argv) {
 		
 		printf("RL %4u PT %4u YW %4u X %4u Y %4u Z %4u\n",
 			readings.roll_rate, readings.pitch_rate, readings.yaw_rate, readings.x_accel, readings.y_accel, readings.z_accel);
-		printf("Tottime: %lu\n", tottime);
 	}
 }
 
