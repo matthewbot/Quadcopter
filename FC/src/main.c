@@ -7,7 +7,6 @@
 int main(int argc, char **argv) {
 	system_init();
 
-	analog_setup(NULL);	
 	for (;;) {
 		time_sleep(500);
 		struct analog_readings readings = analog_get_readings();

@@ -27,11 +27,8 @@ static analog_update_handler update_handler;
 
 static void analog_dma_handler();
 
-void analog_setup(analog_update_handler handler) {
-	update_handler = handler;
-	
-	if (handler) 
-		nvic_register_handler(ANALOG_DMA_IRQ, analog_dma_handler, true);
+void analog_init() {
+	nvic_register_handler(ANALOG_DMA_IRQ, analog_dma_handler, true);
 	
 	dma_configure(ANALOG_DMA, DMA_DIR_PERIPHERAL_TO_MEM, DMA_PRIORITY_HIGH, 2, 
 		DMA_OPTION_MEMORY_INCREMENT | DMA_OPTION_CIRCULAR | DMA_OPTION_INTERRUPT);
@@ -40,6 +37,10 @@ void analog_setup(analog_update_handler handler) {
 	timer_channel_setup_oc(ANALOG_TIMER, ANALOG_TIMER_CH, TIMER_OC_MODE_PWM_1, NULL, 1000);
 	
 	adc_scan(chans, ANALOG_READINGS_COUNT, ANALOG_TRIGGER);
+}
+
+void analog_set_update_handler(analog_update_handler handler) {
+	update_handler = handler;
 }
 
 struct analog_readings analog_get_readings() {

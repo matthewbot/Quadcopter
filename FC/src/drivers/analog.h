@@ -15,7 +15,8 @@ struct analog_readings {
 
 typedef void (*analog_update_handler)(struct analog_readings);
 
-void analog_setup(analog_update_handler handler);
+void analog_init();
+void analog_set_update_handler(analog_update_handler handler);
 const volatile uint16_t *analog_get_raw();
 struct analog_readings analog_get_readings();
 

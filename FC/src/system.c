@@ -1,6 +1,7 @@
 #include "system.h"
 #include "drivers/panel.h"
 #include "drivers/stdio.h"
+#include "drivers/analog.h"
 #include "drivers/micromag.h"
 #include "drivers/vexrc.h"
 #include "drivers/time.h"
@@ -26,6 +27,7 @@ void system_init() {
 
 	sharedinit_init();
 	stdio_init();
+	analog_init();
 	micromag_init();
 	vexrc_init();
 		
