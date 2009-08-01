@@ -50,7 +50,7 @@ size_t stdio_write(const uint8_t *buf, size_t len) {
 	if (len > sizeof(writebuf))
 		len = sizeof(writebuf);
 	
-	while (dma_get_remaining(DMA_TX) > 0) { }
+	while (dma_get_remaining(DMA_TX) > 0) { } // TODO append on existing transfer (more DMA study, I think its possible)
 	
 	memcpy((void *)writebuf, (void *)buf, len);
 	dma_start(DMA_TX, writebuf, usart_dma_address(1), len);
