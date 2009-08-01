@@ -6,7 +6,7 @@ static DMA_Channel_TypeDef *const channels[] = {
 	0, DMA1_Channel1, DMA1_Channel2, DMA1_Channel3, DMA1_Channel4, DMA1_Channel5, DMA1_Channel6, DMA1_Channel7
 };
 
-void dma_configure(int chnum, enum dma_direction dir, enum dma_priority pri, int memsize, int persize, enum dma_options opts) {
+void dma_configure(int chnum, enum dma_direction dir, enum dma_priority pri, size_t size, enum dma_options opts) {
 	uint32_t val = opts;
 	
 	if (dir == DMA_DIR_MEM_TO_PERIPHERAL)
@@ -14,15 +14,10 @@ void dma_configure(int chnum, enum dma_direction dir, enum dma_priority pri, int
 		
 	val |= pri << 12;	
 		
-	if (memsize == 16)
-		val |= DMA_CCR1_MSIZE_0;
-	else if (memsize == 32)
-		val |= DMA_CCR1_MSIZE_1;
-		
-	if (persize == 16)
-		val |= DMA_CCR1_PSIZE_0;
-	else if (memsize == 32)
-		val |= DMA_CCR1_MSIZE_1;
+	if (size == 2)
+		val |= DMA_CCR1_MSIZE_0 | DMA_CCR1_PSIZE_0;
+	else if (size == 4)
+		val |= DMA_CCR1_MSIZE_1 | DMA_CCR1_MSIZE_1;
 		
 	channels[chnum]->CCR = val;
 }

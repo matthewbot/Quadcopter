@@ -31,7 +31,7 @@ enum dma_options {
 
 #define DMA_BASE_IRQn 10 // add the DMA channel number to this to get its IRQ ID
 
-void dma_configure(int chnum, enum dma_direction dir, enum dma_priority pri, int memsize, int persize, enum dma_options opts);
+void dma_configure(int chnum, enum dma_direction dir, enum dma_priority pri, size_t size, enum dma_options opts);
 void dma_start(int chnum, volatile void *mem, volatile void *periph, size_t count);
 void dma_disable(int chnum);
 void dma_enable(int chnum);

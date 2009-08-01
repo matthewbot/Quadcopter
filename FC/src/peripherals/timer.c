@@ -31,9 +31,9 @@ struct channel_callback_config {
 static struct channel_callback_config chancallbacks[3][4];
 
 void timer_init() {
-	nvic_register_handler(TIM2_IRQn, timer_irq_handler_2);
-	nvic_register_handler(TIM3_IRQn, timer_irq_handler_3);
-	nvic_register_handler(TIM4_IRQn, timer_irq_handler_4);
+	nvic_register_handler(TIM2_IRQn, timer_irq_handler_2, true);
+	nvic_register_handler(TIM3_IRQn, timer_irq_handler_3, true);
+	nvic_register_handler(TIM4_IRQn, timer_irq_handler_4, true);
 }
 
 void timer_setup(int timer, int microsec, uint16_t maxval, enum timer_direction dir) {
@@ -65,7 +65,7 @@ void timer_channel_setup_ic(int timer, int channel, enum timer_ic_filter filter,
 		tim->DIER &= ~(1 << channel);
 }
 
-void timer_channel_setup_oc(int timer, int channel, enum timer_oc_mode mode, timer_output_callback callback) {
+void timer_channel_setup_oc(int timer, int channel, enum timer_oc_mode mode, timer_output_callback callback, uint16_t ccr) {
 	TIM_TypeDef *tim = timers[timer];
 	
 	struct channel_callback_config *chanconf = &chancallbacks[timer-2][channel-1];
@@ -81,6 +81,8 @@ void timer_channel_setup_oc(int timer, int channel, enum timer_oc_mode mode, tim
 		tim->DIER |= (1 << channel);
 	else
 		tim->DIER &= ~(1 << channel);
+		
+	timer_channel_set_ccr(timer, channel, ccr);
 }
 
 void timer_channel_set_ccr(int timer, int channel, uint16_t ccr) {

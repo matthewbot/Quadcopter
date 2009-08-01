@@ -41,8 +41,11 @@ void nvic_init() {
 	__enable_irq();
 }
 
-void nvic_register_handler(int id, nvic_handler handler) {
-	ram_vectors.handlers[id+15] = handler;
+void nvic_register_handler(enum IRQn irq, nvic_handler handler, bool enable) {
+	ram_vectors.handlers[irq+15] = handler;
+	
+	if (enable)
+		nvic_enable_interrupt(irq);
 }
 
 void nvic_enable_interrupt(enum IRQn irq) {

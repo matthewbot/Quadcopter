@@ -9,8 +9,8 @@ static void systick_irq_handler();
 static volatile unsigned long milliseconds;
 
 void time_init() {
-	nvic_register_handler(SysTick_IRQn, systick_irq_handler);
 	systick_setup(1000);
+	nvic_register_handler(SysTick_IRQn, systick_irq_handler, false);
 }
 
 unsigned long time_get() { 

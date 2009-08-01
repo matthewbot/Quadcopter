@@ -30,17 +30,14 @@ static void analog_dma_handler();
 void analog_setup(analog_update_handler handler) {
 	update_handler = handler;
 	
-	if (handler) {
-		nvic_register_handler(ANALOG_DMA_IRQ, analog_dma_handler);
-		nvic_enable_interrupt(ANALOG_DMA_IRQ);
-	}
+	if (handler) 
+		nvic_register_handler(ANALOG_DMA_IRQ, analog_dma_handler, true);
 	
-	dma_configure(ANALOG_DMA, DMA_DIR_PERIPHERAL_TO_MEM, DMA_PRIORITY_LOW, 16, 16, 
+	dma_configure(ANALOG_DMA, DMA_DIR_PERIPHERAL_TO_MEM, DMA_PRIORITY_HIGH, 2, 
 		DMA_OPTION_MEMORY_INCREMENT | DMA_OPTION_CIRCULAR | DMA_OPTION_INTERRUPT);
 	dma_start(ANALOG_DMA, data.raw, adc_dma_address(), ANALOG_READINGS_COUNT);
 
-	timer_channel_setup_oc(ANALOG_TIMER, ANALOG_TIMER_CH, TIMER_OC_MODE_PWM_1, NULL);
-	timer_channel_set_ccr(ANALOG_TIMER, ANALOG_TIMER_CH, 1000);
+	timer_channel_setup_oc(ANALOG_TIMER, ANALOG_TIMER_CH, TIMER_OC_MODE_PWM_1, NULL, 1000);
 	
 	adc_scan(chans, ANALOG_READINGS_COUNT, ANALOG_TRIGGER);
 }

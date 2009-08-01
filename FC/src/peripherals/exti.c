@@ -15,21 +15,13 @@ static void exti_irq_handler_search(int begin, int end);
 static void exti_irq_handler(int irq);
 
 void exti_init() {
-	nvic_register_handler(EXTI0_IRQn, exti_irq_handler_0);
-	nvic_register_handler(EXTI1_IRQn, exti_irq_handler_1);
-	nvic_register_handler(EXTI2_IRQn, exti_irq_handler_2);
-	nvic_register_handler(EXTI3_IRQn, exti_irq_handler_3);
-	nvic_register_handler(EXTI4_IRQn, exti_irq_handler_4);	
-	nvic_register_handler(EXTI9_5_IRQn, exti_irq_handler_5_9);
-	nvic_register_handler(EXTI15_10_IRQn, exti_irq_handler_10_15);
-	
-	nvic_enable_interrupt(EXTI0_IRQn);
-	nvic_enable_interrupt(EXTI1_IRQn);
-	nvic_enable_interrupt(EXTI2_IRQn);
-	nvic_enable_interrupt(EXTI3_IRQn);
-	nvic_enable_interrupt(EXTI4_IRQn);	
-	nvic_enable_interrupt(EXTI9_5_IRQn);
-	nvic_enable_interrupt(EXTI15_10_IRQn);
+	nvic_register_handler(EXTI0_IRQn, exti_irq_handler_0, true);
+	nvic_register_handler(EXTI1_IRQn, exti_irq_handler_1, true);
+	nvic_register_handler(EXTI2_IRQn, exti_irq_handler_2, true);
+	nvic_register_handler(EXTI3_IRQn, exti_irq_handler_3, true);
+	nvic_register_handler(EXTI4_IRQn, exti_irq_handler_4, true);	
+	nvic_register_handler(EXTI9_5_IRQn, exti_irq_handler_5_9, true);
+	nvic_register_handler(EXTI15_10_IRQn, exti_irq_handler_10_15, true);
 }
 
 void exti_setup(int exti, enum gpio_port port, enum exti_edge edge, exti_handler handler) {

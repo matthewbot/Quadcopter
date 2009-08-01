@@ -4,7 +4,7 @@
 #define ADC_CR2_EXTSEL_SWSTART (ADC_CR2_EXTSEL_0 | ADC_CR2_EXTSEL_1 | ADC_CR2_EXTSEL_2)
 #define ADC_CR1_DUALMOD_REGULAR (ADC_CR1_DUALMOD_1 | ADC_CR1_DUALMOD_2)
 
-static uint32_t buildreg(const chan_t **chanptr, size_t *count);
+static uint32_t buildreg(const uint8_t **chanptr, size_t *count);
 static void adc_off();
 
 void adc_init() {
@@ -15,7 +15,7 @@ void adc_init() {
 	while (ADC2->CR2 & ADC_CR2_CAL) { }
 }
 
-uint16_t adc_capture(chan_t chan) {
+uint16_t adc_capture(int chan) {
 	adc_off();
 	
 	ADC1->SQR1 = 0; // set sequence length to 1 conversion
@@ -32,7 +32,7 @@ uint16_t adc_capture(chan_t chan) {
 	return ADC1->DR; 
 }
 
-void adc_scan(const chan_t *chans, size_t count, enum adc_trigger trigger) {
+void adc_scan(const uint8_t *chans, size_t count, enum adc_trigger trigger) {
 	adc_off();
 
 	size_t countremaining = count;
@@ -59,7 +59,7 @@ void adc_scan(const chan_t *chans, size_t count, enum adc_trigger trigger) {
 	}
 }
 
-void adc_set_sampletime(chan_t chan, enum adc_sample_time time) {
+void adc_set_sampletime(int chan, enum adc_sample_time time) {
 	adc_off();
 	
 	__IO uint32_t *SMPR_addr1, *SMPR_addr2;
@@ -83,7 +83,7 @@ void *adc_dma_address() {
 	return (void *)&ADC1->DR;
 }
 
-static uint32_t buildreg(const chan_t **chanptr, size_t *count) { // I miss references
+static uint32_t buildreg(const uint8_t **chanptr, size_t *count) { // I miss references
 	uint32_t reg=0;
 	int i;
 	
