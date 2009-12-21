@@ -13,6 +13,6 @@ struct kernel_mutex {
 
 void mutex_init(struct kernel_mutex *mutex);
 void mutex_wait(struct kernel_mutex *mutex);
-void mutex_release(struct kernel_mutex *unmutex);
+void mutex_release(struct kernel_mutex *mutex);
 
 #endif
