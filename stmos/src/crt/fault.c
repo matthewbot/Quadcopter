@@ -13,11 +13,16 @@ static void printreg(const char *msg, uint32_t reg) {
 
 extern struct kernel_task *sched_curtask;
 
-__attribute__((naked)) // don't generate prologue/epilogue
-void fault_handler() {
-	uint32_t *sp;
-	asm volatile ("mov %0, %%sp" : "=r" (sp));
+struct frame {
+	uint32_t r0, r1, r2, r3;
+	uint32_t r12;
+	uint32_t lr;
+	uint32_t ip;
+	uint32_t psr;
+};
 
+__attribute__((noreturn))
+static void fault_handler_body(struct frame *frame) {
 	nvic_disable_interrupts();
 	debug_init();
 	
@@ -29,15 +34,15 @@ void fault_handler() {
 		printreg("HFSR ", SCB->HFSR);
 		printreg("BFAR ", SCB->BFAR);
 		printreg("MMFAR ", SCB->MMFAR);
-		printreg("R0 ", sp[0]);
-		printreg("R1 ", sp[1]);
-		printreg("R2 ", sp[2]);
-		printreg("R3 ", sp[3]);
-		printreg("R12 ", sp[4]);
-		printreg("LR ", sp[5]);
-		printreg("IP ", sp[6]);
-		printreg("PSR ", sp[7]);
-		printreg("SP ", (uint32_t)&sp[8]);
+		printreg("R0 ", frame->r0);
+		printreg("R1 ", frame->r1);
+		printreg("R2 ", frame->r2);
+		printreg("R3 ", frame->r3);
+		printreg("R12 ", frame->r12);
+		printreg("LR ", frame->lr);
+		printreg("IP ", frame->ip);
+		printreg("PSR ", frame->psr);
+		printreg("SP ", (uint32_t)(frame + 1));
 		printreg("sched_curtask ", (uint32_t)sched_curtask);
 		printreg("sched_curtask sp", (uint32_t)sched_curtask->sp);
 		
@@ -46,3 +51,18 @@ void fault_handler() {
 	}		
 }
 	
+__attribute__((naked))
+void fault_handler() { 
+	struct frame *frame;
+	
+	asm volatile(
+		"tst lr, 0b0100;"
+		"ite ne;"
+		"mrsne %0, psp;"
+		"moveq %0, sp;"
+		
+		: "=r" (frame)
+	);
+	
+	fault_handler_body(frame);
+}
