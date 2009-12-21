@@ -2,11 +2,6 @@
 #include <stmos/util/Task.h>
 #include <stmos/util/Mutex.h>
 
-extern "C" {
-	#include <stmos/crt/debug.h>
-}
-
-
 using namespace stmos;
 
 static Mutex mutex;
@@ -28,9 +23,6 @@ class OtherTaskCallback : public Callback {
 
 
 int main(int argc, char **argv) {
-	debug_init();
-	debug_print("main\n");
-
 	out.print("Starting other!\n");
 	
 	OtherTaskCallback othercallback;
@@ -38,7 +30,6 @@ int main(int argc, char **argv) {
 	
 	while (true) {
 		Task::sleep(1000);
-	
 		{
 		Lock lock(mutex);
 		out.print("Main got mutex\n");
