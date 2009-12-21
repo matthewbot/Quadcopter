@@ -5,14 +5,28 @@ extern "C" {
 	#include <stmos/kernel/sched.h>
 	#include <stmos/kernel/tick.h>
 	#include <stmos/kernel/irq.h>
+	#include <stmos/crt/panic.h>
 }
 
 using namespace stmos;
 static void taskfunc(void *callback);
 
+Task Task::maintask;
+
 Task::Task(const char *name, uint8_t pri, Callback &callback, size_t stacksize) 
 : ktask(task_new(name, pri, taskfunc, stacksize, &callback)) {
+	if (ktask == NULL)
+		panic("Out of memory to allocate task");
+	ktask->userdata = this;
 	sched_add_task(ktask);
+}
+
+Task::Task() : ktask(NULL) { }
+
+Task::~Task() {
+	stop();
+	task_free(ktask);
+	ktask = NULL;
 }
 
 static void taskfunc(void *callback_v) {
@@ -66,6 +80,18 @@ void Task::sleep(long msecs) {
 	do {
 		tick_sleep(curtask, waketick);
 	} while (tick_getcount() != waketick); // loop is just in case something else wakes us up (suspend then resume) before we should
+}
+
+Task *Task::getCurrentTask() {
+	struct kernel_task *ktask = sched_get_current_task();
+	Task *task = (Task *)ktask->userdata;
+	
+	if (task)
+		return task;
+		
+	maintask.ktask = ktask;
+	ktask->userdata = &maintask;
+	return &maintask;
 }
 
 void Task::wakeup() {

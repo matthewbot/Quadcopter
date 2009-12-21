@@ -11,9 +11,15 @@ namespace stmos {
 			virtual void call()=0;
 	};
 	
-	template <void (*func)()> class CallbackWrapper : public Callback {
+	class CallbackWrapper : public Callback {
 		public:
+			typedef void (*Func)();
+		
+			CallbackWrapper(Func func) : func(func) { }
 			virtual void call() { func(); }
+			
+		private:
+			Func func;
 	};
 }
 

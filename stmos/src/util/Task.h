@@ -18,12 +18,15 @@ namespace stmos {
 			void resume();
 			void stop();
 			
-			static void sleep(long msecs); // true if successful sleep, false if interrupted
-			
+			static void sleep(long msecs);
+			Task *getCurrentTask();
 		private:
+			Task();
 			struct kernel_task *ktask;
 			
 			void wakeup();
+			
+			static Task maintask;
 	};
 }
 

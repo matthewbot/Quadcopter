@@ -26,12 +26,7 @@ SECTIONS {
 		KEEP (*(EXCLUDE_FILE (*crtend.o *crtbegin.o) .ctors))
 		KEEP (*(SORT(.ctors.*)))
 		__ctors_end = .;
-		__dtors_start = .;
-		KEEP (*(EXCLUDE_FILE (*crtend.o *crtbegin.o) .dtors))
-		KEEP (*(SORT(.dtors.*)))
-		__dtors_end = .;
 		*(.init)
-		*(.fini)
 	} > flash
 	
 	.data : {
