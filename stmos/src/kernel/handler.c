@@ -4,6 +4,7 @@
 #include "irq.h"
 #include "irqcallback.h"
 #include <stmos/crt/nvic.h>
+#include <stmos/crt/fault.h>
 #include <stm32f10x.h>
 #include <stddef.h>
 
@@ -19,6 +20,7 @@ void handler_begin() {
 
 __attribute__((naked))
 void handler_svcall() {
+	nvic_set_handler(SVCall_IRQn, fault_handler);
 	sched_setup();
 	SysTick->LOAD = 72000 - 1;
 	SysTick->CTRL = SysTick_CTRL_ENABLE | SysTick_CTRL_CLKSOURCE | SysTick_CTRL_TICKINT;

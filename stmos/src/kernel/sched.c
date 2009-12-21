@@ -54,6 +54,10 @@ void sched_setup() {
 }
 
 void sched_run() {
+	if (sched_curtask->stackguard != TASK_STACKGUARD_VALUE) {
+		asm("svc 0");
+	}
+
 	// first, we need to determine the next task
 	if (nexttask != NULL) { // if the next task has been saved (because the current task no longer is linked in the list)
 		sched_curtask = nexttask; // use it as the current task
