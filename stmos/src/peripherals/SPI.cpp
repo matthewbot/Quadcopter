@@ -9,10 +9,10 @@ static SPI_TypeDef *const spis[] = { 0, SPI1, SPI2 };
 
 SPI::SPI(int num, Baud baud)
 : num(num),
-  nss_pin(spiports[num], spibasepins[num], IOPinConfig::OUTPUT, IOPinConfig::NONE, true),
-  sck_pin(spiports[num], spibasepins[num]+1, IOPinConfig::OUTPUT, IOPinConfig::NONE, true),
-  miso_pin(spiports[num], spibasepins[num]+2, IOPinConfig::INPUT, IOPinConfig::NONE, true),
-  mosi_pin(spiports[num], spibasepins[num]+3, IOPinConfig::OUTPUT, IOPinConfig::NONE, true) 
+  nss_pin(spiports[num-1], spibasepins[num-1], IOPinConfig::OUTPUT, IOPinConfig::NONE, true),
+  sck_pin(spiports[num-1], spibasepins[num-1]+1, IOPinConfig::OUTPUT, IOPinConfig::NONE, true),
+  miso_pin(spiports[num-1], spibasepins[num-1]+2, IOPinConfig::INPUT, IOPinConfig::NONE, true),
+  mosi_pin(spiports[num-1], spibasepins[num-1]+3, IOPinConfig::OUTPUT, IOPinConfig::NONE, true) 
 {
  	switch (num) {
  		case 1:
@@ -41,11 +41,12 @@ void SPI::sendReceive(const uint8_t *sendbuf, uint8_t *receivebuf, size_t len) {
 			spi->DR = *sendbuf++;
 		else
 			spi->DR = 0;
-			
-		if (receivebuf) {
-			while (!(spi->SR & SPI_SR_RXNE)) { }
-			*receivebuf++ = spi->DR;
-		}
+		
+		while (!(spi->SR & SPI_SR_RXNE)) { }
+		uint32_t got = spi->DR;
+		
+		if (receivebuf) 
+			*receivebuf++ = got;
 	}
 }
 
