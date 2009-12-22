@@ -1,4 +1,5 @@
 #include "IOPin.h"
+#include <stmos/crt/nvic.h>
 #include <stm32f10x.h>
 #include <stdint.h>
 
@@ -91,4 +92,66 @@ void IOPin::set(bool val) const {
 	GPIO_TypeDef *gpio = gpios[port];
 	gpio->BSRR = 1 << (val ? pin : pin+16);
 }
+
+static Callback *exti_callbacks[16];
+static void exti_irq_handler();
+
+void IOPin::setupEXTI(Callback &callback, Edge edge, int pri) {
+	RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
+
+	exti_callbacks[pin] = &callback;
+	
+	const uint32_t exti_bit = (1 << pin);
+	__IO uint32_t *const exticr = &AFIO->EXTICR[pin >> 2]; // divide exti by 4 to get which register it belongs in
+	const int exticr_shiftamt = 4 * (pin & 0x03); // the lower two bits determine its position in its register
+
+	EXTI->RTSR &= ~exti_bit;
+	EXTI->FTSR &= ~exti_bit;
+	*exticr &= ~(0x0F << exticr_shiftamt); // clear exticr settings
+	*exticr |= port << exticr_shiftamt;
+	if (edge & EDGE_RISING)
+		EXTI->RTSR |= exti_bit;
+	if (edge & EDGE_FALLING)
+		EXTI->FTSR |= exti_bit;
+	EXTI->IMR |= exti_bit;
+	
+	int irq;
+	if (pin <= 4)
+		irq = EXTI0_IRQn + pin;
+	else if (pin <= 9)
+		irq = EXTI9_5_IRQn;
+	else
+		irq = EXTI15_10_IRQn;
+	nvic_set_handler(irq, exti_irq_handler);
+	nvic_set_priority(irq, pri);
+	nvic_set_enabled(irq, true);
+}
+
+void IOPin::disableEXTI() {
+	const uint32_t exti_bit = (1 << pin);
+	
+	EXTI->RTSR &= ~exti_bit;
+	EXTI->FTSR &= ~exti_bit;
+}
+
+static void run_exti_callback(int irq) {
+	Callback *callback = exti_callbacks[irq];
+	if (callback)
+		callback->call();
+	
+	EXTI->PR = (1 << irq);
+}
+
+static void exti_irq_handler() {
+	int irq;
+	const uint32_t PR = EXTI->PR;
+	
+	for (irq=0; irq<=15; irq++) {
+		if (PR & (1 << irq)) {
+			run_exti_callback(irq);
+			break;
+		}
+	}
+}
+
 
