@@ -54,7 +54,7 @@ build/tests/%.out out/%.dis: build/tests/%.o $(stmos) $(ldscript)
 	$(ld) -Lout -o $@ $< $(ldflags) -Wl,-Map,$(patsubst build/tests/%.out,out/%.map,$@)
 	$(objdump) -d $@ > $(patsubst build/tests/%.out, out/%.dis, $@)
 
-build/tests/%.o: tests/%.cpp
+build/tests/%.o: tests/%.cpp $(headers)
 	$(mkdirs)
 	$(cpp) $(cppopts) -c $< -o $@
 	$(mkdeps)
