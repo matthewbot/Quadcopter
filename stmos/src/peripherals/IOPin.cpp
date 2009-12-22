@@ -88,9 +88,16 @@ bool IOPin::read() const {
 	return (gpio->IDR >> pin) & 1;
 }
 
-void IOPin::set(bool val) const {
+void IOPin::set(bool val) {
 	GPIO_TypeDef *gpio = gpios[port];
 	gpio->BSRR = 1 << (val ? pin : pin+16);
+}
+
+void IOPin::pulse() {
+	int i;
+	set(true);
+	for (i=0;i<10;i++) { asm volatile("nop"); }
+	set(false);
 }
 
 static Callback *exti_callbacks[16];
@@ -153,5 +160,3 @@ static void exti_irq_handler() {
 		}
 	}
 }
-
-

@@ -44,11 +44,15 @@ namespace stmos {
 			IOPin(Port port, Pin pin, Mode mode, PullUp pullup=NONE, bool alternatefunction=false);
 			
 			bool read() const;
+			inline operator bool() const { return read(); }
+			inline bool operator!() const { return !read(); }
 			
-			void set(bool val=true) const;
-			inline const IOPin &operator=(bool val) const { set(val); return *this; }
+			void set(bool val=true);
+			inline const IOPin &operator=(bool val) { set(val); return *this; }
+			void pulse();
 			
-			void setupEXTI(Callback &call, Edge edge, int pri=IRQ_PRIORITY_LOW);
+			void setupEXTI(Callback &call, Edge edge=EDGE_RISING, int pri=IRQ_PRIORITY_LOW);
+			void enableEXTI(Edge edge);
 			void disableEXTI();
 						
 		private:
