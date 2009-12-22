@@ -18,8 +18,10 @@ namespace stmos {
 			void resume();
 			void stop();
 			
-			static void sleep(long msecs);
-			Task *getCurrentTask();
+				
+			static unsigned long getCurrentTick();
+			static void sleep(unsigned long msecs);
+			static Task *getCurrentTask();
 		private:
 			Task();
 			struct kernel_task *ktask;

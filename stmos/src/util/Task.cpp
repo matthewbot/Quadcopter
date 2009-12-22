@@ -73,7 +73,7 @@ void Task::stop() {
 	irq_enable_switch();
 }
 
-void Task::sleep(long msecs) {
+void Task::sleep(unsigned long msecs) {
 	tick_t waketick = tick_getcount() + msecs;
 	struct kernel_task *curtask = sched_get_current_task();
 
@@ -99,3 +99,6 @@ void Task::wakeup() {
 		tick_unsleep(ktask);
 }
 
+unsigned long Task::getCurrentTick() {
+	return tick_getcount();
+}
