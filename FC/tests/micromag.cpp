@@ -5,7 +5,9 @@
 using namespace FC;
 using namespace stmos;
 
-static MicroMag mag(2, IOPin::PORT_C, 5, IOPin::PORT_B, 10);
+const IOPin::PortPin reset = { IOPin::PORT_C, 5 };
+const IOPin::PortPin drdy = { IOPin::PORT_B, 10 };
+static MicroMag mag(2, reset, drdy);
 static USART out(1, 115200);
 
 int main(int argc, char **argv) {	
