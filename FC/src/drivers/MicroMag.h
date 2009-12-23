@@ -33,13 +33,13 @@ namespace FC {
 				Result x, y, z;
 			};
 			
-			MicroMag(int spinum, stmos::IOPin::Port reset_port, int reset_pin, stmos::IOPin::Port drdy_port, int drdy_pin);
+			MicroMag(int spinum, stmos::IOPin::PortPin reset, stmos::IOPin::PortPin drdy);
 			
 			Result sample(Axis axis, Period period=PERIOD_4096);
 			
 			void startScan(Period period=PERIOD_4096);
 			void startScan(Period period, stmos::Callback &call);
-			inline Scan &getScan() { return scan_results; }
+			inline Scan getScan() { return scan_results; }
 			inline unsigned long getScanTime() { return scan_tottime; }
 			void stopScan();
 			

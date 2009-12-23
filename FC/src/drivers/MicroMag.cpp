@@ -9,10 +9,10 @@ extern "C" {
 #include <stmos/crt/debug.h> 
 }
 
-MicroMag::MicroMag(int spinum, IOPin::Port reset_port, int reset_pinnum, IOPin::Port drdy_port, int drdy_pinnum)
+MicroMag::MicroMag(int spinum, stmos::IOPin::PortPin reset, stmos::IOPin::PortPin drdy)
 : spi(spinum, SPI::BAUDDIV_128),
-  reset_pin(reset_port, reset_pinnum, IOPin::OUTPUT),
-  drdy_pin(drdy_port, drdy_pinnum, IOPin::INPUT),
+  reset_pin(reset, IOPin::OUTPUT),
+  drdy_pin(drdy, IOPin::INPUT),
   scan_tottime(0),
   scan_axis(_AXIS_NONE) {
   
