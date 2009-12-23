@@ -44,10 +44,6 @@ VexRC::Channels VexRC::getChannels() const {
 	return ret;
 }
 
-extern "C" {
-#include <stmos/crt/debug.h>
-}
-
 void VexRC::call() {
 	uint16_t timerval = capturechan.getCCR();
 	prevtime = Task::getCurrentTick();
