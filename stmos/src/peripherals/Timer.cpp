@@ -66,6 +66,12 @@ void Timer::setOverflow(uint16_t overflow) {
 	tim->ARR = overflow;	
 }
 
+uint16_t Timer::getOverflow() const {
+	TIM_TypeDef *tim = timers[num];
+	
+	return tim->ARR;
+}
+
 void Timer::start() {
 	TIM_TypeDef *tim = timers[num];
 	
@@ -173,6 +179,16 @@ void TimerChannel::setEnabled(bool enabled) {
 		tim->CCER &= ~mask;
 }
 
+void TimerChannel::setIRQEnabled(bool enabled) {
+	TIM_TypeDef *tim = timers[timernum];
+	
+	int mask = 1 << num;
+	if (enabled)
+		tim->DIER |= mask;
+	else
+		tim->DIER &= ~mask;
+}
+
 void TimerChannel::setPolarity(bool pol) {
 	TIM_TypeDef *tim = timers[timernum];
 
@@ -262,6 +278,10 @@ void OutputCompareTimerChannel::setMode(Mode mode) {
 	}		
 }
 
+extern "C" {
+#include <stmos/crt/debug.h>
+}
+
 static void tim_handler(int num) {
 	TIM_TypeDef *tim = timers[num];
 	uint16_t sr = tim->SR;
@@ -273,17 +293,17 @@ static void tim_handler(int num) {
 	}
 		
 	if (sr & TIM_SR_CC2IF) {
-		callback = callbacks[num-2][0];
+		callback = callbacks[num-1][1];
 		tim->SR &= ~TIM_SR_CC2IF;
 	}
 	
 	if (sr & TIM_SR_CC3IF) {
-		callback = callbacks[num-3][0];
+		callback = callbacks[num-1][2];
 		tim->SR &= ~TIM_SR_CC3IF;
 	}
 	
 	if (sr & TIM_SR_CC4IF) {
-		callback = callbacks[num-4][0];
+		callback = callbacks[num-1][3];
 		tim->SR &= ~TIM_SR_CC4IF;
 	}
 	

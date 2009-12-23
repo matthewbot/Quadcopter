@@ -16,9 +16,13 @@ namespace stmos {
 			
 			Timer(int num, int pri=IRQ_PRIORITY_LOW);
 			
+			inline int getNum() const { return num; }
+			
 			void setTickTime(unsigned int cycles);
 			void setDirection(Direction dir);
 			void setOverflow(uint16_t overflow);
+			
+			uint16_t getOverflow() const;
 			
 			void start();
 			void stop();
@@ -40,6 +44,10 @@ namespace stmos {
 			void setEnabled(bool enabled);
 			inline void enable() { setEnabled(true); }
 			inline void disable() { setEnabled(false); }
+			
+			void setIRQEnabled(bool enabled);
+			inline void disableIRQ() { setIRQEnabled(true); }
+			inline void enableIRQ() { setIRQEnabled(false); }
 			
 		protected:
 			void setPolarity(bool pol);
