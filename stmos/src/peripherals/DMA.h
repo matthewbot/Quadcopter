@@ -33,6 +33,7 @@ namespace stmos {
 			void resume();
 			
 			size_t getRemaining() const;
+			inline bool done() const { return getRemaining() == 0; }
 			
 		private:
 			int num;
