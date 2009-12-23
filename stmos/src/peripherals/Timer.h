@@ -82,7 +82,7 @@ namespace stmos {
 				EDGE_FALLING
 			};
 		
-			InputCaptureTimerChannel(int numternum, int num);
+			InputCaptureTimerChannel(int timernum, int num);
 			
 			void setFilter(Filter filter);
 			inline void setEdge(Edge edge) { setPolarity((bool)edge); }

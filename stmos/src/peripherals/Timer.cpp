@@ -24,6 +24,7 @@ Timer::Timer(int num, int pri) : num(num) {
 			
 		case 2:
 			RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+			RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
 			AFIO->MAPR |= AFIO_MAPR_TIM2_REMAP_PARTIALREMAP2;
 			interrupt = TIM2_IRQn;
 			handler = tim_handler_wrapper<2>;
@@ -31,6 +32,7 @@ Timer::Timer(int num, int pri) : num(num) {
 			
 		case 3:
 			RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
+			RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
 			AFIO->MAPR |= AFIO_MAPR_TIM3_REMAP_FULLREMAP;
 			interrupt = TIM3_IRQn;
 			handler = tim_handler_wrapper<3>;
@@ -93,7 +95,7 @@ uint16_t Timer::read() {
 static const IOPin::PortPin channelpins[4][4] = {
 	{ {IOPin::PORT_A, 8}, {IOPin::PORT_A, 9}, {IOPin::PORT_A, 10}, {IOPin::PORT_A, 11} },
 	{ {IOPin::PORT_A, 0}, {IOPin::PORT_A, 1}, {IOPin::PORT_B, 10}, {IOPin::PORT_B, 11} }, // also remap
-	{ {IOPin::PORT_C, 6}, {IOPin::PORT_A, 7}, {IOPin::PORT_C, 8}, {IOPin::PORT_C, 9} }, // actually the remap position. At the moment tim3 is always remapped
+	{ {IOPin::PORT_C, 6}, {IOPin::PORT_C, 7}, {IOPin::PORT_C, 8}, {IOPin::PORT_C, 9} }, // actually the remap position. At the moment tim3 is always remapped
 	{ {IOPin::PORT_B, 5}, {IOPin::PORT_B, 6}, {IOPin::PORT_B, 7}, {IOPin::PORT_B, 8} }
 };
 
