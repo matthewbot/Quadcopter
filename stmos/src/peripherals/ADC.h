@@ -1,6 +1,7 @@
 #ifndef STMOS_PERIPHERALS_ADC_H
 #define STMOS_PERIPHERALS_ADC_H
 
+#include <stmos/peripherals/IOPin.h>
 #include <stmos/util/NonCopyable.h>
 #include <cstddef>
 #include <stdint.h>
@@ -43,6 +44,8 @@ namespace stmos {
 			volatile void *getScanDMAAddress() const;
 			int getScanDMAChannel() const;
 			
+			
+			static IOPin::PortPin getChannelPortPin(Channel chan);
 		protected:
 			int num;
 	};

@@ -19,12 +19,6 @@ AnalogSensors::Calibrations calibrations = { {
 	
 AnalogSensors analog(1, chans, calibrations);
 USART out(1, 115200);
-IOPin roll(IOPin::PORT_A, 6, IOPin::INPUT_ANALOG);
-IOPin pitch(IOPin::PORT_A, 5, IOPin::INPUT_ANALOG);
-IOPin yaw(IOPin::PORT_B, 0, IOPin::INPUT_ANALOG);
-IOPin x_acc(IOPin::PORT_A, 7, IOPin::INPUT_ANALOG);
-IOPin y_acc(IOPin::PORT_B, 1, IOPin::INPUT_ANALOG);
-IOPin z_acc(IOPin::PORT_C, 2, IOPin::INPUT_ANALOG);
 
 int main(int argc, char **argv) {	
 	out.print("Calibrating gyros\n");

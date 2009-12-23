@@ -18,7 +18,6 @@ IOPin z_acc(IOPin::PORT_C, 1, IOPin::INPUT_ANALOG);
 int main(int argc, char **argv) {	
 	out.print("Hello World!\n");
 	
-	
 	while (true) {
 		Task::sleep(500);
 		

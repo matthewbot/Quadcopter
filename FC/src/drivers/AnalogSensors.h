@@ -59,6 +59,8 @@ namespace FC {
 			const Calibrations &calibrations;
 			stmos::ADC adc;
 			stmos::ADCSuperSampler sampler;
+			
+			stmos::IOPinConfig roll_pin, pitch_pin, yaw_pin, accel_x_pin, accel_y_pin, accel_z_pin;
 	};
 }
 

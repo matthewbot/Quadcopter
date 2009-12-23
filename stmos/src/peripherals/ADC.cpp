@@ -160,3 +160,19 @@ int ADC::getScanDMAChannel() const {
 	return 1;
 }
 
+IOPin::PortPin ADC::getChannelPortPin(ADC::Channel chan) {
+	IOPin::PortPin ret;
+	if (chan <= 7) {
+		ret.port = IOPin::PORT_A;
+		ret.pin = chan;
+	} else if (chan <= 9) {
+		ret.port = IOPin::PORT_B;
+		ret.pin = chan - 8;
+	} else {
+		ret.port = IOPin::PORT_C;
+		ret.pin = chan - 10;
+	}
+	
+	return ret;
+}
+

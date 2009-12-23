@@ -7,7 +7,13 @@ using namespace stmos;
 AnalogSensors::AnalogSensors(int adcnum, const Channels &channels, const Calibrations &calibrations)
 : calibrations(calibrations),
   adc(adcnum),
-  sampler(adc, channels.array, 6, 10) { }
+  sampler(adc, channels.array, 6, 10),
+  roll_pin(ADC::getChannelPortPin(channels.roll_gyro), IOPin::INPUT_ANALOG),
+  pitch_pin(ADC::getChannelPortPin(channels.pitch_gyro), IOPin::INPUT_ANALOG),
+  yaw_pin(ADC::getChannelPortPin(channels.yaw_gyro), IOPin::INPUT_ANALOG),
+  accel_x_pin(ADC::getChannelPortPin(channels.x_accel), IOPin::INPUT_ANALOG),
+  accel_y_pin(ADC::getChannelPortPin(channels.y_accel), IOPin::INPUT_ANALOG),
+  accel_z_pin(ADC::getChannelPortPin(channels.z_accel), IOPin::INPUT_ANALOG) { }
   
 AnalogSensors::Readings AnalogSensors::getReadings() {
 	ADC::Sample samples[6];

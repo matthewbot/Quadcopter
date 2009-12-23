@@ -16,6 +16,11 @@ namespace stmos {
 			};
 	
 			typedef uint8_t Pin;
+			
+			struct PortPin {
+				Port port;
+				Pin pin;
+			};
 		
 			enum Mode {
 				INPUT,
@@ -30,7 +35,14 @@ namespace stmos {
 				PULLDOWN
 			};
 			
-			IOPinConfig(Port port, Pin pin, Mode mode, PullUp pullup=NONE, bool alternatefunction=false);
+			inline IOPinConfig(Port port, Pin pin, Mode mode, PullUp pullup=NONE, bool alternatefunction=false) {
+				doSetup(port, pin, mode, pullup, alternatefunction);
+			}
+			inline IOPinConfig(const PortPin &portpin, Mode mode, PullUp pullup=NONE, bool alternatefunction=false) {
+				doSetup(portpin.port, portpin.pin, mode, pullup, alternatefunction);
+			}
+			
+			void doSetup(Port port, Pin pin, Mode mode, PullUp pullup, bool alternatefunction);
 	};
 
 	class IOPin : public IOPinConfig {
@@ -42,6 +54,7 @@ namespace stmos {
 			};
 		
 			IOPin(Port port, Pin pin, Mode mode, PullUp pullup=NONE, bool alternatefunction=false);
+			IOPin(const PortPin &portpin, Mode mode, PullUp pullup=NONE, bool alternatefunction=false);
 			
 			bool read() const;
 			inline operator bool() const { return read(); }
