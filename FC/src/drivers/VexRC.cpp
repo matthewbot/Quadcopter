@@ -94,9 +94,9 @@ void VexRC::call() {
 
 VexRC::DigitalChannel VexRC::captureToDigital(uint8_t val) {
 	if (val < 25)
-		return DigitalChannel::DOWN;
-	else if (val > 75)
 		return DigitalChannel::UP;
+	else if (val > 75)
+		return DigitalChannel::DOWN;
 	else
 		return DigitalChannel::NONE;
 }

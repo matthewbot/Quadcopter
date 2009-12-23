@@ -35,12 +35,9 @@ USART out(1, 115200);
 int main(int argc, char **argv) {	
 	out.print("Starting roll kalman test\n");
 	
-	long lastoutput = Task::getCurrentTick();
+
 	while (true) {
-		long sleepamt = 5 - (Task::getCurrentTick() - lastoutput);
-		if (sleepamt > 0)
-			Task::sleep(sleepamt);
-		lastoutput = Task::getCurrentTick();
+		long start = Task::getCurrentTick();
 		
 		AnalogSensors::Readings readings = analog.getReadings();
 		float accelangle = atan2f(readings.z_accel, readings.x_accel)+M_PI/2;
@@ -48,6 +45,10 @@ int main(int argc, char **argv) {
 		kalman.step(measurement);
 		
 		out.printf("%f %f\n", accelangle, kalman.getState().angle);
+		
+		long sleepamt = 5 - (Task::getCurrentTick() - start);
+		if (sleepamt > 0)
+			Task::sleep(sleepamt);
 	}
 }
 

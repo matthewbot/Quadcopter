@@ -9,13 +9,13 @@ using namespace stmos;
 
 const AnalogSensors::Channels chans = { {6, 5, 8, 7, 9, 11} };
 AnalogSensors::Calibrations calibrations = { {
-	{ { 0, 1103.288 }, // roll
-	  { 0, -1103.288 }, // pitch
-	  { 0, -2000 } }, // yaw
-	{ { 32000, -6700 }, // x-axis
-	  { 32000, -6700 }, // y-axis
-	  { 32000, 6700 } } // z-axis
-} };
+	{ { 0, 2206 }, // roll
+	  { 0, -2206 }, // pitch
+	  { 0, -4000 } }, // yaw
+	{ { 32000, -6750 }, // x-axis
+	  { 32000, -6750 }, // y-axis
+	  { 32000, 6750 } } // z-axis
+} };	
 	
 AnalogSensors analog(1, chans, calibrations);
 USART out(1, 115200);
