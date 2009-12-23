@@ -156,3 +156,7 @@ volatile void *ADC::getScanDMAAddress() const {
 	return &adc->DR;
 }
 
+int ADC::getScanDMAChannel() const {
+	return 1;
+}
+
