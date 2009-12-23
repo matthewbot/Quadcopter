@@ -83,9 +83,6 @@ void VexRC::call() {
 			channels.analogs[i] = (int8_t)capturebuf[i] - (int8_t)centers[i];
 		}
 		
-		channels.analogs[1] = -channels.analogs[1];
-		channels.analogs[3] = -channels.analogs[3];
-		
 		channels.left = captureToDigital(capturebuf[4]);
 		channels.right = captureToDigital(capturebuf[5]);
 	} else
