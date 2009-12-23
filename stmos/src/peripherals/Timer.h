@@ -46,8 +46,8 @@ namespace stmos {
 			inline void disable() { setEnabled(false); }
 			
 			void setIRQEnabled(bool enabled);
-			inline void disableIRQ() { setIRQEnabled(true); }
-			inline void enableIRQ() { setIRQEnabled(false); }
+			inline void enableIRQ() { setIRQEnabled(true); }
+			inline void disableIRQ() { setIRQEnabled(false); }
 			
 		protected:
 			void setPolarity(bool pol);

@@ -275,7 +275,7 @@ void OutputCompareTimerChannel::setMode(Mode mode) {
 			tim->CCMR2 &= ~TIM_CCMR2_OC4M;
 			tim->CCMR2 |= mode << 12;
 			break;	
-	}		
+	}
 }
 
 static void tim_handler(int num) {
