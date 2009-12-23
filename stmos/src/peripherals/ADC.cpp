@@ -71,7 +71,7 @@ ADC::Sample ADC::sample() {
 	stopScan();
 	injectedsample(adc);
 	
-	return adc->JDR1;
+	return adc->JDR1 << 1;
 }
 
 void ADC::sampleMultiple(ADC::Sample *samples, size_t samplecount) {
@@ -83,13 +83,13 @@ void ADC::sampleMultiple(ADC::Sample *samples, size_t samplecount) {
 	samples += samplecount;
 	switch (samplecount) {
 		case 4:
-			*--samples = adc->JDR4;
+			*--samples = adc->JDR4 << 1;
 		case 3:
-			*--samples = adc->JDR3;
+			*--samples = adc->JDR3 << 1;
 		case 2:
-			*--samples = adc->JDR2;
+			*--samples = adc->JDR2 << 1;
 		case 1:
-			*--samples = adc->JDR1;
+			*--samples = adc->JDR1 << 1;
 	}	
 }
 
