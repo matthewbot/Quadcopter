@@ -3,8 +3,8 @@
 
 using namespace stmos;
 
-ADCSuperSampler::ADCSuperSampler(int adcnum, const ADC::Channel *chans, size_t chancount, int samplecount) 
-: adc(adcnum),
+ADCSuperSampler::ADCSuperSampler(ADC &adc, const ADC::Channel *chans, size_t chancount, int samplecount) 
+: adc(adc),
   dma(adc.getScanDMAChannel()),
   chancount(chancount),
   samplecount(samplecount) {

@@ -9,13 +9,13 @@
 namespace stmos {
 	class ADCSuperSampler : NonCopyable {
 		public:
-			ADCSuperSampler(int adcnum, const ADC::Channel *chans, size_t chancount, int samples);
+			ADCSuperSampler(ADC &adc, const ADC::Channel *chans, size_t chancount, int samples);
 			~ADCSuperSampler();
 			
 			void superSample(ADC::Sample *samples);
 		
 		private:
-			ADC adc;
+			ADC &adc;
 			DMA dma;
 			
 			size_t chancount;
