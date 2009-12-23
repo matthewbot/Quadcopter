@@ -84,10 +84,7 @@ uint16_t Timer::read() {
 	return tim->CNT;
 }
 
-struct {
-	IOPin::Port port;
-	IOPin::Pin pin;
-} static const channelpins[4][4] = {
+static const IOPin::PortPin channelpins[4][4] = {
 	{ {IOPin::PORT_A, 8}, {IOPin::PORT_A, 9}, {IOPin::PORT_A, 10}, {IOPin::PORT_A, 11} },
 	{ {IOPin::PORT_A, 0}, {IOPin::PORT_A, 1}, {IOPin::PORT_B, 10}, {IOPin::PORT_B, 11} }, // also remap
 	{ {IOPin::PORT_C, 6}, {IOPin::PORT_A, 7}, {IOPin::PORT_C, 8}, {IOPin::PORT_C, 9} }, // actually the remap position. At the moment tim3 is always remapped
@@ -97,7 +94,7 @@ struct {
 static Callback *callbacks[4][4];
 
 TimerChannel::TimerChannel(int timernum, int num, IOPin::Mode mode)
-: timernum(timernum), num(num), pin(channelpins[timernum-1][num-1].port, channelpins[timernum-1][num-1].pin, mode, IOPin::NONE, true) {
+: timernum(timernum), num(num), pin(channelpins[timernum-1][num-1], mode, IOPin::NONE, true) {
 	TIM_TypeDef *tim = timers[timernum];
 	
 	tim->CCER &= ~(0x000F << (num-1)*4); // clear CCER bits
