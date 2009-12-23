@@ -11,6 +11,13 @@ extern "C" struct kernel_task;
 namespace stmos {
 	class Task : public NonCopyable {
 		public:
+			static const uint8_t PRIORITY_IDLE = 0xFF;
+			static const uint8_t PRIORITY_LOWEST = 0xFE; // FF reserved for idle task
+			static const uint8_t PRIORITY_LOW = 0xC0;
+			static const uint8_t PRIORITY_MID = 0x80;
+			static const uint8_t PRIORITY_HIGH = 0x40;
+			static const uint8_t PRIORITY_HIGHEST = 0x00;
+		
 			Task(const char *name, uint8_t pri, Callback &callback, size_t stacksize=1024);
 			~Task();
 			

@@ -38,10 +38,12 @@ void Task::suspend() {
 	if (!ktask)
 		return;
 		
+	irq_disable_switch();
 	wakeup();
 	
 	if (ktask->state == TASK_STATE_SCHEDULED)
 		sched_remove_task(ktask);
+	irq_enable_switch();
 }
 
 void Task::resume() {

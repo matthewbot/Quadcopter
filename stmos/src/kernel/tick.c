@@ -35,6 +35,7 @@ void tick_unsleep(struct kernel_task *task) {
 	irq_disable_switch();
 	
 	task_list_remove(task);
+	task->state = TASK_STATE_NONE;
 	
 	irq_enable_switch();
 }
