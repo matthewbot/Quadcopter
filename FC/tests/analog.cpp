@@ -12,9 +12,9 @@ AnalogSensors::Calibrations calibrations = { {
 	{ { 0, 1103.288 }, // roll
 	  { 0, -1103.288 }, // pitch
 	  { 0, -2000 } }, // yaw
-	{ { 32000, 6750 }, // x-axis
-	  { 32000, 6750 }, // y-axis
-	  { 32000, 6750 } } // z-axis
+	{ { 32000, -6700 }, // x-axis
+	  { 32000, -6700 }, // y-axis
+	  { 32000, 6700 } } // z-axis
 } };
 	
 AnalogSensors analog(1, chans, calibrations);
