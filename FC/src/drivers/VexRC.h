@@ -28,16 +28,12 @@ namespace FC {
 		
 			VexRC(const stmos::Timer &tim, int chan);
 			
-			void calibrateCenters();
-			
 			bool getSynced() const;
 			Channels getChannels() const;
 			
 		private:
 			const stmos::Timer &tim;
 			mutable stmos::InputCaptureTimerChannel capturechan;
-			
-			uint8_t centers[4];
 			
 			volatile bool synced;
 			Channels channels;

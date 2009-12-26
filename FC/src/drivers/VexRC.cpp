@@ -12,22 +12,10 @@ VexRC::VexRC(const stmos::Timer &tim, int channum)
   currentchan(0),
   prevtimerval(0),
   prevtime(Task::getCurrentTick()) {
-  	int i;
-  	for (i=0; i<4; i++) {
-  		centers[i] = 50;
-  	}
-  	
   	memset(&channels, '\0', sizeof(channels));
   	
   	capturechan.setCallback(*this);
   	capturechan.enable();
-}
-
-void VexRC::calibrateCenters() {
-	int i;
-	for (i=0; i<4; i++) {
-		centers[i] = capturebuf[i];
-	}
 }
 
 bool VexRC::getSynced() const {
@@ -80,7 +68,7 @@ void VexRC::call() {
 		
 		int i;
 		for (i=0; i<4; i++) {
-			channels.analogs[i] = (int8_t)capturebuf[i] - (int8_t)centers[i];
+			channels.analogs[i] = (int8_t)capturebuf[i] - 50;
 		}
 		
 		channels.left = captureToDigital(capturebuf[4]);
