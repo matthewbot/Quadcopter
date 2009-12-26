@@ -81,7 +81,7 @@ void Task::sleep(unsigned long msecs) {
 
 	do {
 		tick_sleep(curtask, waketick);
-	} while (tick_getcount() != waketick); // loop is just in case something else wakes us up (suspend then resume) before we should
+	} while (tick_getcount() < waketick); // loop is just in case something else wakes us up (suspend then resume) before we should
 }
 
 Task *Task::getCurrentTask() {
