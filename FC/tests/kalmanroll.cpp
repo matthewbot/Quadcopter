@@ -28,14 +28,13 @@ AnalogSensors::Calibrations calibrations = { {
 	  { 32000, -6750 }, // y-axis
 	  { 32000, 6750 } } // z-axis
 } };	
-
-AnalogSensors analog(1, chans, calibrations);
+ADC adc(1);
+AnalogSensors analog(adc, chans, calibrations);
 USART out(1, 115200);
 
 int main(int argc, char **argv) {	
 	out.print("Starting roll kalman test\n");
 	
-
 	while (true) {
 		long start = Task::getCurrentTick();
 		

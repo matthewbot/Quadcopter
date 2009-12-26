@@ -4,10 +4,12 @@
 using namespace FC;
 using namespace stmos;
 
-IMU::IMU(AnalogSensors &sensors, const Config &config)
+IMU::IMU(AnalogSensors &sensors, TCCompass &compass, const Config &config)
 : sensors(sensors),
+  compass(compass),
   rollkalman(config.roll_pitch_config),
   pitchkalman(config.roll_pitch_config),
+  yawkalman(config.yaw_config),
   updatetask("imu", Task::PRIORITY_HIGH, *this, 2048),
   cyclecount(0) { }
   
@@ -25,37 +27,36 @@ bool IMU::ready() {
 
 IMU::State IMU::getState() {
 	stop();
-	State ret = { rollkalman.getState().angle, pitchkalman.getState().angle };
+	State ret = { rollkalman.getState().angle, pitchkalman.getState().angle, yawkalman.getState().angle };
 	start();
 	
 	return ret;	
 }
 
 extern "C" {
-#include <stmos/crt/debug.h>
+	#include <stmos/crt/debug.h>
 }
 
 void IMU::call() {
 	while (true) {
 		unsigned long starttime = Task::getCurrentTick();
 		AnalogSensors::Readings readings = sensors.getReadings();
+		float compassheading = compass.readHeading();
 	
-		{
-			Kalman::Measurement roll = {{atan2f(readings.z_accel, readings.x_accel)+(float)M_PI/2, readings.roll_gyro}};
-			rollkalman.step(roll);
-		}
+		Kalman::Measurement roll = {{atan2f(readings.z_accel, readings.x_accel)+(float)M_PI/2, readings.roll_gyro}};
+		rollkalman.step(roll);
 	
-		{
-			Kalman::Measurement pitch = {{atan2f(readings.z_accel, readings.y_accel)+(float)M_PI/2, readings.pitch_gyro}};
-			pitchkalman.step(pitch);
-		}
+		Kalman::Measurement pitch = {{atan2f(readings.z_accel, readings.y_accel)+(float)M_PI/2, readings.pitch_gyro}};
+		pitchkalman.step(pitch);
+		
+		Kalman::Measurement yaw = {{ compassheading, readings.yaw_gyro }};
+		yawkalman.step(yaw);
 		
 		int time = 5 - (Task::getCurrentTick() - starttime);
-		if (time > 0) {
+		if (time > 0)
 			Task::sleep(time);
-		} else {
+		else
 			debug_print("x");
-		}
 	
 		cyclecount++;
 	}

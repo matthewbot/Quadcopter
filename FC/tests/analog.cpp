@@ -16,14 +16,13 @@ AnalogSensors::Calibrations calibrations = { {
 	  { 32000, -6750 }, // y-axis
 	  { 32000, 6750 } } // z-axis
 } };	
-	
-AnalogSensors analog(1, chans, calibrations);
+ADC adc(1);
+AnalogSensors analog(adc, chans, calibrations);
 USART out(1, 115200);
 
 int main(int argc, char **argv) {	
 	out.print("Calibrating gyros\n");
 	
-	ADC &adc = analog.getADC();
 	calibrations.gyro.roll.center = adc.sampleChannel(chans.roll_gyro);
 	calibrations.gyro.pitch.center = adc.sampleChannel(chans.pitch_gyro);
 	calibrations.gyro.yaw.center = adc.sampleChannel(chans.yaw_gyro);

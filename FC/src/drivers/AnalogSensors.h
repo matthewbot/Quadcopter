@@ -50,14 +50,13 @@ namespace FC {
 				float array[6];
 			};
 		
-			AnalogSensors(int adcnum, const Channels &channels, const Calibrations &calibrations);
+			AnalogSensors(stmos::ADC &adc, const Channels &channels, const Calibrations &calibrations);
 	
 			Readings getReadings();
 			
-			inline stmos::ADC &getADC() { return adc; }
 		private:
 			const Calibrations &calibrations;
-			stmos::ADC adc;
+			stmos::ADC &adc;
 			stmos::ADCSuperSampler sampler;
 			
 			stmos::IOPinConfig roll_pin, pitch_pin, yaw_pin, accel_x_pin, accel_y_pin, accel_z_pin;
