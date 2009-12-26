@@ -7,7 +7,7 @@
 namespace FC {
 	class Motors {
 		public:
-			Motors(int timernum);
+			Motors(stmos::Timer &tim);
 			
 			void arm();
 			
@@ -15,7 +15,6 @@ namespace FC {
 			void off();
 			
 		private:
-			stmos::Timer tim;
 			ESC north, east, south, west;
 	};
 

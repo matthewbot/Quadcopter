@@ -1,12 +1,12 @@
 #include <FC/drivers/VexRC.h>
-#include <stmos/peripherals/Timer.h>
+#include <FC/util/PPMTimer.h>
 #include <stmos/peripherals/USART.h>
 #include <stmos/util/Task.h>
 
 using namespace FC;
 using namespace stmos;
 
-Timer tim(4);
+PPMTimer tim;
 VexRC vex(tim, 4);
 static USART out(1, 115200);
 
@@ -22,10 +22,6 @@ static const char *digitalToString(VexRC::DigitalChannel chan) {
 }
 
 int main(int argc, char **argv) {	
-	tim.setTickTime(720);
-	tim.setOverflow(4000);
-	tim.start();
-
 	while (true) {
 		Task::sleep(500);
 		

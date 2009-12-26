@@ -1,6 +1,7 @@
 #include <FC/control/Motors.h>
 #include <FC/drivers/VexRC.h>
-#include <stmos/peripherals/Timer.h>
+#include <FC/util/ESCTimer.h>
+#include <FC/util/PPMTimer.h>
 #include <stmos/peripherals/USART.h>
 #include <stmos/peripherals/IOPin.h>
 #include <stmos/util/Task.h>
@@ -11,10 +12,11 @@ using namespace FC;
 using namespace stmos;
 
 USART out(1, 115200);
-Timer tim(4);
-VexRC vex(tim, 4);
+PPMTimer ppmtim;
+VexRC vex(ppmtim, 4);
 
-Motors motors(3);
+ESCTimer esctim;
+Motors motors(esctim);
 
 IOPin buzzer(IOPin::PORT_C, 12, IOPin::OUTPUT_OPENDRAIN);
 
@@ -22,10 +24,6 @@ int main(int argc, char **argv) {
 	buzzer = false;
 	Task::sleep(500);
 	buzzer = true;
-
-	tim.setTickTime(720);
-	tim.setOverflow(4000);
-	tim.start();
 
 	while (!vex.getSynced()) { }
 

@@ -2,16 +2,11 @@
 
 using namespace FC;
 
-Motors::Motors(int timernum) 
-: tim(timernum),
-  north(tim, 1),
+Motors::Motors(stmos::Timer &tim) 
+: north(tim, 1),
   east(tim, 2),
   south(tim, 3),
-  west(tim, 4) {
-	tim.setTickTime(720);
-	tim.setOverflow(1000);
-	tim.start();  
-}
+  west(tim, 4) { }
   
 void Motors::arm() {
 	north.arm();
