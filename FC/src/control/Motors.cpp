@@ -13,40 +13,24 @@ Motors::Motors(int timernum)
 	tim.start();  
 }
   
-void Motors::arm(Motor mot) {
-	getESC(mot).arm();
-}
-  
-void Motors::armAll() {
+void Motors::arm() {
 	north.arm();
 	east.arm();
 	south.arm();
 	west.arm();
 }
 
-void Motors::setThrottle(Motor mot, float throttle) {
-	getESC(mot).setThrottle(throttle);
+void Motors::setThrottle(float throttle, float rollcorrection, float pitchcorrection, float yawcorrection) {
+	north.setThrottle(throttle + pitchcorrection - yawcorrection);
+	south.setThrottle(throttle - pitchcorrection - yawcorrection);
+	east.setThrottle(throttle + rollcorrection + yawcorrection);
+	west.setThrottle(throttle - rollcorrection + yawcorrection);
 }
 
-void Motors::setThrottleAll(float throttle) {
-	north.setThrottle(throttle);
-	east.setThrottle(throttle);
-	south.setThrottle(throttle);
-	west.setThrottle(throttle);
+void Motors::off() {
+	north.off();
+	south.off();
+	east.off();
+	west.off();
 }
 
-ESC &Motors::getESC(Motor mot) {
-	switch (mot) {
-		case NORTH:
-			return north;
-			
-		case EAST:
-			return east;
-			
-		case SOUTH:
-			return south;
-			
-		case WEST:
-			return west;
-	}
-}

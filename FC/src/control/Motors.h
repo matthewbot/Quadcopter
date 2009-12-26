@@ -7,26 +7,16 @@
 namespace FC {
 	class Motors {
 		public:
-			enum Motor {
-				NORTH,
-				EAST,
-				SOUTH,
-				WEST
-			};
-		
 			Motors(int timernum);
 			
-			void arm(Motor mot);
-			void armAll();
+			void arm();
 			
-			void setThrottle(Motor mot, float throttle);
-			void setThrottleAll(float throttle);
+			void setThrottle(float throttle, float rollcorrection, float pitchcorrection, float yawcorrection);
+			void off();
 			
 		private:
 			stmos::Timer tim;
 			ESC north, east, south, west;
-			
-			ESC &getESC(Motor mot);
 	};
 
 };
