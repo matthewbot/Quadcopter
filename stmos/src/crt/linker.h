@@ -24,4 +24,6 @@ extern cdtor __ctors_end;
 extern cdtor __dtors_start;
 extern cdtor __dtors_end;
 
+void __run_ctors();
+
 #endif

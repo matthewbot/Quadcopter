@@ -15,7 +15,6 @@ extern void kernel_start();
 static void init_clock();
 static void copy(uint32_t *start, uint32_t *end, const uint32_t *load);
 static void fill(uint32_t *start, const uint32_t *end, uint32_t val);
-static void run_ctors();
 
 // flash vector, placed at the top of the binary (flash)
 
@@ -43,8 +42,6 @@ void reset() {
 	copy(&__data_start, &__data_end, &__data_load);
 	fill(&__bss_start, &__bss_end, 0);
 	fill(&__heap_start, &__heap_end, 0xDEADBEEF);
-	
-	run_ctors();
 	
 	kernel_start();
 }
@@ -74,12 +71,5 @@ static void copy(uint32_t *start, uint32_t *end, const uint32_t *load) {
 static void fill(uint32_t *start, const uint32_t *end, uint32_t val) {
 	while (start != end)
 		*start++ = val;
-}
-
-static void run_ctors() {
-	cdtor *ptr;
-	for (ptr = &__ctors_start; ptr != &__ctors_end; ptr++) {
-		(*ptr)();
-	}
 }
 
