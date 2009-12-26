@@ -49,16 +49,3 @@ void mutex_release(struct kernel_mutex *mutex) {
 	irq_enable_switch();
 }
 
-static struct kernel_mutex malloc_mutex;
-
-
-void __malloc_lock() {
-	if (sched_get_current_task() != NULL)
-		mutex_wait(&malloc_mutex);
-}
-
-void __malloc_unlock() {
-	if (sched_get_current_task() != NULL)
-		mutex_release(&malloc_mutex);
-}
-
