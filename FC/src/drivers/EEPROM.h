@@ -12,13 +12,15 @@ namespace FC {
 			EEPROM(stmos::I2C &i2c, stmos::I2C::Address i2caddr);
 			
 			typedef uint16_t Address;
-			static const int pagelength = 128;
-			static inline Address pageAddress(int page) { return (Address)(page * pagelength); }
+			static const int PAGELENGTH = 128;
+			static inline Address pageAddress(int page) { return (Address)(page * PAGELENGTH); }
 			static inline Address byteAddress(int page, int byte) { return pageAddress(page) + byte; }
 			
 			void read(Address addr, uint8_t *data, size_t len);
 			void write(Address addr, const uint8_t *data, size_t len);
 			
+			bool ready() const;
+			void waitReady() const;
 		private:
 			stmos::I2C &i2c;
 			stmos::I2C::Address i2caddr;
