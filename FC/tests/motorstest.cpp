@@ -35,10 +35,10 @@ int main(int argc, char **argv) {
 		if (vex.getSynced()) {
 			VexRC::Channels chans = vex.getChannels();
 
-			float yawcorrection = (chans.analogs[0] / 50.0) / 10;		
+			float yawcorrection = (chans.analogs[0] / 50.0) / 6;		
 			float throttle = chans.analogs[1] / 50.0;
-			float pitchcorrection = (chans.analogs[2] / 50.0) / 10;
-			float rollcorrection = (chans.analogs[3] / 50.0) / 10;
+			float pitchcorrection = (chans.analogs[2] / 50.0) / 6;
+			float rollcorrection = (-chans.analogs[3] / 50.0) / 6;
 		
 			out.printf("%f\n", throttle);
 			
@@ -49,4 +49,3 @@ int main(int argc, char **argv) {
 		}
 	}
 }
-
