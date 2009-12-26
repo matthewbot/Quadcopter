@@ -8,7 +8,7 @@
 namespace stmos {
 	class IOPinConfig : NonCopyable {
 		public:
-			enum Port {
+			enum Port : uint8_t {
 				PORT_A,
 				PORT_B,
 				PORT_C,
@@ -20,7 +20,7 @@ namespace stmos {
 			struct PortPin {
 				Port port;
 				Pin pin;
-			};
+			} __attribute__((packed));
 		
 			enum Mode {
 				INPUT,
