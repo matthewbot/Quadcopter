@@ -10,6 +10,7 @@ namespace stmos {
 	class USART : NonCopyable {
 		public:
 			USART(int num, unsigned int baud);
+			~USART();
 			
 			// string IO
 			void print(const char *msg) const;

@@ -44,6 +44,10 @@ USART::USART(int num, unsigned int baud)
 	usart->CR1 |= USART_CR1_TE | USART_CR1_RE;
 }
 
+USART::~USART() {
+	delete printfbuf;
+}
+
 void USART::print(const char *str) const {
 	send((const uint8_t *)str, strlen(str));
 }
