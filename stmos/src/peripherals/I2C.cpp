@@ -9,7 +9,6 @@ static I2C_TypeDef *const i2cs[] = {0, I2C1, I2C2 };
 
 static void send_start(I2C_TypeDef *i2c);
 static void send_addr(I2C_TypeDef *i2c, I2C::Address addr);
-static void send_stop(I2C_TypeDef *i2c);
 
 static IOPin::PortPin pins[2][2] = {
 	{ { IOPin::PORT_B, 6}, { IOPin::PORT_B, 7} },
@@ -41,16 +40,18 @@ void I2C::send(const I2C::Address *buf, size_t size) {
 	I2C_TypeDef *i2c = i2cs[num];
 
 	while (size--) {
-		i2c->DR = *buf++;
 		while (!(i2c->SR1 & I2C_SR1_TXE)) { }
+		i2c->DR = *buf++;
 	}
+	
+	while (!(i2c->SR1 & I2C_SR1_BTF)) { }
 }
 
 void I2C::stop() {
 	I2C_TypeDef *i2c = i2cs[num];
 
-	while (!(i2c->SR1 & I2C_SR1_BTF)) { }
-	send_stop(i2c);
+	i2c->CR1 |= I2C_CR1_STOP;
+	while (!(i2c->CR1 & I2C_CR1_STOP)) { }
 }
 
 void I2C::receive(I2C::Address addr, uint8_t *buf, size_t size) {
@@ -85,8 +86,3 @@ static void send_addr(I2C_TypeDef *i2c, I2C::Address addr) {
 	(void)i2c->SR2;
 }
 
-static void send_stop(I2C_TypeDef *i2c) {
-	i2c->CR1 |= I2C_CR1_STOP;
-	while (!(i2c->CR1 & I2C_CR1_STOP)) { }
-}
-	
