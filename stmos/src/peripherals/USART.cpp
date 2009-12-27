@@ -52,7 +52,7 @@ void USART::print(const char *str) const {
 	send((const uint8_t *)str, strlen(str));
 }
 
-#define PRINTF_MAXSIZE 50
+#define PRINTF_MAXSIZE 100
 
 void USART::printf(const char *fmt, ...) const {
 	if (!printfbuf)
