@@ -8,6 +8,8 @@ using namespace stmos;
 static TIM_TypeDef *const timers[] = { 0, TIM1, TIM2, TIM3, TIM4 };
 static void tim_handler(int num);
 
+static Callback *overflowcallbacks[4];
+
 template <int num> static void tim_handler_wrapper() {
 	tim_handler(num);
 }
@@ -72,6 +74,13 @@ uint16_t Timer::getOverflow() const {
 	TIM_TypeDef *tim = timers[num];
 	
 	return tim->ARR;
+}
+
+void Timer::setOverflowCallback(Callback &callback) {
+	TIM_TypeDef *tim = timers[num];
+	
+	overflowcallbacks[num-1] = &callback;
+	tim->DIER |= TIM_DIER_UIE;
 }
 
 void Timer::start() {
@@ -280,27 +289,28 @@ void OutputCompareTimerChannel::setMode(Mode mode) {
 	}
 }
 
+extern "C" {
+#include <stmos/crt/debug.h>
+}
+
 static void tim_handler(int num) {
 	TIM_TypeDef *tim = timers[num];
 	uint16_t sr = tim->SR;
 	Callback *callback = NULL;
 	
-	if (sr & TIM_SR_CC1IF) {
+	if (sr & TIM_SR_UIF) {
+		callback = overflowcallbacks[num-1];
+		tim->SR &= ~TIM_SR_UIF;
+	} else if (sr & TIM_SR_CC1IF) {
 		callback = callbacks[num-1][0];
 		tim->SR &= ~TIM_SR_CC1IF;
-	}
-		
-	if (sr & TIM_SR_CC2IF) {
+	} else if (sr & TIM_SR_CC2IF) {
 		callback = callbacks[num-1][1];
 		tim->SR &= ~TIM_SR_CC2IF;
-	}
-	
-	if (sr & TIM_SR_CC3IF) {
+	} else if (sr & TIM_SR_CC3IF) {
 		callback = callbacks[num-1][2];
 		tim->SR &= ~TIM_SR_CC3IF;
-	}
-	
-	if (sr & TIM_SR_CC4IF) {
+	} else if (sr & TIM_SR_CC4IF) {
 		callback = callbacks[num-1][3];
 		tim->SR &= ~TIM_SR_CC4IF;
 	}

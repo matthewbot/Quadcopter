@@ -21,6 +21,8 @@ namespace stmos {
 			void setTickTime(unsigned int cycles);
 			void setDirection(Direction dir);
 			void setOverflow(uint16_t overflow);
+			void setOverflowCallback(Callback &callback);
+			void clearOverflowCallback();
 			
 			uint16_t getOverflow() const;
 			
@@ -30,7 +32,8 @@ namespace stmos {
 			uint16_t read();
 			
 		protected:
-			int num;
+			const int num;
+			Callback *overflowcallback;
 	};
 	
 	class TimerChannel : NonCopyable {
@@ -52,7 +55,7 @@ namespace stmos {
 		protected:
 			void setPolarity(bool pol);
 		
-			int timernum, num;
+			const int timernum, num;
 			IOPinConfig pin;
 	};
 	
