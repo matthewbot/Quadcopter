@@ -5,8 +5,6 @@
 #include <stmos/peripherals/USART.h>
 #include <stmos/peripherals/IOPin.h>
 #include <stmos/util/Task.h>
-#include <../../stmos/include/stm32f10x.h>
-
 
 using namespace FC;
 using namespace stmos;
