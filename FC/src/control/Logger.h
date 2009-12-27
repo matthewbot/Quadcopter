@@ -30,7 +30,7 @@ namespace FC {
 
 	class Logger : BaseLogger, stmos::NonCopyable, stmos::Callback {
 		public:
-			Logger(EEPROM &eeprom, int startpage);
+			Logger(EEPROM &eeprom, int startpage, int endpage=512); // inclusive, endpage is (potentially) written to
 			
 			void write(const uint8_t *data, size_t len);
 			void print(const char *msg);
@@ -45,6 +45,7 @@ namespace FC {
 		
 			EEPROM &eeprom;
 			int curpage;
+			int endpage;
 			
 			Entry *curbuf, *writebuf;
 			volatile bool writebuf_written;

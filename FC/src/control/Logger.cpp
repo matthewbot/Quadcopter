@@ -6,9 +6,10 @@
 using namespace FC;
 using namespace stmos;
 
-Logger::Logger(EEPROM &eeprom, int startpage)
+Logger::Logger(EEPROM &eeprom, int startpage, int endpage)
 : eeprom(eeprom),
   curpage(startpage),
+  endpage(endpage),
   curbuf(&bufa),
   writebuf(&bufb),
   writebuf_written(true),
@@ -54,23 +55,14 @@ void Logger::printf(const char *fmt, ...) {
 	print(printfbuf);
 }
 
-extern "C" {
-	#include <stmos/crt/debug.h>
-}
-
 void Logger::flush() {
-	debug_print("flush a\n");
 	flipBuf(); // move current buffer to the write buffer
-	debug_print("flush b\n");
 	doWrite(); // perform the write
-	debug_print("flush c\n");
 }
 
 void Logger::flipBuf() {
-	if (!writebuf_written) {
-		debug_print("blah\n");
+	if (!writebuf_written)
 		doWrite();
-	}
 	
 	Entry *tmp = curbuf;
 	curbuf = writebuf;
@@ -84,10 +76,12 @@ void Logger::doWrite() {
 	
 	if (writebuf_written)
 		return;
-		
-	writebuf->header.checksum = computeChecksum(writebuf->data, writebuf->header.length);
-	eeprom.write(EEPROM::pageAddress(curpage), (const uint8_t *)writebuf, sizeof(EntryHeader) + writebuf->header.length);
-	curpage++;
+	
+	if (curpage <= endpage) {
+		writebuf->header.checksum = computeChecksum(writebuf->data, writebuf->header.length);
+		eeprom.write(EEPROM::pageAddress(curpage), (const uint8_t *)writebuf, sizeof(EntryHeader) + writebuf->header.length);
+		curpage++;
+	}
 	writebuf_written = true;
 }
 
