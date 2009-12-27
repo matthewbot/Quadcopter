@@ -39,8 +39,7 @@ ADC::ADC(int num)
 	            ADC_CR2_JEXTSEL_JSWSTART | // select software start for injected channels
 	            ADC_CR2_JEXTTRIG | // enable trigger for injected channels
 	            ADC_CR2_EXTSEL_SWSTART | // select software start for regular channels
-	            ADC_CR2_EXTTRIG | // enable trigger for regular channels
-	            ADC_CR2_DMA; // enable DMA for regular channels
+	            ADC_CR2_EXTTRIG; // enable trigger for regular channels
 	            
 	if (num == 1) 
 		adc->CR2 |= ADC_CR2_TSVREFE;
@@ -141,13 +140,13 @@ static uint32_t buildreg(const uint8_t *&chanptr, size_t &count) {
 void ADC::startScan() {
 	ADC_TypeDef *adc = adcs[num];
 	
-	adc->CR2 |= ADC_CR2_SWSTART | ADC_CR2_CONT;
+	adc->CR2 |= ADC_CR2_SWSTART | ADC_CR2_CONT | ADC_CR2_DMA;
 }
 
 void ADC::stopScan() {
 	ADC_TypeDef *adc = adcs[num];
 	
-	adc->CR2 &= ~ADC_CR2_CONT;
+	adc->CR2 &= ~(ADC_CR2_CONT | ADC_CR2_DMA);
 }
 
 volatile void *ADC::getScanDMAAddress() const {
