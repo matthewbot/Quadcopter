@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef uint8_t kernel_taskpri;
 
@@ -46,6 +47,10 @@ struct kernel_task {
 	void *userdata;
 	uint16_t stackguard;
 };
+
+inline bool task_checkstack(const struct kernel_task *task) { 
+	return task->stackguard == TASK_STACKGUARD_VALUE;
+}
 
 typedef void (*kernel_taskfunc)(void *);
 
