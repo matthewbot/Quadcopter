@@ -36,6 +36,9 @@ struct kernel_task *task_new(const char *name, kernel_taskpri pri, kernel_taskfu
 }
 
 void task_list_add(struct kernel_task *listpos, struct kernel_task *task) {
+	assert(listpos != NULL);
+	assert(task != NULL);
+	task_assertstack(task);
 	struct kernel_task *next = listpos->listnode.next;
 	listpos->listnode.next = task;
 	task->listnode.prev = listpos;
@@ -45,6 +48,8 @@ void task_list_add(struct kernel_task *listpos, struct kernel_task *task) {
 }
 
 struct kernel_task *task_list_remove(struct kernel_task *task) {
+	assert(task != NULL);
+	task_assertstack(task);
 	struct kernel_task *next = task->listnode.next; // save next and prev
 	struct kernel_task *prev = task->listnode.prev;
 	
@@ -58,6 +63,8 @@ struct kernel_task *task_list_remove(struct kernel_task *task) {
 }
 
 void task_free(struct kernel_task *task) {
+	assert(task != NULL);
+	task_assertstack(task);
 	irq_disable_switch();
 	task->listnode.next = freetasks.next;
 	freetasks.next = task;
@@ -80,3 +87,4 @@ void task_gc() {
 	
 	irq_enable_switch();
 }
+

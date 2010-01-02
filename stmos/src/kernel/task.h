@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <assert.h>
 
 typedef uint8_t kernel_taskpri;
 
@@ -51,6 +52,11 @@ struct kernel_task {
 inline bool task_checkstack(const struct kernel_task *task) { 
 	return task->stackguard == TASK_STACKGUARD_VALUE;
 }
+
+inline void task_assertstack(const struct kernel_task *task) {
+	assert(task->stackguard == TASK_STACKGUARD_VALUE);
+}
+
 
 typedef void (*kernel_taskfunc)(void *);
 

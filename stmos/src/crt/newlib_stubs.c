@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #undef errno
 
+#include "panic.h"
 #include "linker.h"
 
 void *_sbrk_r(struct _reent *re, int amt) {
@@ -50,3 +51,8 @@ int _getpid_r(struct _reent *re) {
 int _kill_r(int n, int m, struct _reent *re) {
 	return -1;
 }
+
+void _exit(int status) {
+	panic("exit");
+}
+
