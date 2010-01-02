@@ -18,7 +18,6 @@ Task::Task(const char *name, uint8_t pri, Callback &callback, size_t stacksize)
 	if (ktask == NULL)
 		panic("Out of memory to allocate task");
 	ktask->userdata = this;
-	sched_add_task(ktask);
 }
 
 Task::Task() : ktask(NULL) { }

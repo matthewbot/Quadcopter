@@ -20,15 +20,17 @@ struct OtherTaskCallback : public Callback {
 	}
 };
 
+OtherTaskCallback othercallback1(1);
+Task other1("other1", KERNEL_PRIORITY_MID, othercallback1, 500);
+	
+OtherTaskCallback othercallback2(2);
+Task other2("other2", KERNEL_PRIORITY_MID, othercallback2, 500);
 
 int main(int argc, char **argv) {
 	out.print("Starting other tasks\n");
 	
-	OtherTaskCallback othercallback1(1);
-	Task other1("other1", KERNEL_PRIORITY_MID, othercallback1, 500);
-	
-	OtherTaskCallback othercallback2(2);
-	Task other2("other2", KERNEL_PRIORITY_MID, othercallback2, 500);
+	other1.start();
+	other2.start();
 	
 	int count=0;
 	while (true) {

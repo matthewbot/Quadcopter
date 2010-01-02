@@ -21,12 +21,13 @@ class OtherTaskCallback : public Callback {
 	}
 };
 
+OtherTaskCallback othercallback;
+Task other("other", KERNEL_PRIORITY_MID, othercallback);
 
 int main(int argc, char **argv) {
 	out.print("Starting other!\n");
 	
-	OtherTaskCallback othercallback;
-	Task other("other", KERNEL_PRIORITY_MID, othercallback);
+	other.start();
 	
 	while (true) {
 		Task::sleep(1000);

@@ -21,11 +21,11 @@ namespace stmos {
 			Task(const char *name, uint8_t pri, Callback &callback, size_t stacksize=1024);
 			~Task();
 			
+			inline void start() { resume(); }
 			void suspend();
 			void resume();
 			void stop();
-			
-				
+					
 			static unsigned long getCurrentTick();
 			static void sleep(unsigned long msecs);
 			static Task *getCurrentTask();

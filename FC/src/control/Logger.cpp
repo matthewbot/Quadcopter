@@ -20,6 +20,7 @@ Logger::Logger(EEPROM &eeprom, int startpage, int endpage)
 	bufb.header.id = bufa.header.id = prevheader.id + 1; // set the ID of our two buffered entries to one unique from the previous log
 	
 	curbuf->header.length = 0; // clear the length field of the current buffer
+	task.start();
 }
 
 void Logger::write(const uint8_t *data, size_t len) {
