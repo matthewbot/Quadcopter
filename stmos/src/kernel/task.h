@@ -53,10 +53,7 @@ inline bool task_checkstack(const struct kernel_task *task) {
 	return task->stackguard == TASK_STACKGUARD_VALUE;
 }
 
-inline void task_assertstack(const struct kernel_task *task) {
-	assert(task->stackguard == TASK_STACKGUARD_VALUE);
-}
-
+#define task_assertstack(task) assert((task)->stackguard == TASK_STACKGUARD_VALUE)
 
 typedef void (*kernel_taskfunc)(void *);
 
