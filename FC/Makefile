@@ -10,7 +10,7 @@ cpuflags := -mcpu=cortex-m3 -msoft-float -mthumb
 sharedflags := \
 	-Iinclude -Wall -Werror \
 	-ffunction-sections -fdata-sections -pipe \
-	-Os -ffast-math -fstrict-aliasing
+	-O3 -ffast-math -fstrict-aliasing
 cppopts := $(cpuflags) $(sharedflags) -fno-exceptions -fno-rtti -std=gnu++0x
 ldscript := ../stmos/src/crt/linker.ld
 ldflags := -nostdlib $(cpuflags) -Wall -Wl,--gc-sections -T$(ldscript) -L../stmos/out
