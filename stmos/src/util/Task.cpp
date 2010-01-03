@@ -28,9 +28,12 @@ Task::~Task() {
 	ktask = NULL;
 }
 
+__attribute__((naked))
 static void taskfunc(void *callback_v) {
 	Callback *callback = (Callback *)callback_v;
 	callback->call();
+	Task::getCurrentTask()->stop();
+	while (true) { }
 }
 
 void Task::suspend() {
