@@ -3,7 +3,7 @@
 #include "irq.h"
 
 static tick_t curtick;
-static struct kernel_tasklist_node ticklist;
+static struct kernel_task *ticklist;
 
 tick_t tick_getcount() {
 	return curtick;
@@ -18,8 +18,8 @@ void tick_sleep(struct kernel_task *task, tick_t waketick) {
 	task->list_data.num = waketick;
 	
 	struct kernel_task *insertpoint = (struct kernel_task *)&ticklist;
-	while (insertpoint->listnode.next != NULL && waketick > insertpoint->listnode.next->list_data.num) {
-		insertpoint = insertpoint->listnode.next;
+	while (insertpoint->list_next != NULL && waketick > insertpoint->list_next->list_data.num) {
+		insertpoint = insertpoint->list_next;
 	}
 	
 	task_list_add(insertpoint, task);
@@ -52,7 +52,7 @@ void tick_wake(struct kernel_task *task) {
 void tick_run() {
 	curtick++;
 	
-	struct kernel_task *curtask = (struct kernel_task *)ticklist.next;
+	struct kernel_task *curtask = ticklist;
 	while (curtask != NULL) {
 		if (curtick >= curtask->list_data.num) {
 			struct kernel_task *nexttask = task_list_remove(curtask);

@@ -6,7 +6,7 @@
 
 void mutex_init(struct kernel_mutex *mutex) {
 	memset(mutex, '\0', sizeof(struct kernel_mutex));
-	mutex->node_end = (struct kernel_task *)&mutex->node;
+	mutex->list_end = (struct kernel_task *)&mutex->list_begin;
 }
 
 void mutex_wait(struct kernel_mutex *mutex) {
@@ -19,8 +19,8 @@ void mutex_wait(struct kernel_mutex *mutex) {
 			irq_disable_switch(); 
 		
 			sched_remove_task(curtask); // unschedule ourselves
-			task_list_add(mutex->node_end, curtask); // and insert us at the end of the mutex's waiting queue
-			mutex->node_end = curtask;
+			task_list_add(mutex->list_end, curtask); // and insert us at the end of the mutex's waiting queue
+			mutex->list_end = curtask;
 		
 			irq_force_switch(); // and force a context switch
 			irq_enable_switch();
@@ -36,13 +36,13 @@ void mutex_release(struct kernel_mutex *mutex) {
 		
 	irq_disable_switch();
 	
-	struct kernel_task *fronttask = mutex->node.next; // add the front task of the wait queue to the scheduler
+	struct kernel_task *fronttask = mutex->list_begin; // add the front task of the wait queue to the scheduler
 	if (fronttask != NULL) {
 		task_list_remove(fronttask);
 		sched_add_task(fronttask);
 	
-		if (fronttask == mutex->node_end) // if the front task is also the end
-			mutex->node_end = (struct kernel_task *)&mutex->node; // reset the end pointer to our starting node
+		if (fronttask == mutex->list_end) // if the front task is also the end
+			mutex->list_end = (struct kernel_task *)&mutex->list_begin; // reset the end pointer to our starting node
 	}
 	
 	mutex->owner = NULL;

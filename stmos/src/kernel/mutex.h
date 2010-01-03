@@ -5,8 +5,8 @@
 #include <stdint.h>
 
 struct kernel_mutex {
-	struct kernel_tasklist_node node;
-	struct kernel_task *node_end;
+	struct kernel_task *list_begin;
+	struct kernel_task *list_end;
 	volatile struct kernel_task *owner;
 	volatile uint32_t count;
 };

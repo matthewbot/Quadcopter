@@ -5,8 +5,8 @@
 #include <stdint.h>
 
 struct kernel_notifier {
-	struct kernel_tasklist_node node;
-	struct kernel_task *node_end;
+	struct kernel_task *list_start;
+	struct kernel_task *list_end;
 };
 
 void notifier_init(struct kernel_notifier *notifier);

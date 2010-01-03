@@ -21,15 +21,11 @@ enum task_state {
 	TASK_STATE_SLEEP,
 };
 
-struct kernel_tasklist_node {
-	struct kernel_task *prev;
-	struct kernel_task *next;
-};
-
 #define TASK_STACKGUARD_VALUE 0xABCD
 
 struct kernel_task {
-	struct kernel_tasklist_node listnode;
+	struct kernel_task *list_next;
+	struct kernel_task *list_prev;
 	void *sp;
 	
 	char name[11];

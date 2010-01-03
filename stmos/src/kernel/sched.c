@@ -8,7 +8,7 @@
 struct kernel_task *sched_curtask;
 static struct kernel_task *nexttask; // when the next task can't be determined from the current task
 
-static struct kernel_tasklist_node schedlist;
+static struct kernel_task *schedlist;
 static kernel_taskpri schedlist_maxpri=0xFF;
 
 struct kernel_task *sched_get_current_task() { return sched_curtask; }
@@ -23,8 +23,8 @@ void sched_add_task(struct kernel_task *task) {
 	}
 	
 	struct kernel_task *insertpoint = (struct kernel_task *)&schedlist;
-	while (insertpoint->listnode.next != NULL && task->pri > insertpoint->listnode.next->pri) {
-		insertpoint = insertpoint->listnode.next;
+	while (insertpoint->list_next != NULL && task->pri > insertpoint->list_next->pri) {
+		insertpoint = insertpoint->list_next;
 	}
 			
 	task_list_add(insertpoint, task);
@@ -37,20 +37,20 @@ void sched_remove_task(struct kernel_task *task) {
 	irq_disable_switch();
 	
 	if (sched_curtask == task)  // if we're unscheduling the current task
-		nexttask = task->listnode.next; // we need to save the next task
+		nexttask = task->list_next; // we need to save the next task
 		
 	task_list_remove(task);
 	task->state = TASK_STATE_NONE;
 	
 	if (task->pri == schedlist_maxpri) {
-		schedlist_maxpri = schedlist.next->pri;
+		schedlist_maxpri = schedlist->pri;
 	}
 		
 	irq_enable_switch();
 }
 
 void sched_setup() {
-	sched_curtask = schedlist.next;
+	sched_curtask = schedlist;
 }
 
 void sched_run() {
@@ -63,7 +63,7 @@ void sched_run() {
 		sched_curtask = nexttask; // use it as the current task
 		nexttask = NULL; // clear nexttask flag
 	} else { // no saved next task
-		sched_curtask = sched_curtask->listnode.next; // so use the next task in the linked list
+		sched_curtask = sched_curtask->list_next; // so use the next task in the linked list
 		if (sched_curtask == NULL) // if we're at the end of the linked list
 			goto schedfirst; // we need to schedule the first task
 	}
@@ -75,6 +75,6 @@ void sched_run() {
 	return; // otherwise we're done!
 	
 schedfirst:
-	sched_curtask = schedlist.next;
+	sched_curtask = schedlist;
 }
 

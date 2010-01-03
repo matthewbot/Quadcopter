@@ -7,7 +7,7 @@
 
 #define TASK_MINSTACK 16*4
 
-struct kernel_tasklist_node freetasks;
+struct kernel_task *freetasks;
 
 struct kernel_task *task_new(const char *name, kernel_taskpri pri, kernel_taskfunc func, size_t stacksize, void *data) {
 	stacksize += TASK_MINSTACK;
@@ -28,7 +28,7 @@ struct kernel_task *task_new(const char *name, kernel_taskpri pri, kernel_taskfu
 	task->sp = sp;
 	task->pri = pri;
 	strncpy(task->name, name, sizeof(task->name));
-	task->listnode.prev = task->listnode.next = NULL;
+	task->list_prev = task->list_next = NULL;
 	task->userdata = NULL;
 	task->state = TASK_STATE_NONE;
 	task->stackguard = TASK_STACKGUARD_VALUE;
@@ -39,25 +39,25 @@ void task_list_add(struct kernel_task *listpos, struct kernel_task *task) {
 	assert(listpos != NULL);
 	assert(task != NULL);
 	task_assertstack(task);
-	struct kernel_task *next = listpos->listnode.next;
-	listpos->listnode.next = task;
-	task->listnode.prev = listpos;
-	task->listnode.next = next;
+	struct kernel_task *next = listpos->list_next;
+	listpos->list_next = task;
+	task->list_prev = listpos;
+	task->list_next = next;
 	if (next != NULL)
-		next->listnode.prev = task;
+		next->list_prev = task;
 }
 
 struct kernel_task *task_list_remove(struct kernel_task *task) {
 	assert(task != NULL);
 	task_assertstack(task);
-	struct kernel_task *next = task->listnode.next; // save next and prev
-	struct kernel_task *prev = task->listnode.prev;
+	struct kernel_task *next = task->list_next; // save next and prev
+	struct kernel_task *prev = task->list_prev;
 	
-	task->listnode.prev = task->listnode.next = NULL; // clear the current task's pointers
+	task->list_prev = task->list_next = NULL; // clear the current task's pointers
 	
-	prev->listnode.next = next; // update next and prev's pointers
+	prev->list_next = next; // update next and prev's pointers
 	if (next != NULL)
-		next->listnode.prev = prev;
+		next->list_prev = prev;
 
 	return next;
 }
@@ -66,8 +66,8 @@ void task_free(struct kernel_task *task) {
 	assert(task != NULL);
 	task_assertstack(task);
 	irq_disable_switch();
-	task->listnode.next = freetasks.next;
-	freetasks.next = task;
+	task->list_next = freetasks;
+	freetasks = task;
 	irq_enable_switch();
 }
 
@@ -75,10 +75,10 @@ void task_gc() {
 	while (true) {
 		irq_disable_switch();
 	
-		struct kernel_task *task = freetasks.next;
+		struct kernel_task *task = freetasks;
 		if (task == NULL)
 			break;
-		freetasks.next = task->listnode.next;
+		freetasks = task->list_next;
 		
 		free(task);
 		
