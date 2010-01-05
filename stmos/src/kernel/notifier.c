@@ -1,4 +1,5 @@
 #include "notifier.h"
+#include "mutex.h"
 #include "sched.h"
 #include "task.h"
 #include "irq.h"
@@ -18,6 +19,13 @@ void notifier_wait(struct kernel_notifier *notifier) {
 	notifier->list_end = curtask;
 	
 	irq_force_switch();
+	irq_enable_switch();
+}
+
+void notifier_wait_and_release(struct kernel_notifier *notifier, struct kernel_mutex *mutex) {
+	irq_disable_switch();
+	mutex_release(mutex);
+	notifier_wait(notifier);
 	irq_enable_switch();
 }
 
