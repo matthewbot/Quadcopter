@@ -1,5 +1,6 @@
 #include "sched.h"
 #include "irq.h"
+#include <stmos/util/cexts.h>
 #include <stmos/crt/nvic.h>
 #include <stm32f10x.h>
 #include <stdbool.h>
@@ -36,15 +37,15 @@ void sched_add_task(struct kernel_task *task) {
 void sched_remove_task(struct kernel_task *task) {
 	irq_disable_switch();
 	
-	if (sched_curtask == task)  // if we're unscheduling the current task
+	// if we're unscheduling the current task, or the saved next task
+	if (task == sched_curtask || UNLIKELY(task == nexttask))
 		nexttask = task->list_next; // we need to save the next task
-		
+			
 	task_list_remove(task);
 	task->state = TASK_STATE_NONE;
 	
-	if (task->pri == schedlist_maxpri) {
+	if (UNLIKELY(task->pri == schedlist_maxpri)) 
 		schedlist_maxpri = schedlist->pri;
-	}
 		
 	irq_enable_switch();
 }
@@ -54,26 +55,22 @@ void sched_setup() {
 }
 
 void sched_run() {
-	if (sched_curtask->stackguard != TASK_STACKGUARD_VALUE) {
-		asm("svc 0");
-	}
+	task_assertstack(sched_curtask);
 
 	// first, we need to determine the next task
-	if (nexttask != NULL) { // if the next task has been saved (because the current task no longer is linked in the list)
+	if (UNLIKELY(nexttask != NULL)) { // if the next task has been saved (because the current task no longer is linked in the list)
 		sched_curtask = nexttask; // use it as the current task
 		nexttask = NULL; // clear nexttask flag
 	} else { // no saved next task
 		sched_curtask = sched_curtask->list_next; // so use the next task in the linked list
-		if (sched_curtask == NULL) // if we're at the end of the linked list
+		if (UNLIKELY(sched_curtask == NULL)) // if we're at the end of the linked list
 			goto schedfirst; // we need to schedule the first task
 	}
 	
-	if (sched_curtask->pri > schedlist_maxpri) { // if our new task is actually a lower priority than the current max
+	if (UNLIKELY(sched_curtask->pri > schedlist_maxpri)) // if our new task is actually a lower priority than the current max
 		goto schedfirst; // we need to schedule from the top again
-	}
 		
 	return; // otherwise we're done!
-	
 schedfirst:
 	sched_curtask = schedlist;
 }
