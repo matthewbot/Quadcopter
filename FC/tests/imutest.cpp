@@ -38,8 +38,8 @@ const IMU::Config imuconf = {
 			1.25E-7, 2.5E-5, 5E-7,
 			2.5E-9, 5E-7,1E-8
 		}, { // R
-			.0001, 0,
-			0, .005
+			.001, 0,
+			0, .001
 		}
 	}
 };
@@ -49,6 +49,7 @@ USART out(1, 115200);
 
 int main(int argc, char **argv) {	
 	out.print("Waiting for IMU\n");
+	imu.start();
 	
 	while (!imu.ready()) { Task::sleep(100); }
 	
