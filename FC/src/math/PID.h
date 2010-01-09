@@ -8,7 +8,7 @@ namespace FC {
 				float p, i, d;
 				float i_max;
 				float dt;
-			};
+			} __attribute__((packed));
 			
 			PID(const Config &config);
 			
