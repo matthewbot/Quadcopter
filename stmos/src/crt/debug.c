@@ -38,6 +38,15 @@ void debug_print(const char *msg) {
 	while (!(USART1->SR & USART_SR_TC)) { }
 }
 
+void debug_write(const uint8_t *data, size_t len) {
+	while (len--) {
+		while (!(USART1->SR & USART_SR_TXE)) { }
+		USART1->DR = *data++;
+	}
+	
+	while (!(USART1->SR & USART_SR_TC)) { }
+}
+
 void debug_printhex(uint32_t num) {
 	static const char hexchars[16] = "0123456789ABCDEF";
 	

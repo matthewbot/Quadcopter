@@ -5,6 +5,7 @@
 
 #include "panic.h"
 #include "linker.h"
+#include "debug.h"
 
 void *_sbrk_r(struct _reent *re, int amt) {
 	static char *end_data_segment = (char *)&__heap_start; // our current end data segment
@@ -24,6 +25,11 @@ int _read_r(struct _reent *re, int fd, void *data, size_t len) {
 }
 
 int _write_r(struct _reent *re, int fd, const void *data, size_t len) {
+	if (fd == 1 || fd == 2) {
+		debug_write(data, len);
+		return len;
+	}
+	
 	return -1;
 }
 
