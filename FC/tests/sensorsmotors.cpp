@@ -5,6 +5,7 @@
 #include <FC/drivers/AnalogSensors.h>
 #include <FC/drivers/EEPROM.h>
 #include <FC/drivers/MicroMag.h>
+#include <FC/drivers/Buzzer.h>
 #include <FC/util/ESCTimer.h>
 #include <FC/util/PPMTimer.h>
 #include <stmos/peripherals/USART.h>
@@ -41,7 +42,7 @@ I2C i2c(1);
 EEPROM eeprom(i2c, 0x50);
 Logger log(eeprom, 1);
 
-IOPin buzzer(IOPin::PORT_C, 12, IOPin::OUTPUT_OPENDRAIN);
+Buzzer buzzer;
 
 static void motortaskfunc();
 static void logtaskfunc();
@@ -64,10 +65,6 @@ LogReader reader(eeprom, 1);
 
 int main(int argc, char **argv) {
 	mag.startScan();
-
-	buzzer = false;
-	Task::sleep(500);
-	buzzer = true;
 	
 	out.print("=== Begin dump of previous log ===\n");
 	int got;

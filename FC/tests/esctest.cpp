@@ -1,5 +1,6 @@
 #include <FC/drivers/ESC.h>
 #include <FC/drivers/VexRC.h>
+#include <FC/drivers/Buzzer.h>
 #include <FC/util/PPMTimer.h>
 #include <FC/util/ESCTimer.h>
 #include <stmos/peripherals/USART.h>
@@ -18,13 +19,9 @@ VexRC vex(tim, 4);
 ESCTimer esctim;
 ESC south(esctim, 3);
 
-IOPin buzzer(IOPin::PORT_C, 12, IOPin::OUTPUT_OPENDRAIN);
+Buzzer buzzer;
 
 int main(int argc, char **argv) {
-	buzzer = false;
-	Task::sleep(500);
-	buzzer = true;
-
 	while (!vex.getSynced()) { }
 
 	south.arm();
