@@ -12,7 +12,7 @@ static void idletaskfunc();
 static struct kernel_task *maintask;
 static struct kernel_mutex malloc_mutex;
 
-static char idletask_mem[96];
+static char idletask_mem[256];
 
 __attribute__((noreturn))
 void kernel_start() {
