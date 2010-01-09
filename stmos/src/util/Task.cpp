@@ -14,7 +14,7 @@ static void taskfunc(void *callback);
 Task Task::maintask;
 
 Task::Task(const char *name, uint8_t pri, Callback &callback, size_t stacksize) 
-: ktask(task_new(name, pri, taskfunc, stacksize, &callback)) {
+: ktask(task_new(name, pri, taskfunc, &callback, stacksize)) {
 	if (ktask == NULL)
 		panic("Out of memory to allocate task");
 	ktask->userdata = this;

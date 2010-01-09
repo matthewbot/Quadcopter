@@ -12,11 +12,13 @@ static void idletaskfunc();
 static struct kernel_task *maintask;
 static struct kernel_mutex malloc_mutex;
 
+static char idletask_mem[96];
+
 __attribute__((noreturn))
 void kernel_start() {
 	mutex_init(&malloc_mutex);
-	struct kernel_task *idletask = task_new("idle", KERNEL_PRIORITY_IDLE, idletaskfunc, 128, NULL);
-	maintask = task_new("main", KERNEL_PRIORITY_MID, maintaskfunc, 1024*7, NULL);
+	struct kernel_task *idletask = task_new_inplace("idle", KERNEL_PRIORITY_IDLE, idletaskfunc, NULL, idletask_mem, sizeof(idletask_mem));
+	maintask = task_new("main", KERNEL_PRIORITY_MID, maintaskfunc, NULL, 1024*4);
 	sched_add_task(idletask);
 	sched_add_task(maintask);
 	irq_setup();

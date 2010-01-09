@@ -28,17 +28,14 @@ struct kernel_task {
 	struct kernel_task *list_prev;
 	void *sp;
 	
-	char name[11];
+	char name[10];
 	kernel_taskpri pri;
-	enum task_state state;
 	
+	enum task_state state;
+	bool freesp;
+		
 	union {
 		uint32_t num;
-		struct {
-			uint32_t timeout;
-			const volatile uint8_t *ptr;
-			uint8_t val;
-		} flag; 
 	} list_data;
 	
 	void *userdata;
@@ -53,7 +50,8 @@ inline bool task_checkstack(const struct kernel_task *task) {
 
 typedef void (*kernel_taskfunc)(void *);
 
-struct kernel_task *task_new(const char *name, kernel_taskpri pri, kernel_taskfunc func, size_t stacksize, void *data);
+struct kernel_task *task_new(const char *name, kernel_taskpri pri, kernel_taskfunc func, void *data, size_t stacksize);
+struct kernel_task *task_new_inplace(const char *name, kernel_taskpri pri, kernel_taskfunc func, void *data, char *buf, size_t bufsize);
 void task_list_add(struct kernel_task *listpos, struct kernel_task *task);
 struct kernel_task *task_list_remove(struct kernel_task *task);
 void task_free(struct kernel_task *task);

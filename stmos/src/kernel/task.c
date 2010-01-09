@@ -9,15 +9,21 @@
 
 struct kernel_task *freetasks;
 
-struct kernel_task *task_new(const char *name, kernel_taskpri pri, kernel_taskfunc func, size_t stacksize, void *data) {
-	stacksize += TASK_MINSTACK;
+struct kernel_task *task_new(const char *name, kernel_taskpri pri, kernel_taskfunc func, void *data, size_t stacksize) {
+	assert(stacksize >= TASK_MINSTACK);
 	size_t size = sizeof(struct kernel_task) + stacksize; // calculate memory size
-	struct kernel_task *task = malloc(size); // allocate memory
+	char *mem = malloc(size); // allocate memory
 	
-	if (task == NULL)
+	if (mem == NULL)
 		return NULL;
 	
-	char *rawsp = ((char *)task + size); // calculate top of stack
+	return task_new_inplace(name, pri, func, data, mem, size);
+}
+
+struct kernel_task *task_new_inplace(const char *name, kernel_taskpri pri, kernel_taskfunc func, void *data, char *buf, size_t bufsize) {
+	struct kernel_task *task = (struct kernel_task *)buf;
+	
+	char *rawsp = (buf + bufsize); // calculate top of stack
 	uint32_t *sp = (uint32_t *)(rawsp - ((int)rawsp % 4)); // align it
 	*--sp = 0x01000000; // saved PSR, T bit must be set
 	*--sp = (uint32_t)func; // PC
