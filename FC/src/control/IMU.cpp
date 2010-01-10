@@ -10,7 +10,7 @@ IMU::IMU(AnalogSensors &sensors, TCCompass &compass, const Config &config)
   rollkalman(config.roll_pitch_config),
   pitchkalman(config.roll_pitch_config),
   yawkalman(config.yaw_config),
-  updatetask("imu", Task::PRIORITY_HIGH, *this, 2048),
+  updatetask("imu", Task::PRIORITY_HIGH, *this, 1024),
   cyclecount(0) { }
   
 void IMU::start() {
@@ -26,15 +26,9 @@ bool IMU::ready() {
 }
 
 IMU::State IMU::getState() {
-	stop();
 	State ret = { rollkalman.getState().angle, pitchkalman.getState().angle, yawkalman.getState().angle };
-	start();
 	
 	return ret;	
-}
-
-extern "C" {
-	#include <stmos/crt/debug.h>
 }
 
 void IMU::call() {
@@ -55,8 +49,6 @@ void IMU::call() {
 		int time = 5 - (Task::getCurrentTick() - starttime);
 		if (time > 0)
 			Task::sleep(time);
-		else
-			debug_print("x");
 	
 		cyclecount++;
 	}
