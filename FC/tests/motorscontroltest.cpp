@@ -9,6 +9,7 @@
 #include <stmos/peripherals/USART.h>
 #include <stmos/peripherals/IOPin.h>
 #include <stmos/util/Task.h>
+#include <cstdio>
 
 using namespace FC;
 using namespace stmos;
@@ -59,9 +60,9 @@ IMU imu(sensors, compass, imuconf);
 ESCTimer esctim;
 Motors motors(esctim);
 
-const MotorsController::Config controlconfig = {
+MotorsController::Config controlconfig = {
 	{
-		.14, 0.25, 0.03,
+		.13, .3, .028,
 		.1,
 		0.01
 	}, {
@@ -85,12 +86,11 @@ int main(int argc, char **argv) {
 
 	out.print("Arming\n");
 	motors.arm();
-	control.start();
 
 	while (true) {
-		Task::sleep(50);
+		control.start();
 		
-		if (vex.getSynced()) {
+		while (vex.getSynced()) {
 			VexRC::Channels chans = vex.getChannels();
 	
 			float throttle = chans.analogs[1] / 50.0;
@@ -101,11 +101,25 @@ int main(int argc, char **argv) {
 			control.setControlPoints(throttle, rollsetpoint, 0, 0);
 			
 			IMU::State state = imu.getState();
-			out.printf("%f %f\n", state.roll, rollsetpoint, control.getRollCorrection(), control.roll_pid.int_error);
-		} else {
-			control.stop();
-			out.print("Not synced\n");
-			motors.off();
+			out.printf("%f %f\n", state.roll, rollsetpoint);
+			Task::sleep(50);
 		}
+		
+		control.stop();
+		motors.off();
+		out.print("Push enter\n");
+		out.getch();
+		PID::Config *conf = &controlconfig.roll_pitch_config;
+		out.printf("Old: %f %f %f\n", conf->p, conf->i, conf->d);
+		out.print("New PID values:\n");
+		
+		char buf[100];
+		out.getline(buf, sizeof(buf));
+		
+		sscanf(buf, "%f %f %f", &conf->p, &conf->i, &conf->d);
+		out.printf("Got: %f %f %f\n", conf->p, conf->i, conf->d);
+		out.print("Waiting for remote\n");
+		
+		while (!vex.getSynced()) { Task::sleep(50); }
 	}
 }
