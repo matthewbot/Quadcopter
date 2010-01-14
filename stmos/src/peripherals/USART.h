@@ -13,16 +13,20 @@ namespace stmos {
 			~USART();
 			
 			// string IO
-			void print(const char *msg) const;
-			void printf(const char *fmt, ...) const;
+			void print(const char *msg);
+			void printf(const char *fmt, ...);
+			char getch(); // blocking
+			size_t getline(char *buf, size_t bufsize); // blocking
 			
 			// binary IO
-			void send(const uint8_t *buf, size_t len) const;
-			void receive(uint8_t *buf, size_t len) const;
+			void send(const uint8_t *buf, size_t len);
+			int receive(uint8_t *buf, size_t maxlen); // nonblocking
 		private:
 			const int num;
-			mutable char *printfbuf;
+			char *printfbuf;
 			IOPinConfig txpin, rxpin;
+			
+			char *recvbuf;
 	};
 }
 
