@@ -23,7 +23,7 @@ static const char *digitalToString(VexRC::DigitalChannel chan) {
 
 int main(int argc, char **argv) {	
 	while (true) {
-		Task::sleep(500);
+		Task::sleep(50);
 		
 		if (vex.getSynced()) {
 			VexRC::Channels chans = vex.getChannels();

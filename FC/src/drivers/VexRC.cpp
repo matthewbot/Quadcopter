@@ -15,11 +15,12 @@ VexRC::VexRC(const stmos::Timer &tim, int channum)
   	memset(&channels, '\0', sizeof(channels));
   	
   	capturechan.setCallback(*this);
+  	capturechan.setFilter(InputCaptureTimerChannel::FILTER_DTS32_8);
   	capturechan.enable();
 }
 
 bool VexRC::getSynced() const {
-	return synced && (Task::getCurrentTick() - prevtime) < 20;
+	return (Task::getCurrentTick() - prevtime) < 100;
 }
 
 VexRC::Channels VexRC::getChannels() const {
