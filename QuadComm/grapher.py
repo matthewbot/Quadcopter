@@ -79,7 +79,6 @@ class Grapher(wx.Panel):
 		dc = wx.PaintDC(self)
 		dc.Clear()
 		dc.BeginDrawing()
-		dc.SetPen(wx.Pen("BLACK", 2))
 	
 		if len(self.graphsamples) > 0:
 			(width, height) = self.GetSizeTuple()
@@ -90,8 +89,12 @@ class Grapher(wx.Panel):
 			for samplenum in range(1, len(self.graphsamples)):
 				sample = self.graphsamples[samplenum]
 				prevsample = self.graphsamples[samplenum-1]
-			
+				
+				colornum = 0
 				for prevval, val in zip(prevsample, sample):
+					dc.SetPen(wx.Pen(self.colors[colornum], 2))
+					colornum = colornum + 1
+					
 					x1 = (samplenum-1)*xscale
 					x2 = samplenum*xscale
 					y1 = (prevval - self.yscale_min)*yscale
@@ -100,6 +103,8 @@ class Grapher(wx.Panel):
 					dc.DrawLine(x1, height - y1, x2, height - y2)
 				
 		dc.EndDrawing()
+		
+	colors = ["RED", "GREEN", "BLUE", "BLACK", "BLACK", "BLACK"]
 
 class GraphFrame(wx.Frame):
 	def __init__(self, mainframe):
