@@ -7,8 +7,8 @@ using namespace stmos;
 
 const AnalogSensors::Channels chans = { {6, 5, 8, 7, 9, 11} };
 AnalogSensors::Calibrations calibrations = { {
-	{ { 0, 2206 }, // roll
-	  { 0, -2206 }, // pitch
+	{ { 0, -2206 }, // roll
+	  { 0, 2206 }, // pitch
 	  { 0, -4000 } }, // yaw
 	{ { 32000, -6750 }, // x-axis
 	  { 32000, -6750 }, // y-axis
@@ -57,8 +57,7 @@ int main(int argc, char **argv) {
 		Task::sleep(20);
 		
 		IMU::State state = imu.getState();
-		//out.printf("%f %f %f\n", state.roll, state.pitch, state.yaw);
-		out.printf("%f\n", state.yaw);
+		out.printf("%f %f %f\n", state.roll, state.pitch, state.yaw);
 	}
 }
 

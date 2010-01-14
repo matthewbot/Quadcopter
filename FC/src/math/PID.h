@@ -13,8 +13,9 @@ namespace FC {
 			PID(const Config &config);
 			
 			float update(float error);
+			inline void clearInt() { int_error = 0; }
 			
-		private:
+//		private:
 			const Config &config;	
 			float prev_error;
 			float int_error;

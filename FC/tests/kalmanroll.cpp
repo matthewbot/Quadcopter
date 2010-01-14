@@ -21,8 +21,8 @@ Kalman kalman(kalmanconf);
 
 const AnalogSensors::Channels chans = { {6, 5, 8, 7, 9, 11} };
 AnalogSensors::Calibrations calibrations = { {
-	{ { 0, 2206 }, // roll
-	  { 0, -2206 }, // pitch
+	{ { 0, -2206 }, // roll
+	  { 0, 2206 }, // pitch
 	  { 0, -4000 } }, // yaw
 	{ { 32000, -6750 }, // x-axis
 	  { 32000, -6750 }, // y-axis
