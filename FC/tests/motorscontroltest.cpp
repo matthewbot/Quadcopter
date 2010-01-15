@@ -4,6 +4,7 @@
 #include <FC/drivers/AnalogSensors.h>
 #include <FC/drivers/VexRC.h>
 #include <FC/drivers/Buzzer.h>
+#include <FC/drivers/BatteryMonitor.h>
 #include <FC/util/ESCTimer.h>
 #include <FC/util/PPMTimer.h>
 #include <stmos/peripherals/USART.h>
@@ -77,10 +78,12 @@ PPMTimer ppmtim;
 VexRC vex(ppmtim, 4);
 
 Buzzer buzzer;
+BatteryMonitor batmon(adc, 13);
 
 int main(int argc, char **argv) {
 	imu.start();
 
+	out.printf("Battery: %f\n", batmon.getVoltage());
 	out.print("Waiting for remote signal\n");
 	while (!vex.getSynced()) { Task::sleep(100); }
 

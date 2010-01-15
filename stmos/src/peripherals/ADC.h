@@ -11,6 +11,7 @@ namespace stmos {
 		public:
 			typedef uint8_t Channel;
 			typedef uint16_t Sample;
+			static const Sample MAXSAMPLE = 0xFFFF;
 		
 			enum SampleTime {
 				SAMPLETIME_1,
