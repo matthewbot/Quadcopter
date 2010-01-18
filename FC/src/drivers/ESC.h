@@ -12,6 +12,7 @@ namespace FC {
 			void arm();
 			inline bool isArmed() { return armed; }
 			void setThrottle(float throttle);
+			float getThrottle();
 			inline void off() { setThrottle(0); }
 		
 		private:

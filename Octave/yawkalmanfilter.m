@@ -28,8 +28,8 @@ cur_gyroangle = 0;
 for samplenum = 1:samplecount
 	# calculate a sample
 	sample = samples(samplenum,1:2);
-	mag = sample(1);
-	gyro = sample(2); 
+	mag = sample(2);
+	gyro = sample(1); 
 	z = [mag; gyro]; 
 
 	# Kalman prediction phase

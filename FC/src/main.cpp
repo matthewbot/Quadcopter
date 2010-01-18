@@ -1,10 +1,11 @@
-#include <stmos/peripherals/USART.h>
+#include <FC/copter/Quadcopter.h>
+#include <FC/copter/ManualThrottlePilot.h>
 
-using namespace stmos;
+using namespace FC;
 
-static USART out(1, 115200);
+Quadcopter copter(new ManualThrottlePilot());
 
 int main(int argc, char **argv) {	
-	out.print("Hello World!\n");
+	copter.run();
 }
 

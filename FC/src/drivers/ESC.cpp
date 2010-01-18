@@ -11,7 +11,7 @@ ESC::ESC(Timer &tim, int timerchan)
 }
 
 void ESC::arm() {
-	chan.setCCR(100);
+	chan.setCCR(1000);
 	chan.enable();
 	Task::sleep(1000);
 	armed = true;
@@ -21,6 +21,10 @@ void ESC::setThrottle(float speed) {
 	if (!armed)
 		return;
 		
-	chan.setCCR(100 + (int)(speed * 100));
+	chan.setCCR(1000 + (int)(speed * 1000));
+}
+
+float ESC::getThrottle() {
+	return (chan.getCCR() - 1000) / 1000.0;
 }
 

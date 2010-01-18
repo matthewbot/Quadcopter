@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 			float pitchcorrection = (chans.analogs[2] / 50.0) / 6;
 			float rollcorrection = (-chans.analogs[3] / 50.0) / 6;
 		
-			out.printf("%f\n", throttle);
+			out.printf("%f %f\n", throttle, yawcorrection);
 			
 			motors.setThrottle(throttle, rollcorrection, pitchcorrection, yawcorrection);
 		} else {

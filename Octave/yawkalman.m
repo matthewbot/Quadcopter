@@ -22,9 +22,9 @@ F = [
 # or: how much is the actual state expected to deviate from the above predictions
 
 Qvec = [
-	0.005*DT; # angle
-	0.005;    # vel
-	0.0001;  # veloffset (the gyro's rate of change of drift is pretty low, even though it builds up over time)
+	0.0005*DT; # angle
+	0.0005;    # vel
+	0.00001;  # veloffset (the gyro's rate of change of drift is pretty low, even though it builds up over time)
 ];
 Q = Qvec*transpose(Qvec); 
 
@@ -41,8 +41,8 @@ H = [
 # or: how much our sensors are expected to deviate from reality
 
 R = [
-	.001, 0; # compass
-	0, 0.001; # gyro
+	.1, 0; # compass
+	0, 0.0001; # gyro
 ]; 
 
 ### Generate Graphs ###
@@ -56,6 +56,7 @@ plot(mags, 'r', angles, 'b', gyroangles, 'g');
 title("Yaw test")
 xlabel("Sample (200 samples/sec)")
 ylabel("Roll (rad)")
+axis([0, samplecount, -3, 3])
 print -dsvg "-S3000,800" yaw.svg
 
 

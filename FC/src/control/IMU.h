@@ -27,6 +27,10 @@ namespace FC {
 			bool ready();
 			
 			State getState();
+			State getVelocityState();
+			inline float getRoll() { return getState().roll; }
+			inline float getPitch() { return getState().pitch; }
+			inline float getYaw() { return getState().yaw; }
 			
 		private:
 			AnalogSensors &sensors;

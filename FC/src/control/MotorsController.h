@@ -4,6 +4,7 @@
 #include <FC/control/Motors.h>
 #include <FC/control/IMU.h>
 #include <FC/math/PID.h>
+#include <FC/util/ESCTimer.h>
 #include <stmos/util/NonCopyable.h>
 #include <stmos/util/Callback.h>
 
@@ -15,7 +16,7 @@ namespace FC {
 				PID::Config yaw_config;
 			} __attribute__((packed));
 		
-			MotorsController(const Config &config, IMU &imu, Motors &motors, stmos::Timer &esctimer);
+			MotorsController(const Config &config, IMU &imu, Motors &motors, ESCTimer &esctimer);
 			
 			void start();
 			void stop();

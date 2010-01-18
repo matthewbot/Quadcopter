@@ -42,7 +42,10 @@ void VexRC::call() {
 		val += tim.getOverflow();
 	prevtimerval = timerval;
 	
-	val /= 10;
+	if (val % 10 >= 5)
+		val = val/10 + 1;
+	else
+		val = val/10;
 	
 	if (val > 500) { // sync pulse
 		if (currentchan != 0)

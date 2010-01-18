@@ -36,10 +36,10 @@ void TCCompass::call() {
 	
 	float relheading = atan2f(northvec[1], northvec[0]);
 	
-	while (heading - relheading > M_PI)
+	/*while (heading - relheading > M_PI)
 		relheading += M_PI*2;
 	while (heading - relheading < -M_PI)
-		relheading -= M_PI*2;
+		relheading -= M_PI*2;*/
 		
 	heading = relheading;
 }

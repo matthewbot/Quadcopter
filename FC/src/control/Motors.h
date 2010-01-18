@@ -14,6 +14,10 @@ namespace FC {
 			void setThrottle(float throttle, float rollcorrection, float pitchcorrection, float yawcorrection);
 			void off();
 			
+			inline float getNorthThrottle() { return north.getThrottle(); }
+			inline float getEastThrottle() { return east.getThrottle(); }
+			inline float getSouthThrottle() { return south.getThrottle(); }
+			inline float getWestThrottle() { return west.getThrottle(); }
 		private:
 			ESC north, east, south, west;
 	};

@@ -16,10 +16,10 @@ void Motors::arm() {
 }
 
 void Motors::setThrottle(float throttle, float rollcorrection, float pitchcorrection, float yawcorrection) {
-	north.setThrottle(throttle + pitchcorrection - yawcorrection);
-	south.setThrottle(throttle - pitchcorrection - yawcorrection);
-	east.setThrottle( throttle + rollcorrection  + yawcorrection);
-	west.setThrottle( throttle - rollcorrection  + yawcorrection);
+	north.setThrottle(throttle + pitchcorrection + yawcorrection);
+	south.setThrottle(throttle - pitchcorrection + yawcorrection);
+	east.setThrottle( throttle + rollcorrection  - yawcorrection);
+	west.setThrottle( throttle - rollcorrection  - yawcorrection);
 }
 
 void Motors::off() {

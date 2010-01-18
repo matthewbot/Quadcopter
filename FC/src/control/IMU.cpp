@@ -31,19 +31,26 @@ IMU::State IMU::getState() {
 	return ret;	
 }
 
+IMU::State IMU::getVelocityState() {
+	State ret = { rollkalman.getState().vel, pitchkalman.getState().vel, yawkalman.getState().vel };
+	
+	return ret;	
+}
+
 void IMU::call() {
 	while (true) {
 		unsigned long starttime = Task::getCurrentTick();
 		AnalogSensors::Readings readings = sensors.getReadings();
-		float compassheading = compass.readHeading();
 	
-		Kalman::Measurement roll = {{-atan2f(readings.z_accel, readings.x_accel)-(float)M_PI/2, readings.roll_gyro}};
+		float tmp = sqrtf(readings.z_accel*readings.z_accel + readings.y_accel*readings.y_accel);
+		Kalman::Measurement roll = {{atan2f(tmp, readings.x_accel) - (float)M_PI/2, readings.roll_gyro}};
 		rollkalman.step(roll);
 	
-		Kalman::Measurement pitch = {{-atan2f(readings.z_accel, readings.y_accel)-(float)M_PI/2, readings.pitch_gyro}};
+		tmp = sqrtf(readings.z_accel*readings.z_accel + readings.x_accel*readings.x_accel);
+		Kalman::Measurement pitch = {{atan2f(tmp, readings.y_accel) - (float)M_PI/2, readings.pitch_gyro}};
 		pitchkalman.step(pitch);
 		
-		Kalman::Measurement yaw = {{ compassheading, readings.yaw_gyro }};
+		Kalman::Measurement yaw = {{ compass.readHeading(), readings.yaw_gyro }};
 		yawkalman.step(yaw);
 		
 		int time = 5 - (Task::getCurrentTick() - starttime);

@@ -13,6 +13,7 @@ namespace FC {
 			PID(const Config &config);
 			
 			float update(float error);
+			float updateVelocity(float error, float derror_dt);
 			inline void clearInt() { int_error = 0; }
 			
 //		private:

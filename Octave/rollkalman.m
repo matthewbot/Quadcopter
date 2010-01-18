@@ -22,9 +22,9 @@ global F = [
 # or: how much is the actual state expected to deviate from the above predictions
 
 Qvec = [
-	0.01*DT; # angle
+	0.00001; # angle
 	0.01;    # vel
-	0.0005;  # veloffset (the gyro's rate of change of drift is pretty low, even though it builds up over time)
+	0.0001;  # veloffset (the gyro's rate of change of drift is pretty low, even though it builds up over time)
 ];
 global Q = Qvec*transpose(Qvec); 
 
@@ -41,8 +41,8 @@ global H = [
 # or: how much our sensors are expected to deviate from reality
 
 global R = [
-	.002, 0; # accel
-	0, 0.005; # gyro
+	.001, 0; # accel
+	0, 0.001; # gyro
 ]; 
 
 ### Generate Graphs ###

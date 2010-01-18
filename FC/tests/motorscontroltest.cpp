@@ -11,6 +11,7 @@
 #include <stmos/peripherals/IOPin.h>
 #include <stmos/util/Task.h>
 #include <cstdio>
+#include <cmath>
 
 using namespace FC;
 using namespace stmos;
@@ -37,21 +38,21 @@ TCCompass compass(chans, calibrations.accel, adc, mag);
 const IMU::Config imuconf = {
 	{ // roll_pitch_kalman
 		{ // Q
-			2.5E-9, 5E-7, 2.5E-8,
-			5E-7, 1E-4, 5E-6,
-			2.5E-8, 5E-6, 2.5E-7
+			1E-10, 1E-7, 1E-9,
+			1E-7, 1E-4, 1E-6,
+			1E-9, 1E-6, 1E-8
 		}, { // R
 			.001, 0,
-			0,  .005
+			0,  .001
 		}
 	}, { // yaw_kalman
 		{ // Q
-			6.25E-10, 1.25E-7, 2.5E-9,
-			1.25E-7, 2.5E-5, 5E-7,
-			2.5E-9, 5E-7,1E-8
+			6.25E-12, 1.25E-9, 2.5E-11,
+			1.25E-9, 2.5E-7, 5E-9,
+			2.5E-11, 5E-9,1E-10
 		}, { // R
-			.001, 0,
-			0, .001
+			.1, 0,
+			0, .0001
 		}
 	}
 };
@@ -63,13 +64,13 @@ Motors motors(esctim);
 
 MotorsController::Config controlconfig = {
 	{
-		.13, .3, .028,
-		.1,
-		0.01
+	    0.03, 0.01, 0.025,
+		1,
+		ESCTimer::UPDATETIME / 1000.0
 	}, {
-		.08, 0.0, 0,
-		.05,
-		0.01
+		.03, 0, .02,
+		.1,
+		ESCTimer::UPDATETIME / 1000.0
 	}
 };
 MotorsController control(controlconfig, imu, motors, esctim);
@@ -80,49 +81,69 @@ VexRC vex(ppmtim, 4);
 Buzzer buzzer;
 BatteryMonitor batmon(adc, 13);
 
+static void docalibrate(const char *type, PID::Config *pid);
+
 int main(int argc, char **argv) {
 	imu.start();
 
-	out.printf("Battery: %f\n", batmon.getVoltage());
+	out.printf("Battery: %f cell\n", batmon.getCellVoltage());
 	out.print("Waiting for remote signal\n");
 	while (!vex.getSynced()) { Task::sleep(100); }
 
 	out.print("Arming\n");
 	motors.arm();
 
+	float heading = imu.getYaw();
+
 	while (true) {
 		control.start();
 		
-		while (vex.getSynced()) {
+		while (true) {
+			if (!vex.getSynced()) {
+				control.stop();
+				motors.off();
+				while (!vex.getSynced()) { Task::sleep(100); }
+				control.start();
+			}
+		
 			VexRC::Channels chans = vex.getChannels();
+	
+			if (chans.left != VexRC::NONE || chans.right != VexRC::NONE)
+				break;
 	
 			float throttle = chans.analogs[1] / 50.0;
 			if (throttle < 0)
 				throttle = 0;
 			float rollsetpoint = (-chans.analogs[3] / 50.0) * 0.3;
+			float pitchsetpoint = (-chans.analogs[2] / 50.0) * 0.3;
+			heading += (chans.analogs[0] / 50.0) * (M_PI / 25);
 			
-			control.setControlPoints(throttle, rollsetpoint, 0, 0);
+			control.setControlPoints(throttle, rollsetpoint, pitchsetpoint, heading);
 			
 			IMU::State state = imu.getState();
-			out.printf("%f %f\n", state.roll, rollsetpoint);
+			//out.printf("%f %f %f %f\n", state.roll, state.pitch, state.yaw, batmon.getCellVoltage());
+			//out.printf("%f %f %f\n", state.yaw, compass.readHeading(), batmon.getCellVoltage());
+			//out.printf("%f\n", motors.getNorthThrottle());
+			out.printf("%f %f %f\n", control.roll_pid.int_error, control.pitch_pid.int_error, control.yaw_pid.int_error);
 			Task::sleep(50);
 		}
 		
 		control.stop();
 		motors.off();
 		out.print("Push enter\n");
-		out.getch();
-		PID::Config *conf = &controlconfig.roll_pitch_config;
-		out.printf("Old: %f %f %f\n", conf->p, conf->i, conf->d);
-		out.print("New PID values:\n");
-		
-		char buf[100];
-		out.getline(buf, sizeof(buf));
-		
-		sscanf(buf, "%f %f %f", &conf->p, &conf->i, &conf->d);
-		out.printf("Got: %f %f %f\n", conf->p, conf->i, conf->d);
-		out.print("Waiting for remote\n");
-		
-		while (!vex.getSynced()) { Task::sleep(50); }
+		while (out.getch() != '\r') { }
+		docalibrate("RP", &controlconfig.roll_pitch_config);
+		docalibrate("Y", &controlconfig.yaw_config);
 	}
 }
+static void docalibrate(const char *type, PID::Config *conf) {
+	out.printf("Old %s: %f %f %f\n", type, conf->p, conf->i, conf->d);
+	out.printf("New %s PID values:\n", type);
+	
+	static char buf[100];
+	out.getline(buf, sizeof(buf));
+	
+	sscanf(buf, "%f %f %f", &conf->p, &conf->i, &conf->d);
+	out.printf("Got: %f %f %f\n", conf->p, conf->i, conf->d);
+}
+		

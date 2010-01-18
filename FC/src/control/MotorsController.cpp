@@ -3,7 +3,7 @@
 using namespace FC;
 using namespace stmos;
 
-MotorsController::MotorsController(const Config &config, IMU &imu, Motors &motors, Timer &esctimer)
+MotorsController::MotorsController(const Config &config, IMU &imu, Motors &motors, ESCTimer &esctimer)
 : imu(imu),
   motors(motors),
   running(false),
@@ -39,7 +39,7 @@ void MotorsController::call() {
 	if (!running)
 		return;
 		
-	if (throttle < 0.1) {
+	if (throttle < 0.13) {
 		roll_pid.clearInt();
 		pitch_pid.clearInt();
 		yaw_pid.clearInt();
@@ -48,10 +48,11 @@ void MotorsController::call() {
 	}
 		
 	IMU::State imustate = imu.getState();
+	IMU::State imuvelstate = imu.getVelocityState();
 	roll_correction = roll_pid.update(roll_setpoint - imustate.roll);
-	//pitch_correction = pitch_pid.update(pitch_setpoint - imustate.pitch);
-	//yaw_correction = yaw_pid.update(yaw_setpoint - imustate.yaw);
+	pitch_correction = pitch_pid.update(pitch_setpoint - imustate.pitch);
+	yaw_correction = yaw_pid.update(yaw_setpoint - imustate.yaw);
 	
-	//motors.setThrottle(throttle, rollcorrection, pitchcorrection, yawcorrection);
-	motors.setThrottle(throttle, roll_correction, 0, 0);
+	//motors.setThrottle(throttle, roll_correction, 0, 0);
+	motors.setThrottle(throttle, roll_correction, pitch_correction, yaw_correction);
 }

@@ -17,3 +17,5 @@ void operator delete(void *p) throw() { free(p); }
 void operator delete[](void *p) throw() { free(p); }
 extern "C" int __aeabi_atexit(void *object, void (*destructor)(void *), void *dso_handle) { return 0; }
 
+extern "C" void __cxa_pure_virtual() { panic("Pure virtual"); }
+

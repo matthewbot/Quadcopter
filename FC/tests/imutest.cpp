@@ -25,24 +25,25 @@ TCCompass compass(chans, calibrations.accel, adc, mag);
 const IMU::Config imuconf = {
 	{ // roll_pitch_kalman
 		{ // Q
-			2.5E-9, 5E-7, 2.5E-8,
-			5E-7, 1E-4, 5E-6,
-			2.5E-8, 5E-6, 2.5E-7
+			1E-10, 1E-7, 1E-9,
+			1E-7, 1E-4, 1E-6,
+			1E-9, 1E-6, 1E-8
 		}, { // R
 			.001, 0,
-			0,  .005
+			0,  .001
 		}
 	}, { // yaw_kalman
 		{ // Q
-			6.25E-10, 1.25E-7, 2.5E-9,
-			1.25E-7, 2.5E-5, 5E-7,
-			2.5E-9, 5E-7,1E-8
+			6.25E-12, 1.25E-9, 2.5E-11,
+			1.25E-9, 2.5E-7, 5E-9,
+			2.5E-11, 5E-9,1E-10
 		}, { // R
-			.001, 0,
-			0, .001
+			.1, 0,
+			0, .0001
 		}
 	}
 };
+
 
 IMU imu(sensors, compass, imuconf);
 USART out(1, 115200);
@@ -57,7 +58,7 @@ int main(int argc, char **argv) {
 		Task::sleep(20);
 		
 		IMU::State state = imu.getState();
-		out.printf("%f %f %f\n", state.roll, state.pitch, state.yaw);
+		out.printf("%f %f\n", state.yaw, compass.readHeading());
 	}
 }
 
