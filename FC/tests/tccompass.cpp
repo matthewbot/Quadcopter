@@ -1,4 +1,5 @@
 #include <FC/control/TCCompass.h>
+#include <FC/util/configs.h>
 #include <stmos/peripherals/ADC.h>
 #include <stmos/peripherals/IOPin.h>
 #include <stmos/peripherals/USART.h>
@@ -7,30 +8,20 @@
 using namespace FC;
 using namespace stmos;
 
-const IOPin::PortPin reset = { IOPin::PORT_C, 5 };
-const IOPin::PortPin drdy = { IOPin::PORT_B, 10 };
-MicroMag mag(2, reset, drdy);
+MicroMag mag(2, (IOPin::PortPin) { IOPin::PORT_C, 5 }, (IOPin::PortPin)  { IOPin::PORT_B, 10 });
 
-const AnalogSensors::Channels chans = { {6, 5, 8, 7, 9, 11} };
-AnalogSensors::Calibrations calibrations = { {
-	{ { 0, 2206 }, // roll
-	  { 0, -2206 }, // pitch
-	  { 0, -4000 } }, // yaw
-	{ { 32000, -6750 }, // x-axis
-	  { 32000, -6750 }, // y-axis
-	  { 32000, 6750 } } // z-axis
-} };	
 ADC adc(1);
-AnalogSensors analog(adc, chans, calibrations);
+AnalogSensors::Calibrations calibrations = configs::analog;
+AnalogSensors analog(adc, configs::chans, calibrations);
 
-TCCompass compass(chans, calibrations.accel, adc, mag);
+TCCompass compass(configs::chans, configs::analog.accel, adc, mag);
 
 USART out(1, 115200);
 
 int main(int argc, char **argv) {
 	out.print("Tilt compensated compass test\n");
 	
-	calibrations.gyro.yaw.center = adc.sampleChannel(chans.yaw_gyro);
+	calibrations.gyro.yaw.center = adc.sampleChannel(configs::chans.yaw_gyro);
 	
 	while (true) {
 		long start = Task::getCurrentTick();

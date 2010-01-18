@@ -8,7 +8,7 @@ using namespace stmos;
 
 PPMTimer tim;
 VexRC vex(tim, 4);
-static USART out(1, 115200);
+USART out(1, 115200);
 
 static const char *digitalToString(VexRC::DigitalChannel chan) {
 	switch (chan) {

@@ -5,14 +5,11 @@
 using namespace FC;
 using namespace stmos;
 
-const IOPin::PortPin reset = { IOPin::PORT_C, 5 };
-const IOPin::PortPin drdy = { IOPin::PORT_B, 10 };
-static MicroMag mag(2, reset, drdy);
-static USART out(1, 115200);
+MicroMag mag(2, (IOPin::PortPin) { IOPin::PORT_C, 5 }, (IOPin::PortPin)  { IOPin::PORT_B, 10 });
+USART out(1, 115200);
 
 int main(int argc, char **argv) {	
-	out.printf("Single axis X: %d\n", (int)mag.sample(MicroMag::AXIS_X));
-	out.print("Starting scan\n");
+	out.print("Starting micromag scan\n");
 	
 	mag.startScan();
 	

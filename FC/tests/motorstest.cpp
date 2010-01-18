@@ -29,13 +29,13 @@ int main(int argc, char **argv) {
 		
 		if (vex.getSynced()) {
 			VexRC::Channels chans = vex.getChannels();
-
-			float yawcorrection = (chans.analogs[0] / 50.0) / 6;		
+	
 			float throttle = chans.analogs[1] / 50.0;
+			float yawcorrection = (chans.analogs[0] / 50.0) / 6;	
 			float pitchcorrection = (chans.analogs[2] / 50.0) / 6;
 			float rollcorrection = (-chans.analogs[3] / 50.0) / 6;
 		
-			out.printf("%f %f\n", throttle, yawcorrection);
+			out.printf("%f %f %f %f\n", rollcorrection, pitchcorrection, yawcorrection, throttle);
 			
 			motors.setThrottle(throttle, rollcorrection, pitchcorrection, yawcorrection);
 		} else {
