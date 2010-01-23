@@ -1,4 +1,5 @@
 #include "IMU.h"
+#include <FC/math/trig.h>
 #include <cmath>
 
 using namespace FC;
@@ -37,20 +38,21 @@ IMU::State IMU::getVelocityState() {
 	return ret;	
 }
 
+static inline float sqr(float f) { return f*f; }
+
 void IMU::call() {
 	while (true) {
 		unsigned long starttime = Task::getCurrentTick();
 		AnalogSensors::Readings readings = sensors.getReadings();
-	
-		float tmp = sqrtf(readings.z_accel*readings.z_accel + readings.y_accel*readings.y_accel);
-		Kalman::Measurement roll = {{atan2f(tmp, readings.x_accel) - (float)M_PI/2, readings.roll_gyro}};
-		rollkalman.step(roll);
-	
-		tmp = sqrtf(readings.z_accel*readings.z_accel + readings.x_accel*readings.x_accel);
-		Kalman::Measurement pitch = {{atan2f(tmp, readings.y_accel) - (float)M_PI/2, readings.pitch_gyro}};
-		pitchkalman.step(pitch);
 		
-		Kalman::Measurement yaw = {{ compass.readHeading(), readings.yaw_gyro }};
+		float aroll = -atan2f(readings.x_accel, sqrtf(readings.y_accel*readings.y_accel + readings.z_accel*readings.z_accel));
+		float apitch = -atan2f(readings.y_accel, sqrtf(readings.x_accel*readings.y_accel + readings.z_accel*readings.z_accel));
+	
+		rollkalman.step((Kalman::Measurement) {{aroll, readings.roll_gyro}});
+		pitchkalman.step((Kalman::Measurement) {{apitch, readings.pitch_gyro}});
+		
+		float heading = compass.calcHeading(-rollkalman.getState().angle, -pitchkalman.getState().angle);
+		Kalman::Measurement yaw = {{ heading, readings.yaw_gyro }};
 		yawkalman.step(yaw);
 		
 		int time = 5 - (Task::getCurrentTick() - starttime);

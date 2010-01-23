@@ -10,7 +10,7 @@ ADC adc(1);
 AnalogSensors sensors(adc, configs::chans, configs::analog);
 
 MicroMag mag(2, (IOPin::PortPin) { IOPin::PORT_C, 5 }, (IOPin::PortPin) { IOPin::PORT_B, 10 });
-TCCompass compass(configs::chans, configs::analog.accel, adc, mag);
+TCCompass compass(mag);
 
 IMU imu(sensors, compass, configs::imu);
 USART out(1, 115200);
@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 		Task::sleep(20);
 		
 		IMU::State state = imu.getState();
-		out.printf("%f %f\n", state.yaw, compass.readHeading());
+		out.printf("%f %f %f\n", state.roll, state.pitch, state.yaw);
 	}
 }
 

@@ -25,9 +25,6 @@ ADC adc(1);
 AnalogSensors::Calibrations calibrations = configs::analog;
 AnalogSensors analog(adc, configs::chans, calibrations);
 
-MicroMag mag(2, (IOPin::PortPin) { IOPin::PORT_C, 5 }, (IOPin::PortPin) { IOPin::PORT_B, 10 });
-TCCompass compass(configs::chans, configs::analog.accel, adc, mag);
-
 Buzzer buzzer;
 int main(int argc, char **argv) {
 	out.print("Waiting for vexrc\n");
@@ -57,7 +54,7 @@ int main(int argc, char **argv) {
 			motors.setThrottle(throttle, rollcorrection, pitchcorrection, yawcorrection);
 			
 			AnalogSensors::Readings readings = analog.getReadings();
-			out.printf("%f %f\n", readings.yaw_gyro, compass.readHeading());
+			out.printf("%f %f %f\n", readings.x_accel, readings.z_accel, readings.roll_gyro);
 		} else {
 			motors.off();
 		}

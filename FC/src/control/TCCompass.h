@@ -8,22 +8,15 @@
 #include <stmos/util/Callback.h>
 
 namespace FC {
-	class TCCompass : stmos::NonCopyable, stmos::Callback {
+	class TCCompass : stmos::NonCopyable {
 		public:
-			TCCompass(const AnalogSensors::Channels &chans, const AnalogSensors::AccelerometerCalibration &cal, 
-			          stmos::ADC &adc, MicroMag &mmag);
+			TCCompass(MicroMag &mmag);
 	
-			inline float readHeading() { return heading; }
+			float calcHeading(float roll, float pitch);
 			
 		private:
-			const AnalogSensors::Channels &chans;
-			const AnalogSensors::AccelerometerCalibration &cal;
-			stmos::ADC &adc;
 			MicroMag &mmag;
-			
-			float heading;
-			
-			virtual void call();
+			float prevheading;
 	};
 };
 

@@ -23,7 +23,7 @@ ADC adc(1);
 AnalogSensors sensors(adc, configs::chans, configs::analog);
 
 MicroMag mag(2, (IOPin::PortPin) { IOPin::PORT_C, 5 }, (IOPin::PortPin) { IOPin::PORT_B, 10 });
-TCCompass compass(configs::chans, configs::analog.accel, adc, mag);
+TCCompass compass(mag);
 
 IMU imu(sensors, compass, configs::imu);
 

@@ -1,5 +1,6 @@
 #include <FC/drivers/AnalogSensors.h>
 #include <FC/util/configs.h>
+#include <FC/math/trig.h>
 #include <stmos/peripherals/ADC.h>
 #include <stmos/peripherals/USART.h>
 #include <stmos/util/Task.h>
@@ -24,9 +25,14 @@ int main(int argc, char **argv) {
 		Task::sleep(500);
 		AnalogSensors::Readings readings = analog.getReadings();
 		
-		out.printf("Roll %f\nPitch %f\nYaw %f\n",
-		           readings.roll_gyro, readings.pitch_gyro, readings.yaw_gyro);
-		out.printf("XAcc %f\nYAcc %f\nZAcc %f\n", 
-		           readings.x_accel, readings.y_accel, readings.z_accel);
+		float roll = atan2f(readings.x_accel, sqrtf(readings.y_accel*readings.y_accel + readings.z_accel*readings.z_accel));
+		float pitch = atan2f(readings.y_accel, sqrtf(readings.x_accel*readings.y_accel + readings.z_accel*readings.z_accel));
+		
+		out.printf("%f %f\n", roll, pitch);
+		
+		//out.printf("Roll %f\nPitch %f\nYaw %f\n",
+		//           readings.roll_gyro, readings.pitch_gyro, readings.yaw_gyro);
+		//out.printf("XAcc %f\nYAcc %f\nZAcc %f\n", 
+		//           readings.x_accel, readings.y_accel, readings.z_accel);
 	}
 }
