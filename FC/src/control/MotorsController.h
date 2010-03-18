@@ -12,7 +12,8 @@ namespace FC {
 	class MotorsController : stmos::NonCopyable, stmos::Callback {
 		public:
 			struct Config {
-				PID::Config roll_pitch_config;
+				PID::Config roll_config;
+				PID::Config pitch_config;
 				PID::Config yaw_config;
 			} __attribute__((packed));
 		

@@ -1,0 +1,8 @@
+/FC/build/
+/FC/out/
+/stmos/build/
+/stmos/out/
+
+Octave/*.svg
+*.pyc
+

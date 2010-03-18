@@ -10,11 +10,7 @@ x = [
 
 # covariance matrix
 
-P = [
-	10, 0, 0;
-	0, 10, 0;
-	0, 0, 10;
-];
+P = eye(3, 3)*10;
 
 # --- Processing ---
 

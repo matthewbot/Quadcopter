@@ -22,8 +22,8 @@ F = [
 # or: how much is the actual state expected to deviate from the above predictions
 
 Qvec = [
-	0.0005*DT; # angle
-	0.0005;    # vel
+	0.00001; # angle
+	0.001;    # vel
 	0.00001;  # veloffset (the gyro's rate of change of drift is pretty low, even though it builds up over time)
 ];
 Q = Qvec*transpose(Qvec); 
@@ -41,13 +41,13 @@ H = [
 # or: how much our sensors are expected to deviate from reality
 
 R = [
-	.1, 0; # compass
+	1, 0; # compass
 	0, 0.0001; # gyro
 ]; 
 
 ### Generate Graphs ###
 
-load "yawsamples.dat" samples;
+load "yaw.dat" samples;
 samplecount = size(samples,1);
 yawkalmanfilter;
 

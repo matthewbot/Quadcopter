@@ -27,8 +27,9 @@ cur_gyroangle = 0;
 
 for samplenum = 1:samplecount
 	# calculate a sample
-	sample = samples(samplenum,1:3);
-	accel = atan2(sample(3), sample(2))+pi/2;
+	sample = samples(samplenum,:);
+	accel = atan2(sample(2), sqrt(sample(3)^2 + sample(4)^2));
+	#accel = acos(sample(2)) - pi/2;
 	gyro = sample(1); 
 	z = [accel; gyro]; 
 

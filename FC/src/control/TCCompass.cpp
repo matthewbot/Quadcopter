@@ -15,8 +15,15 @@ TCCompass::TCCompass(MicroMag &mmag)
 float TCCompass::calcHeading(float roll, float pitch) {
 	MicroMag::Scan scan = mmag.getScan();
 	
-	float magx = scan.x*cos(pitch) + scan.y*sin(roll)*sin(pitch) - scan.z*cos(roll)*sin(pitch);
-	float magy = scan.y*cos(roll) + scan.z*sin(roll);
+	roll = -roll;
+	pitch = -pitch;
+	float sroll = sinf(roll);
+	float croll = cosf(roll);
+	float spitch = sinf(pitch);
+	float cpitch = cosf(pitch);
+	
+	float magx = scan.x*cpitch + scan.y*sroll*spitch - scan.z*croll*spitch;
+	float magy = scan.y*croll + scan.z*sroll;
 
 	float relheading = atan2f(magy, magx);
 	

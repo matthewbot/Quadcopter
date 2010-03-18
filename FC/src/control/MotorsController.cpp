@@ -7,8 +7,8 @@ MotorsController::MotorsController(const Config &config, IMU &imu, Motors &motor
 : imu(imu),
   motors(motors),
   running(false),
-  roll_pid(config.roll_pitch_config),
-  pitch_pid(config.roll_pitch_config),
+  roll_pid(config.roll_config),
+  pitch_pid(config.pitch_config),
   yaw_pid(config.yaw_config),
   throttle(0),
   roll_setpoint(0),
@@ -39,7 +39,7 @@ void MotorsController::call() {
 	if (!running)
 		return;
 		
-	if (throttle < 0.13) {
+	if (throttle < 0.25) {
 		roll_pid.clearInt();
 		pitch_pid.clearInt();
 		yaw_pid.clearInt();

@@ -79,10 +79,12 @@ int main(int argc, char **argv) {
 			control.setControlPoints(throttle, rollsetpoint, pitchsetpoint, heading);
 			
 			IMU::State state = imu.getState();
-			//out.printf("%f %f %f %f\n", state.roll, state.pitch, state.yaw, batmon.getCellVoltage());
+			//out.printf("%f %f\n", pitchsetpoint, state.pitch);
+			//out.printf("%f %f\n", rollsetpoint, state.roll);
+			out.printf("%f %f\n", throttle, batmon.getCellVoltage());
 			//out.printf("%f %f %f\n", state.yaw, compass.readHeading(), batmon.getCellVoltage());
 			//out.printf("%f\n", motors.getNorthThrottle());
-			out.printf("%f %f %f\n", control.roll_pid.int_error, control.pitch_pid.int_error, control.yaw_pid.int_error);
+			//out.printf("%f %f %f\n", control.roll_pid.int_error, control.pitch_pid.int_error, control.yaw_pid.int_error);
 			Task::sleep(50);
 		}
 		
@@ -90,8 +92,9 @@ int main(int argc, char **argv) {
 		motors.off();
 		out.print("Push enter\n");
 		while (out.getch() != '\r') { }
-		docalibrate("RP", &controlconfig.roll_pitch_config);
-		docalibrate("Y", &controlconfig.yaw_config);
+		docalibrate("Roll", &controlconfig.roll_config);
+		docalibrate("Pitch", &controlconfig.pitch_config);
+		docalibrate("Yaw", &controlconfig.yaw_config);
 	}
 }
 static void docalibrate(const char *type, PID::Config *conf) {

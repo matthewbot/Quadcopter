@@ -46,12 +46,12 @@ void IMU::call() {
 		AnalogSensors::Readings readings = sensors.getReadings();
 		
 		float aroll = -atan2f(readings.x_accel, sqrtf(readings.y_accel*readings.y_accel + readings.z_accel*readings.z_accel));
-		float apitch = -atan2f(readings.y_accel, sqrtf(readings.x_accel*readings.y_accel + readings.z_accel*readings.z_accel));
+		float apitch = -atan2f(readings.y_accel, sqrtf(readings.x_accel*readings.x_accel + readings.z_accel*readings.z_accel));
 	
 		rollkalman.step((Kalman::Measurement) {{aroll, readings.roll_gyro}});
 		pitchkalman.step((Kalman::Measurement) {{apitch, readings.pitch_gyro}});
 		
-		float heading = compass.calcHeading(-rollkalman.getState().angle, -pitchkalman.getState().angle);
+		float heading = compass.calcHeading(rollkalman.getState().angle, pitchkalman.getState().angle);
 		Kalman::Measurement yaw = {{ heading, readings.yaw_gyro }};
 		yawkalman.step(yaw);
 		

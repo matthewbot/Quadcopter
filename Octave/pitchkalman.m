@@ -48,16 +48,16 @@ R = [
 ### Generate Graphs ###
 
 load "rollpitch.dat" samples;
-samples = [samples(:, 1), samples(:, 3), samples(:, 4), samples(:, 5)]; # leave out pitch gyro
+samples = [samples(:, 2), samples(:, 4), samples(:, 3), samples(:, 5)]; # leave out roll gyro, swap accels
 rollpitchkalmanfilter;
 
 figure(1);
 plot(accels, 'r', spencer(accels), 'y', angles, 'b', gyroangles, 'g');
-title("Airborne roll test")
-xlabel("Sample (200hz)")
+title("Airborn roll test")
+xlabel("Sample (200 samples/sec)")
 ylabel("Roll (rad)")
-axis([0, samplecount, -0.5, 0.5])
-print -dpng "-S600,500" roll.png
+axis([0, samplecount, -1, 1])
+print -dsvg "-S3000,800" pitch.svg
 
 figure(2);
 plot(accels, 'r', spencer(accels), 'y', angles, 'b', gyroangles, 'g');
@@ -65,5 +65,5 @@ title("Settling")
 xlabel("Sample (200 samples/sec)")
 ylabel("Roll (rad)")
 axis([2200, samplecount, -.1, .1])
-print -dsvg "-S500,250" roll_settling.svg
+print -dsvg "-S3000,800" pitch_settling.svg
 
