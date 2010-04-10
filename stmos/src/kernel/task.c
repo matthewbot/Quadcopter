@@ -86,9 +86,8 @@ void task_gc() {
 			break;
 		freetasks = task->list_next;
 		
+		irq_enable_switch(); // free is protected w/ a mutex, must enable context switches
 		free(task);
-		
-		irq_enable_switch(); // in between every tasks toggle interrupts so a context switch can interrupt a GC cycle
 	}
 	
 	irq_enable_switch();
