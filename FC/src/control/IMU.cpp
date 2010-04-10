@@ -45,9 +45,10 @@ void IMU::call() {
 		unsigned long starttime = Task::getCurrentTick();
 		AnalogSensors::Readings readings = sensors.getReadings();
 		
-		float aroll = -atan2f(readings.x_accel, sqrtf(readings.y_accel*readings.y_accel + readings.z_accel*readings.z_accel));
-		float apitch = -atan2f(readings.y_accel, sqrtf(readings.x_accel*readings.x_accel + readings.z_accel*readings.z_accel));
-	
+		float g = sqrtf(sqr(readings.x_accel) + sqr(readings.y_accel) + sqr(readings.z_accel));
+		float apitch = -asinf(readings.y_accel / g);
+		float aroll = -asinf(readings.x_accel / (cosf(apitch)*g));
+
 		rollkalman.step((Kalman::Measurement) {{aroll, readings.roll_gyro}});
 		pitchkalman.step((Kalman::Measurement) {{apitch, readings.pitch_gyro}});
 		
