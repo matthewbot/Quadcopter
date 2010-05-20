@@ -33,8 +33,6 @@ namespace stmos {
 			Task();
 			struct kernel_task *ktask;
 			
-			void wakeup();
-			
 			static Task maintask;
 	};
 }

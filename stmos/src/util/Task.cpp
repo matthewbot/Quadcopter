@@ -24,8 +24,6 @@ Task::Task() : ktask(NULL) { }
 
 Task::~Task() {
 	stop();
-	task_free(ktask);
-	ktask = NULL;
 }
 
 __attribute__((naked))
@@ -37,34 +35,27 @@ static void taskfunc(void *callback_v) {
 }
 
 void Task::suspend() {
-	if (!ktask)
-		return;
+	assert(ktask);
+	assert(ktask->state == TASK_STATE_SCHEDULED);
 		
-	irq_disable_switch();
-	wakeup();
-	
-	if (ktask->state == TASK_STATE_SCHEDULED)
-		sched_remove_task(ktask);
-	irq_enable_switch();
+	sched_remove_task(ktask);
 }
 
 void Task::resume() {
-	if (!ktask)
-		return;
+	assert(ktask);
+	assert(ktask->state == TASK_STATE_NONE);
 		
-	if (ktask->state == TASK_STATE_NONE)
-		sched_add_task(ktask);
+	sched_add_task(ktask);
 }
 
 void Task::stop() {
-	if (!ktask)
-		return;
-	
-	wakeup(); 
+	assert(ktask);
 	
 	irq_disable_switch();
 	if (ktask->state == TASK_STATE_SCHEDULED)
 		sched_remove_task(ktask);
+	else if (ktask->state == TASK_STATE_SLEEP)
+		tick_unsleep(ktask);
 		
 	// even if we're freeing ourselves, we won't actually get deleted until the 
 	// idle task runs (which won't happen until after we enable switching)
@@ -96,11 +87,6 @@ Task *Task::getCurrentTask() {
 	maintask.ktask = ktask;
 	ktask->userdata = &maintask;
 	return &maintask;
-}
-
-void Task::wakeup() {
-	if (ktask->state == TASK_STATE_SLEEP)
-		tick_unsleep(ktask);
 }
 
 unsigned long Task::getCurrentTick() {
