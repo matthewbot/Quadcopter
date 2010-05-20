@@ -20,7 +20,8 @@ Task::Task(const char *name, uint8_t pri, Callback &callback, size_t stacksize)
 	ktask->userdata = this;
 }
 
-Task::Task() : ktask(NULL) { }
+// private constructor, only used to create the hidden Task object representing the main task
+Task::Task() : ktask(sched_get_current_task()) { } // main task always runs global constructors
 
 Task::~Task() {
 	stop();
@@ -78,17 +79,10 @@ void Task::sleep(unsigned long msecs) {
 }
 
 Task *Task::getCurrentTask() {
-	struct kernel_task *ktask = sched_get_current_task();
-	Task *task = (Task *)ktask->userdata;
-	
-	if (task)
-		return task;
-		
-	maintask.ktask = ktask;
-	ktask->userdata = &maintask;
-	return &maintask;
+	return (Task *)sched_get_current_task()->userdata;
 }
 
 unsigned long Task::getCurrentTick() {
 	return tick_getcount();
 }
+

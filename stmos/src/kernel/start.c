@@ -9,7 +9,6 @@
 static void maintaskfunc();
 static void idletaskfunc();
 
-static struct kernel_task *maintask;
 static struct kernel_mutex malloc_mutex;
 
 static char idletask_mem[256];
@@ -18,7 +17,7 @@ __attribute__((noreturn))
 void kernel_start() {
 	mutex_init(&malloc_mutex);
 	struct kernel_task *idletask = task_new_inplace("idle", KERNEL_PRIORITY_IDLE, idletaskfunc, NULL, idletask_mem, sizeof(idletask_mem));
-	maintask = task_new("main", KERNEL_PRIORITY_MID, maintaskfunc, NULL, 1024*4);
+	struct kernel_task *maintask = task_new("main", KERNEL_PRIORITY_MID, maintaskfunc, NULL, 1024*4);
 	sched_add_task(idletask);
 	sched_add_task(maintask);
 	irq_setup();
@@ -35,6 +34,7 @@ static void maintaskfunc(void *unused) {
 	main(0, NULL);
 
 	irq_disable_switch();
+	struct kernel_task *maintask = sched_get_current_task();
 	sched_remove_task(maintask);
 	task_free(maintask);
 	irq_force_switch();
