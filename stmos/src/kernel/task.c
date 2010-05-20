@@ -17,7 +17,9 @@ struct kernel_task *task_new(const char *name, kernel_taskpri pri, kernel_taskfu
 	if (mem == NULL)
 		return NULL;
 	
-	return task_new_inplace(name, pri, func, data, mem, size);
+	struct kernel_task *task = task_new_inplace(name, pri, func, data, mem, size);
+	task->needfree = true;
+	return task;
 }
 
 struct kernel_task *task_new_inplace(const char *name, kernel_taskpri pri, kernel_taskfunc func, void *data, char *buf, size_t bufsize) {
@@ -37,6 +39,7 @@ struct kernel_task *task_new_inplace(const char *name, kernel_taskpri pri, kerne
 	task->list_prev = task->list_next = NULL;
 	task->userdata = NULL;
 	task->state = TASK_STATE_NONE;
+	task->needfree = false;
 	task->stackguard = TASK_STACKGUARD_VALUE;
 	return task;
 }
@@ -70,6 +73,9 @@ struct kernel_task *task_list_remove(struct kernel_task *task) {
 
 void task_free(struct kernel_task *task) {
 	assert(task != NULL);
+	if (!task->needfree)
+		return;
+		
 	task_assertstack(task);
 	irq_disable_switch();
 	task->list_next = freetasks;

@@ -31,9 +31,9 @@ struct kernel_task {
 	char name[10];
 	kernel_taskpri pri;
 	
-	enum task_state state;
-	bool freesp;
-		
+	enum task_state state : 7;
+	bool needfree : 1;	
+	
 	union {
 		uint32_t num;
 	} list_data;
