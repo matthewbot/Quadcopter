@@ -21,12 +21,16 @@ namespace stmos {
 			// binary IO
 			void send(const uint8_t *buf, size_t len);
 			int receive(uint8_t *buf, size_t maxlen); // nonblocking
+			
+			void irq();
 		private:
 			const int num;
 			char *printfbuf;
-			IOPinConfig txpin, rxpin;
+
+			char recvbuf[16];
+			uint8_t recvbuf_pos;
 			
-			char *recvbuf;
+			IOPinConfig txpin, rxpin;
 	};
 }
 

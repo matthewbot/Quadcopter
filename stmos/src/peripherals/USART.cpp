@@ -9,34 +9,26 @@
 using namespace stmos;
 
 static USART_TypeDef *const usarts[] = { USART1, USART2, USART3 };
-
-static struct RecvBuf {
-	char data[15];
-	uint8_t len;
-} recvbufs[3];
-
-struct usart_config {
+static const struct usart_config {
 	IOPin::Port port;
 	IOPin::Pin txpin, rxpin;
-};
-
-static const usart_config configs[3] = {
+} configs[3] = {
 	{IOPin::PORT_A, 9, 10},
 	{IOPin::PORT_A, 2, 3},
 	{IOPin::PORT_B, 10, 11}
 };
 
-static void usart1_irq();
-static void usart2_irq();
-static void usart3_irq();
-
-static void (*const usart_irqs[])() = { usart1_irq, usart2_irq, usart3_irq };
+static USART *objs[3];
+template <int i> static void irq_callback() {
+	objs[i]->irq();
+}
+static void (*const irq_callbacks[])() = { irq_callback<0>, irq_callback<1>, irq_callback<2>};
 
 USART::USART(int num, unsigned int baud) 
-: num(num), printfbuf(NULL),
+: num(num), printfbuf(NULL), recvbuf_pos(0),
   txpin(configs[num-1].port, configs[num-1].txpin, IOPin::OUTPUT, IOPin::NONE, true), 
-  rxpin(configs[num-1].port, configs[num-1].rxpin, IOPin::INPUT, IOPin::NONE, true),
-  recvbuf(NULL) {
+  rxpin(configs[num-1].port, configs[num-1].rxpin, IOPin::INPUT, IOPin::NONE, true) {
+  	objs[num-1] = this;
  	switch (num) {
  		case 1:
  			RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
@@ -58,13 +50,14 @@ USART::USART(int num, unsigned int baud)
 	usart->CR1 |= USART_CR1_TE | USART_CR1_RE | USART_CR1_RXNEIE;
 	
 	int irq = USART1_IRQn + num - 1;
-	nvic_set_handler(irq, usart_irqs[num-1]);
+	nvic_set_handler(irq, irq_callbacks[num-1]);
 	nvic_set_enabled(irq, true);
 }
 
 USART::~USART() {
+	int irq = USART1_IRQn + num - 1;
+	nvic_set_enabled(irq, false);
 	delete printfbuf;
-	delete recvbuf;
 }
 
 void USART::print(const char *str) {
@@ -117,39 +110,33 @@ void USART::send(const uint8_t *buf, size_t len) {
 }
 
 int USART::receive(uint8_t *buf, size_t maxlen) {
-	RecvBuf *recvbuf = &recvbufs[num-1];
 	int irq = USART1_IRQn + num - 1;
 	
 	nvic_set_enabled(irq, false);
 	
-	unsigned int len = recvbuf->len;
+	unsigned int len = recvbuf_pos;
 	if (len > maxlen)
 		len = maxlen;
 		
 	if (len > 0) {
-		memcpy(buf, recvbuf->data, len);
-		int remaining = recvbuf->len - len;
+		memcpy(buf, recvbuf, len);
+		int remaining = recvbuf_pos - len;
 		
 		if (remaining > 0) {
-			memmove(recvbuf->data, &recvbuf->data[len], remaining);
-			recvbuf->len -= len;
+			memmove(recvbuf, &recvbuf[len], remaining);
+			recvbuf_pos -= len;
 		} else
-			recvbuf->len = 0;
+			recvbuf_pos = 0;
 	}
 	
 	nvic_set_enabled(irq, true);
 	return len;
 }
 
-static void usart_irq(int num) {
+void USART::irq() {
 	USART_TypeDef *usart = usarts[num-1];
-	RecvBuf *recvbuf = &recvbufs[num-1];
 	
-	if (usart->SR & USART_SR_RXNE) 
-		recvbuf->data[recvbuf->len++] = usart->DR;
+	if (usart->SR & USART_SR_RXNE)
+		recvbuf[recvbuf_pos++] = usart->DR;
 }
-
-static void usart1_irq() { usart_irq(1); }
-static void usart2_irq() { usart_irq(2); }
-static void usart3_irq() { usart_irq(3); }
 
