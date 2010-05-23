@@ -8,6 +8,8 @@ extern "C" {
 
 namespace stmos {
 	class Mutex : NonCopyable {
+		friend class Notifier;
+	
 		public:
 			inline Mutex() { mutex_init(&mutex); }
 			
@@ -17,15 +19,6 @@ namespace stmos {
 		private:
 			kernel_mutex mutex;
 	};
-	
-	class Lock : NonCopyable {
-		public:
-			inline Lock(Mutex &mutex) : mutex(mutex) { mutex.wait(); }
-			inline ~Lock() { mutex.release(); }
-			
-		private:
-			Mutex &mutex;
-	};	
 }
 
 #endif

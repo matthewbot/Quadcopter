@@ -1,6 +1,7 @@
 #include <stmos/peripherals/USART.h>
 #include <stmos/util/Task.h>
 #include <stmos/util/Mutex.h>
+#include <stmos/util/Lock.h>
 
 using namespace stmos;
 

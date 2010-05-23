@@ -22,11 +22,13 @@ void notifier_wait(struct kernel_notifier *notifier) {
 	irq_enable_switch();
 }
 
-void notifier_wait_and_release(struct kernel_notifier *notifier, struct kernel_mutex *mutex) {
+void notifier_wait_release(struct kernel_notifier *notifier, struct kernel_mutex *mutex) {
 	irq_disable_switch();
-	mutex_release(mutex);
 	notifier_wait(notifier);
+	mutex_release(mutex);
 	irq_enable_switch();
+	
+	mutex_wait(mutex);
 }
 
 void notifier_notify(struct kernel_notifier *notifier) {

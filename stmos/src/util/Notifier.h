@@ -4,6 +4,7 @@
 extern "C" {
 	#include <stmos/kernel/notifier.h>
 }
+#include <stmos/util/Mutex.h>
 #include <stmos/util/NonCopyable.h>
 
 namespace stmos {
@@ -12,6 +13,7 @@ namespace stmos {
 			inline Notifier() { notifier_init(&notifier); }
 			
 			inline void wait() { notifier_wait(&notifier); }
+			inline void waitRelease(Mutex &mutex) { notifier_wait_release(&notifier, &mutex.mutex); }
 			inline void notify() { notifier_notify(&notifier); }
 			inline void notifyAll() { notifier_notify_all(&notifier); }
 			

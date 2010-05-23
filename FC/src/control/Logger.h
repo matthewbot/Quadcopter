@@ -6,6 +6,7 @@
 #include <stmos/util/Callback.h>
 #include <stmos/util/Task.h>
 #include <stmos/util/Mutex.h>
+#include <stmos/util/Lock.h>
 #include <stmos/util/Notifier.h>
 #include <stdint.h>
 
