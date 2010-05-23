@@ -31,6 +31,22 @@ void notifier_wait_release(struct kernel_notifier *notifier, struct kernel_mutex
 	mutex_wait(mutex);
 }
 
+void notifier_wait_leave(struct kernel_notifier *notifier, int irq) {
+	notifier_wait(notifier);
+	irq_leave_critical(irq);
+	
+	irq_enter_critical(irq);
+}
+
+void notifier_wait_leave_release(struct kernel_notifier *notifier, int irq, struct kernel_mutex *mutex) {
+	notifier_wait(notifier);
+	mutex_release(mutex); // must release mutex first, we're using the critical section to prevent context switches
+	irq_leave_critical(irq);
+
+	mutex_wait(mutex);
+	irq_enter_critical(irq);
+}
+
 void notifier_notify(struct kernel_notifier *notifier) {
 	irq_disable_switch();
 	

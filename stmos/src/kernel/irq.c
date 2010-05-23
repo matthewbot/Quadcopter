@@ -26,3 +26,14 @@ void irq_force_switch() {
 	nvic_pendsv();
 }
 
+void irq_enter_critical(int irq) {
+	irq_disable_switch();
+	nvic_set_enabled(irq, false);
+}
+
+void irq_leave_critical(int irq) {
+	nvic_set_enabled(irq, true);
+	irq_enable_switch();
+}
+
+

@@ -5,7 +5,9 @@ void irq_setup();
 
 void irq_disable_switch();
 void irq_enable_switch();
-
 void irq_force_switch();
+
+void irq_enter_critical(int irq);
+void irq_leave_critical(int irq);
 
 #endif

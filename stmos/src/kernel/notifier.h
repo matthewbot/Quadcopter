@@ -14,6 +14,8 @@ struct kernel_mutex;
 void notifier_init(struct kernel_notifier *notifier);
 void notifier_wait(struct kernel_notifier *notifier);
 void notifier_wait_release(struct kernel_notifier *notifier, struct kernel_mutex *mutex);
+void notifier_wait_leave(struct kernel_notifier *notifier, int irq);
+void notifier_wait_leave_release(struct kernel_notifier *notifier, int irq, struct kernel_mutex *mutex);
 void notifier_notify(struct kernel_notifier *notifier);
 void notifier_notify_all(struct kernel_notifier *notifier);
 
