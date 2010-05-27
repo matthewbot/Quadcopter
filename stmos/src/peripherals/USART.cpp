@@ -1,5 +1,6 @@
 #include "USART.h"
 #include <stmos/util/Task.h>
+#include <stmos/util/Lock.h>
 #include <stmos/crt/nvic.h>
 #include <stm32f10x.h>
 #include <cstring>
@@ -23,6 +24,8 @@ template <int i> static void irq_callback() {
 	objs[i]->irq();
 }
 static void (*const irq_callbacks[])() = { irq_callback<0>, irq_callback<1>, irq_callback<2>};
+
+#define IRQ(num) (USART1_IRQn + num - 1)
 
 USART::USART(int num, unsigned int baud) 
 : num(num), printfbuf(NULL), recvbuf_pos(0),
@@ -49,14 +52,13 @@ USART::USART(int num, unsigned int baud)
 	usart->BRR = ((num == 1) ? 72000000 : 36000000) / baud;
 	usart->CR1 |= USART_CR1_TE | USART_CR1_RE | USART_CR1_RXNEIE;
 	
-	int irq = USART1_IRQn + num - 1;
+	int irq = IRQ(num);
 	nvic_set_handler(irq, irq_callbacks[num-1]);
 	nvic_set_enabled(irq, true);
 }
 
 USART::~USART() {
-	int irq = USART1_IRQn + num - 1;
-	nvic_set_enabled(irq, false);
+	nvic_set_enabled(IRQ(num), false);
 	delete printfbuf;
 }
 
@@ -67,6 +69,8 @@ void USART::print(const char *str) {
 #define PRINTF_MAXSIZE 100
 
 void USART::printf(const char *fmt, ...) {
+	Lock lock(mutex);
+	
 	if (!printfbuf)
 		printfbuf = new char [PRINTF_MAXSIZE];
 	
@@ -80,12 +84,14 @@ void USART::printf(const char *fmt, ...) {
 
 char USART::getch() {
 	char ch;
-	while (receive((uint8_t *)&ch, 1) == 0) { Task::sleep(1); }
+	receive((uint8_t *)&ch, 1);
 	
 	return ch;
 }
 
 size_t USART::getline(char *buf, size_t bufsize) {
+	Lock lock(mutex);
+	
 	size_t count=0;
 	bufsize--; // take away one just to hold the NULL
 	while (bufsize--) {
@@ -100,43 +106,58 @@ size_t USART::getline(char *buf, size_t bufsize) {
 
 void USART::send(const uint8_t *buf, size_t len) {
 	USART_TypeDef *usart = usarts[num-1];
+
+	Lock lock(mutex);
+	CriticalSection crit(IRQ(num));
+		
+	sendbuf = buf;
+	sendbuf_len = len;
+	usart->CR1 |= USART_CR1_TXEIE;
 	
-	while (len--) {		
-		while (!(usart->SR & USART_SR_TXE)) { }
-		usart->DR = *buf++;
-	}
-	
-	while (!(usart->SR & USART_SR_TC)) { }
+	notifier.waitLeave(crit);
 }
 
 int USART::receive(uint8_t *buf, size_t maxlen) {
-	int irq = USART1_IRQn + num - 1;
+	Lock lock(mutex);
+	CriticalSection crit(IRQ(num));
 	
-	nvic_set_enabled(irq, false);
+	while (recvbuf_pos == 0)
+		notifier.waitLeave(crit);
 	
-	unsigned int len = recvbuf_pos;
-	if (len > maxlen)
-		len = maxlen;
-		
-	if (len > 0) {
-		memcpy(buf, recvbuf, len);
-		int remaining = recvbuf_pos - len;
-		
-		if (remaining > 0) {
-			memmove(recvbuf, &recvbuf[len], remaining);
-			recvbuf_pos -= len;
-		} else
-			recvbuf_pos = 0;
+	if (recvbuf_pos > maxlen) {
+		memcpy(buf, recvbuf, maxlen);
+		recvbuf_pos -= maxlen;
+		memmove(recvbuf, &recvbuf[maxlen], recvbuf_pos);
+		return maxlen;
+	} else {
+		memcpy(buf, recvbuf, recvbuf_pos);
+		size_t len = recvbuf_pos;
+		recvbuf_pos = 0;
+		return len;
 	}
-	
-	nvic_set_enabled(irq, true);
-	return len;
 }
 
 void USART::irq() {
 	USART_TypeDef *usart = usarts[num-1];
 	
-	if (usart->SR & USART_SR_RXNE)
-		recvbuf[recvbuf_pos++] = usart->DR;
+	uint32_t sr = usart->SR;
+	if (sr & USART_SR_RXNE) {
+		if (recvbuf_pos < sizeof(recvbuf))
+			recvbuf[recvbuf_pos++] = usart->DR;
+		else
+			(void)usart->DR; // dummy read to clear interrupt
+		register_irqcallback();
+	} else if (sendbuf_len && sr & USART_SR_TXE) {
+		usart->DR = *sendbuf++;
+		if (--sendbuf_len == 0) {
+			usart->CR1 &= ~USART_CR1_TXEIE;
+			register_irqcallback();
+		}
+	}
 }
+
+void USART::irqcallback() {
+	notifier.notify();
+}
+
 

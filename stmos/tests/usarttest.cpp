@@ -1,4 +1,5 @@
 #include <stmos/peripherals/USART.h>
+#include <stmos/util/Task.h>
 
 using namespace stmos;
 
@@ -10,6 +11,7 @@ int main(int argc, char **argv) {
 		char buf[20];
 		out.getline(buf, sizeof(buf));
 		out.printf("You typed: %s\n", buf);
+		Task::sleep(1000);
 	}
 }
 
