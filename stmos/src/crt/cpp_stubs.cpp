@@ -1,8 +1,5 @@
-#include <stdlib.h>
-
-extern "C" {
-	#include "panic.h"
-}
+#include <cstdlib>
+#include "panic.h"
 
 const void *const __dso_handle = (void*) &__dso_handle;
 

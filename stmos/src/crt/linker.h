@@ -18,11 +18,9 @@ extern uint32_t __bss_end;
 extern uint32_t __heap_start;
 extern uint32_t __heap_end;
 
-typedef void (*cdtor)();
-extern cdtor __ctors_start;
-extern cdtor __ctors_end;
-extern cdtor __dtors_start;
-extern cdtor __dtors_end;
+typedef void (*ctor)();
+extern ctor __ctors_start;
+extern ctor __ctors_end;
 
 void __run_ctors();
 
