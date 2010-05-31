@@ -19,7 +19,7 @@ using namespace stmos;
 
 static GPIO_TypeDef *const gpios[] = { GPIOA, GPIOB, GPIOC, GPIOD };
 
-void IOPinConfig::doSetup(Port port, Pin pin, Mode mode, PullUp pullup, bool alternatefunction) {
+void IOPinConfig::setup(Port port, Pin pin, Mode mode, PullUp pullup, bool alternatefunction) {
 	uint32_t config;
 	
 	RCC->APB2ENR |= (1 << (port+2));

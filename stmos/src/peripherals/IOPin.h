@@ -38,13 +38,16 @@ namespace stmos {
 			};
 			
 			inline IOPinConfig(Port port, Pin pin, Mode mode, PullUp pullup=NONE, bool alternatefunction=false) {
-				doSetup(port, pin, mode, pullup, alternatefunction);
+				setup(port, pin, mode, pullup, alternatefunction);
 			}
 			inline IOPinConfig(const PortPin &portpin, Mode mode, PullUp pullup=NONE, bool alternatefunction=false) {
-				doSetup(portpin.port, portpin.pin, mode, pullup, alternatefunction);
+				setup(portpin, mode, pullup, alternatefunction);
 			}
 			
-			void doSetup(Port port, Pin pin, Mode mode, PullUp pullup, bool alternatefunction);
+			inline static void setup(const PortPin &portpin, Mode mode, PullUp pullup=NONE, bool alternatefunction=false) {
+				setup(portpin.port, portpin.pin, mode, pullup, alternatefunction);
+			}
+			static void setup(Port port, Pin pin, Mode mode, PullUp pullup=NONE, bool alternatefunction=false);
 	};
 
 	class IOPin : public IOPinConfig {
