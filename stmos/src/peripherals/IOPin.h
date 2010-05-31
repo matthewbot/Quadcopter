@@ -3,6 +3,8 @@
 
 #include <stmos/util/NonCopyable.h>
 #include <stmos/util/Callback.h>
+#include <stmos/util/IRQCallback.h>
+#include <stmos/util/Notifier.h>
 #include <stdint.h>
 
 namespace stmos {
@@ -64,13 +66,27 @@ namespace stmos {
 			inline const IOPin &operator=(bool val) { set(val); return *this; }
 			void pulse();
 			
+			int EXTIirq();
 			void setupEXTI(Callback &call, Edge edge=EDGE_RISING, int pri=IRQ_PRIORITY_LOW);
-			void enableEXTI(Edge edge);
 			void disableEXTI();
 						
 		private:
 			const Port port;
 			const Pin pin;
+	};
+	
+	class IOPinWait : public IOPin, Callback, IRQCallback {
+		public:
+			IOPinWait(Port port, Pin pin, PullUp pullup=NONE, Edge waitedge=EDGE_RISING);
+			IOPinWait(const PortPin &portpin, PullUp pullup=NONE, Edge waitedge=EDGE_RISING);
+	
+			void wait();
+			
+			virtual void call(); // EXTI callback
+			virtual void irqcallback(); // irq callback
+	
+		private:
+			Notifier notifier;
 	};
 }
 

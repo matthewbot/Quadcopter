@@ -106,6 +106,15 @@ void IOPin::pulse() {
 static Callback *exti_callbacks[16];
 static void exti_irq_handler();
 
+int IOPin::EXTIirq() {
+	if (pin <= 4)
+		return EXTI0_IRQn + pin;
+	else if (pin <= 9)
+		return EXTI9_5_IRQn;
+	else
+		return EXTI15_10_IRQn;
+}
+
 void IOPin::setupEXTI(Callback &callback, Edge edge, int pri) {
 	RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
 
@@ -125,13 +134,7 @@ void IOPin::setupEXTI(Callback &callback, Edge edge, int pri) {
 		EXTI->FTSR |= exti_bit;
 	EXTI->IMR |= exti_bit;
 	
-	int irq;
-	if (pin <= 4)
-		irq = EXTI0_IRQn + pin;
-	else if (pin <= 9)
-		irq = EXTI9_5_IRQn;
-	else
-		irq = EXTI15_10_IRQn;
+	int irq = EXTIirq();
 	nvic_set_handler(irq, exti_irq_handler);
 	nvic_set_priority(irq, pri);
 	nvic_set_enabled(irq, true);
@@ -162,4 +165,26 @@ static void exti_irq_handler() {
 			break;
 		}
 	}
+}
+
+IOPinWait::IOPinWait(Port port, Pin pin, PullUp pullup, Edge waitedge)
+: IOPin(port, pin, INPUT, pullup) {
+	setupEXTI(*this, waitedge);
+}
+
+IOPinWait::IOPinWait(const PortPin &portpin, PullUp pullup, Edge waitedge)
+: IOPin(portpin, INPUT, pullup) {
+	setupEXTI(*this, waitedge);
+}
+
+void IOPinWait::wait() {
+	notifier.wait();
+}
+
+void IOPinWait::call() {
+	register_irqcallback();
+}
+
+void IOPinWait::irqcallback() {
+	notifier.notifyAll();
 }
