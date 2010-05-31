@@ -2,8 +2,8 @@
 #define FC_DRIVERS_ANALOGSENSORS_H
 
 #include <stmos/peripherals/ADC.h>
+#include <stmos/peripherals/DMA.h>
 #include <stmos/peripherals/IOPin.h>
-#include <stmos/util/ADCSuperSampler.h>
 
 namespace FC {
 	class AnalogSensors {
@@ -57,8 +57,7 @@ namespace FC {
 		private:
 			const Calibrations &calibrations;
 			stmos::ADC &adc;
-			stmos::ADCSuperSampler sampler;
-			
+			stmos::DMAWait adc_dma;
 			stmos::IOPinConfig roll_pin, pitch_pin, yaw_pin, accel_x_pin, accel_y_pin, accel_z_pin;
 	};
 }

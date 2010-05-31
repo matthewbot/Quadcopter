@@ -9,11 +9,10 @@ using namespace FC;
 TCCompass::TCCompass(MicroMag &mmag)
 : mmag(mmag),
   prevheading(0) {
-	mmag.startScan(MicroMag::PERIOD_1024);  
 } 
 
 float TCCompass::calcHeading(float roll, float pitch) {
-	MicroMag::Scan scan = mmag.getScan();
+	MicroMag::Scan scan = mmag.scan();
 	
 	float tmp = roll;
 	roll = -pitch;

@@ -22,17 +22,12 @@ int main(int argc, char **argv) {
 	calibrations.gyro.yaw.center = adc.sampleChannel(configs::chans.yaw_gyro);
 	
 	while (true) {
-		Task::sleep(500);
+		Task::sleep(100);
 		AnalogSensors::Readings readings = analog.getReadings();
 		
-		float roll = atan2f(readings.x_accel, sqrtf(readings.y_accel*readings.y_accel + readings.z_accel*readings.z_accel));
-		float pitch = atan2f(readings.y_accel, sqrtf(readings.x_accel*readings.y_accel + readings.z_accel*readings.z_accel));
-		
-		out.printf("%f %f\n", roll, pitch);
-		
-		//out.printf("Roll %f\nPitch %f\nYaw %f\n",
-		//           readings.roll_gyro, readings.pitch_gyro, readings.yaw_gyro);
-		//out.printf("XAcc %f\nYAcc %f\nZAcc %f\n", 
-		//           readings.x_accel, readings.y_accel, readings.z_accel);
+		int i;
+		for (i=0; i<6; i++)
+			out.printf("%f ", readings.array[i]);
+		out.print("\n");
 	}
 }
