@@ -3,14 +3,13 @@
 
 #include <stmos/peripherals/SPI.h>
 #include <stmos/peripherals/IOPin.h>
-#include <stmos/util/Callback.h>
+#include <stmos/util/Task.h>
 #include <stdint.h>
 
 namespace FC {
-	class MicroMag : stmos::Callback {
+	class MicroMag {
 		public:
 			__attribute__((packed)) enum Axis {
-				_AXIS_NONE,
 				AXIS_X,
 				AXIS_Y,
 				AXIS_Z
@@ -36,28 +35,12 @@ namespace FC {
 			MicroMag(int spinum, stmos::IOPin::PortPin reset, stmos::IOPin::PortPin drdy);
 			
 			Result sample(Axis axis, Period period=PERIOD_4096);
-			
-			void startScan(Period period=PERIOD_4096);
-			void startScan(Period period, stmos::Callback &call);
-			inline Scan getScan() { return scan_results; }
-			inline unsigned long getScanTime() { return scan_tottime; }
-			void stopScan();
+			Scan scan(Period period=PERIOD_4096);
 			
 		private:
-			virtual void call(); // used for an EXTI callback related to scanning
-		
-			void query(Axis axis, Period period);
-			Result getResult();
-		
 			stmos::SPI spi;
-			stmos::IOPin reset_pin, drdy_pin;
-			
-			Period scan_period;
-			stmos::Callback *scan_callback;
-			unsigned long scan_prevtime;
-			unsigned long scan_tottime;
-			Scan scan_results;
-			Axis scan_axis; // 0 = no scan going on
+			stmos::IOPin reset_pin;
+			stmos::IOPinWait drdy_pin;
 	};
 }
 

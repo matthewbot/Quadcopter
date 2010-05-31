@@ -11,11 +11,8 @@ USART out(1, 115200);
 int main(int argc, char **argv) {	
 	out.print("Starting micromag scan\n");
 	
-	mag.startScan();
-	
 	while (true) {
-		Task::sleep(500);
-		MicroMag::Scan scan = mag.getScan();
+		MicroMag::Scan scan = mag.scan(MicroMag::PERIOD_128);
 		
 		out.printf("%d %d %d\n", (int)scan.x, (int)scan.y, (int)scan.z);
 	}
