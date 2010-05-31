@@ -7,23 +7,13 @@
 void notifier_init(struct kernel_notifier *notifier) {
 	notifier->list_start = NULL;
 }
-
-struct kernel_task *notifier_get_end(struct kernel_notifier *notifier) {
-	struct kernel_task *end = (struct kernel_task *)notifier;
-		
-	while (end->list_next != NULL)
-		end = end->list_next;
-	return end;
-}
-
 void notifier_wait(struct kernel_notifier *notifier) {
 	struct kernel_task *curtask = sched_get_current_task();
 	
 	irq_disable_switch();
 	
 	sched_remove_task(curtask);
-	struct kernel_task *end = notifier_get_end(notifier);
-	task_list_add(end, curtask);
+	task_list_append_sorted((struct kernel_task *)notifier, curtask);
 	
 	irq_force_switch();
 	irq_enable_switch();

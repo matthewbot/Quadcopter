@@ -54,6 +54,7 @@ struct kernel_task *task_new(const char *name, kernel_taskpri pri, kernel_taskfu
 struct kernel_task *task_new_inplace(const char *name, kernel_taskpri pri, kernel_taskfunc func, void *data, char *buf, size_t bufsize);
 void task_list_add(struct kernel_task *listpos, struct kernel_task *task);
 struct kernel_task *task_list_remove(struct kernel_task *task);
+void task_list_append_sorted(struct kernel_task *list, struct kernel_task *task);
 void task_free(struct kernel_task *task);
 
 void task_gc();

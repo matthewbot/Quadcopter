@@ -48,6 +48,7 @@ void task_list_add(struct kernel_task *listpos, struct kernel_task *task) {
 	assert(listpos != NULL);
 	assert(task != NULL);
 	task_assertstack(task);
+	
 	struct kernel_task *next = listpos->list_next;
 	listpos->list_next = task;
 	task->list_prev = listpos;
@@ -59,6 +60,7 @@ void task_list_add(struct kernel_task *listpos, struct kernel_task *task) {
 struct kernel_task *task_list_remove(struct kernel_task *task) {
 	assert(task != NULL);
 	task_assertstack(task);
+	
 	struct kernel_task *next = task->list_next; // save next and prev
 	struct kernel_task *prev = task->list_prev;
 	
@@ -69,6 +71,18 @@ struct kernel_task *task_list_remove(struct kernel_task *task) {
 		next->list_prev = prev;
 
 	return next;
+}
+
+void task_list_append_sorted(struct kernel_task *list, struct kernel_task *task) {
+	assert(list != NULL);
+	assert(task != NULL);
+	task_assertstack(task);
+
+	const uint8_t ourpri = task->pri;
+	while (list->list_next && list->list_next->pri <= ourpri)
+		list = list->list_next;
+		
+	task_list_add(list, task);
 }
 
 void task_free(struct kernel_task *task) {
