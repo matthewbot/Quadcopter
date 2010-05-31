@@ -7,7 +7,7 @@ using namespace stmos;
 
 USART out(1, 115200);
 ADC adc(1);
-DMA adc_dma(adc.getScanDMAChannel());
+DMAWait adc_dma(adc.getScanDMAChannel());
 
 static const ADC::Channel channels[] = { 7, 9, 11 };
 
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
 		out.print("Scan: ");
 		adc_dma.start(buf, adc.getScanDMAAddress(), 3, false);
 		adc.startScan();
-		Task::sleep(1);
+		adc_dma.wait();
 		adc.stopScan();
 		out.printf("%d %d %d!\n", buf[0], buf[1], buf[2]);
 		

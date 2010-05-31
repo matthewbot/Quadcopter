@@ -3,6 +3,8 @@
 
 #include <stmos/util/NonCopyable.h>
 #include <stmos/util/Callback.h>
+#include <stmos/util/IRQCallback.h>
+#include <stmos/util/Notifier.h>
 #include <cstddef>
 
 namespace stmos {
@@ -23,6 +25,7 @@ namespace stmos {
 			DMA(int num);
 			
 			void setup(Direction dir, Priority pri, size_t tsize);
+			int getIRQ();
 			void setIRQHandler(Callback &call, int pri=IRQ_PRIORITY_LOW);
 			void setIRQEnabled(bool enabled);
 			inline void enableIRQ() { setIRQEnabled(true); }
@@ -37,6 +40,19 @@ namespace stmos {
 			
 		private:
 			int num;
+	};
+	
+	class DMAWait : public DMA, Callback, IRQCallback {
+		public:
+			DMAWait(int num);
+			
+			void wait();
+			
+			virtual void call();
+			virtual void irqcallback();
+		
+		private:
+			Notifier notifier;
 	};
 }
 

@@ -1,4 +1,5 @@
 #include "DMA.h"
+#include <stmos/util/CriticalSection.h>
 #include <stmos/crt/nvic.h>
 #include <stm32f10x.h>
 
@@ -17,14 +18,16 @@ DMA::DMA(int num) : num(num) {
 
 void DMA::setup(Direction dir, Priority pri, size_t tsize) {
 	DMA_Channel_TypeDef *chan = channels[num];
-
-	uint32_t ccr=0;
+	
+	uint32_t ccr = chan->CCR;
 	
 	if (dir == DIRECTION_MEM_TO_PER)
 		ccr |= DMA_CCR1_DIR;
-		
-	ccr |= pri << 12;
+	else
+		ccr &= ~DMA_CCR1_DIR;
 	
+	ccr &= ~(0x3F << 8); // clear priority, msize, and psize bits
+	ccr |= pri << 12;
 	if (tsize == 2)
 		ccr |= DMA_CCR1_MSIZE_0 | DMA_CCR1_PSIZE_0;
 	else if (tsize == 4)
@@ -34,11 +37,13 @@ void DMA::setup(Direction dir, Priority pri, size_t tsize) {
 	chan->CCR = ccr;
 }
 
-static int getirqnum(int num) { return DMA1_Channel1_IRQn + (num-1); }
+int DMA::getIRQ() { 
+	return DMA1_Channel1_IRQn + (num-1); 
+}
 
 void DMA::setIRQHandler(Callback &callback, int pri) {
 	DMA_Channel_TypeDef *chan = channels[num];
-	int irq = getirqnum(num);
+	int irq = getIRQ();
 	
 	irqhandlers[num-1] = &callback;
 	
@@ -50,7 +55,7 @@ void DMA::setIRQHandler(Callback &callback, int pri) {
 }
 
 void DMA::setIRQEnabled(bool enabled) {
-	nvic_set_enabled(getirqnum(num), enabled);
+	nvic_set_enabled(getIRQ(), enabled);
 }
 
 void DMA::start(volatile void *mem, volatile void *periph, size_t count, bool circular) {
@@ -87,4 +92,26 @@ static void irqhandler() {
 	irqhandlers[ch]->call();
 	DMA1->IFCR = 1 << (ch)*4;
 }
+
+DMAWait::DMAWait(int num) : DMA(num) {
+	setIRQHandler(*this);
+	setIRQEnabled(true);
+}
+
+void DMAWait::wait() {
+	CriticalSection crit(getIRQ());
+	if (done())
+		return;
+		
+	notifier.waitLeave(crit);
+}
+
+void DMAWait::call() {
+	register_irqcallback();
+}
+
+void DMAWait::irqcallback() {
+	notifier.notifyAll();
+}
+
 	
