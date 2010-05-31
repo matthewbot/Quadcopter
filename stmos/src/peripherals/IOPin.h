@@ -50,6 +50,7 @@ namespace stmos {
 	class IOPin : public IOPinConfig {
 		public:
 			enum Edge {
+				EDGE_NONE = 0,
 				EDGE_RISING = 1,
 				EDGE_FALLING = 2,
 				EDGE_BOTH = 3
@@ -66,9 +67,10 @@ namespace stmos {
 			inline const IOPin &operator=(bool val) { set(val); return *this; }
 			void pulse();
 			
-			int EXTIirq();
-			void setupEXTI(Callback &call, Edge edge=EDGE_RISING, int pri=IRQ_PRIORITY_LOW);
-			void disableEXTI();
+			int getIRQ();
+			void setIRQHandler(Callback &call, int pri=IRQ_PRIORITY_LOW);
+			void setIRQEnabled(Edge edge);
+			inline void disableIRQ() { setIRQEnabled(EDGE_NONE); }
 						
 		private:
 			const Port port;
@@ -77,10 +79,10 @@ namespace stmos {
 	
 	class IOPinWait : public IOPin, Callback, IRQCallback {
 		public:
-			IOPinWait(Port port, Pin pin, PullUp pullup=NONE, Edge waitedge=EDGE_RISING);
-			IOPinWait(const PortPin &portpin, PullUp pullup=NONE, Edge waitedge=EDGE_RISING);
+			IOPinWait(Port port, Pin pin, PullUp pullup=NONE);
+			IOPinWait(const PortPin &portpin, PullUp pullup=NONE);
 	
-			void wait();
+			void wait(Edge edge = EDGE_RISING);
 			
 			virtual void call(); // EXTI callback
 			virtual void irqcallback(); // irq callback

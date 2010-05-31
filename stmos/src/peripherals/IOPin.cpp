@@ -106,7 +106,7 @@ void IOPin::pulse() {
 static Callback *exti_callbacks[16];
 static void exti_irq_handler();
 
-int IOPin::EXTIirq() {
+int IOPin::getIRQ() {
 	if (pin <= 4)
 		return EXTI0_IRQn + pin;
 	else if (pin <= 9)
@@ -115,36 +115,40 @@ int IOPin::EXTIirq() {
 		return EXTI15_10_IRQn;
 }
 
-void IOPin::setupEXTI(Callback &callback, Edge edge, int pri) {
+void IOPin::setIRQHandler(Callback &callback, int pri) {
 	RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
 
 	exti_callbacks[pin] = &callback;
 	
-	const uint32_t exti_bit = (1 << pin);
 	__IO uint32_t *const exticr = &AFIO->EXTICR[pin >> 2]; // divide exti by 4 to get which register it belongs in
 	const int exticr_shiftamt = 4 * (pin & 0x03); // the lower two bits determine its position in its register
 
-	EXTI->RTSR &= ~exti_bit;
-	EXTI->FTSR &= ~exti_bit;
 	*exticr &= ~(0x0F << exticr_shiftamt); // clear exticr settings
 	*exticr |= port << exticr_shiftamt;
-	if (edge & EDGE_RISING)
-		EXTI->RTSR |= exti_bit;
-	if (edge & EDGE_FALLING)
-		EXTI->FTSR |= exti_bit;
-	EXTI->IMR |= exti_bit;
 	
-	int irq = EXTIirq();
+	int irq = getIRQ();
 	nvic_set_handler(irq, exti_irq_handler);
 	nvic_set_priority(irq, pri);
 	nvic_set_enabled(irq, true);
 }
 
-void IOPin::disableEXTI() {
+void IOPin::setIRQEnabled(Edge edge) {
 	const uint32_t exti_bit = (1 << pin);
-	
-	EXTI->RTSR &= ~exti_bit;
-	EXTI->FTSR &= ~exti_bit;
+
+	if (edge & EDGE_RISING)
+		EXTI->RTSR |= exti_bit;
+	else
+		EXTI->RTSR &= ~exti_bit;
+		
+	if (edge & EDGE_FALLING)
+		EXTI->FTSR |= exti_bit;
+	else
+		EXTI->FTSR &= ~exti_bit;
+		
+	if (edge != 0)
+		EXTI->IMR |= exti_bit;
+	else
+		EXTI->IMR &= ~exti_bit;
 }
 
 static void run_exti_callback(int irq) {
@@ -167,18 +171,31 @@ static void exti_irq_handler() {
 	}
 }
 
-IOPinWait::IOPinWait(Port port, Pin pin, PullUp pullup, Edge waitedge)
+IOPinWait::IOPinWait(Port port, Pin pin, PullUp pullup)
 : IOPin(port, pin, INPUT, pullup) {
-	setupEXTI(*this, waitedge);
+	setIRQHandler(*this);
 }
 
-IOPinWait::IOPinWait(const PortPin &portpin, PullUp pullup, Edge waitedge)
+IOPinWait::IOPinWait(const PortPin &portpin, PullUp pullup)
 : IOPin(portpin, INPUT, pullup) {
-	setupEXTI(*this, waitedge);
+	setIRQHandler(*this);
 }
 
-void IOPinWait::wait() {
-	notifier.wait();
+void IOPinWait::wait(Edge edge) {
+	CriticalSection crit(getIRQ());
+	setIRQEnabled(edge);
+
+	bool val = read();
+	if (val) {
+		if (edge == EDGE_RISING)
+			return;
+	} else {
+		if (edge == EDGE_FALLING)
+			return;
+	}
+
+	notifier.waitLeave(crit);
+	disableIRQ();
 }
 
 void IOPinWait::call() {
