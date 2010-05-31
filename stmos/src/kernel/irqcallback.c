@@ -1,5 +1,6 @@
 #include "irqcallback.h"
 #include "atomic.h"
+#include "irq.h"
 #include <stmos/crt/panic.h>
 #include <stddef.h>
 
@@ -23,6 +24,7 @@ void irqcallback_new(irqcallback callback, void *data) {
 		if (cmpxchg((volatile uint32_t *)&entry->callback, (uint32_t)NULL, (uint32_t)callback)) {
 			// if we succeeded (the value was NULL, and we succesfully changed it to our value before anyone else)
 			entry->data = data; // store our data as well
+			irq_force_switch(); // force a context switch at the next opportunity
 			return;
 		}
 	}
