@@ -20,13 +20,13 @@ VexRC::VexRC(const stmos::Timer &tim, int channum)
 }
 
 bool VexRC::getSynced() const {
-	return (Task::getCurrentTick() - prevtime) < 100;
+	return synced && (Task::getCurrentTick() - prevtime) < 100;
 }
 
 VexRC::Channels VexRC::getChannels() const {
 	Channels ret;
 	
-	capturechan.disableIRQ(); // actually pretty sure we could miss a pulse doing this :/
+	capturechan.disableIRQ();
 	ret = (const Channels &)channels;
 	capturechan.enableIRQ();
 	
