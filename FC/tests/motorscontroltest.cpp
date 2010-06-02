@@ -22,10 +22,7 @@ USART out(1, 115200);
 ADC adc(1);
 AnalogSensors sensors(adc, configs::chans, configs::analog);
 
-MicroMag mag(2, (IOPin::PortPin) { IOPin::PORT_C, 5 }, (IOPin::PortPin) { IOPin::PORT_B, 10 });
-TCCompass compass(mag);
-
-IMU imu(sensors, compass, configs::imu);
+IMU imu(sensors, configs::imu);
 
 ESCTimer esctim;
 Motors motors(esctim);

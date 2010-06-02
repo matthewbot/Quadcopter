@@ -9,10 +9,7 @@ using namespace stmos;
 ADC adc(1);
 AnalogSensors sensors(adc, configs::chans, configs::analog);
 
-MicroMag mag(2, (IOPin::PortPin) { IOPin::PORT_C, 5 }, (IOPin::PortPin) { IOPin::PORT_B, 10 });
-TCCompass compass(mag);
-
-IMU imu(sensors, compass, configs::imu);
+IMU imu(sensors, configs::imu);
 USART out(1, 115200);
 
 int main(int argc, char **argv) {	

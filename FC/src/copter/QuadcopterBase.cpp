@@ -11,10 +11,7 @@ QuadcopterBase::QuadcopterBase()
   
   analog(adc, configs::chans, configs::analog),
   
-  mag(2, (IOPin::PortPin) { IOPin::PORT_C, 5 }, (IOPin::PortPin) { IOPin::PORT_B, 10 }),
-  compass(mag),
-  
-  imu(analog, compass, configs::imu),
+  imu(analog, configs::imu),
   
   motors(esctim),
   controlconfig(configs::control),

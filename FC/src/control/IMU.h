@@ -2,7 +2,6 @@
 #define FC_CONTROL_IMU_H
 
 #include <FC/math/Kalman.h>
-#include <FC/control/TCCompass.h>
 #include <FC/drivers/AnalogSensors.h>
 #include <stmos/util/NonCopyable.h>
 #include <stmos/util/Callback.h>
@@ -20,7 +19,7 @@ namespace FC {
 				Kalman::Config yaw_config;
 			};
 			
-			IMU(AnalogSensors &sensors, TCCompass &compass, const Config &config);
+			IMU(AnalogSensors &sensors, const Config &config);
 			
 			void start();
 			void stop();
@@ -34,8 +33,8 @@ namespace FC {
 			
 		private:
 			AnalogSensors &sensors;
-			TCCompass &compass;
-			Kalman rollkalman, pitchkalman, yawkalman;
+			Kalman rollkalman, pitchkalman;
+			float yawstate, yawstatevel;
 			stmos::Task updatetask;
 			
 			unsigned volatile long cyclecount;

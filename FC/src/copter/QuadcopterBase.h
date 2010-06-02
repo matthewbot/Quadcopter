@@ -3,12 +3,10 @@
 
 // Base struct just contains and properly initializes all quadcopter subsystems
 
-#include <FC/control/TCCompass.h>
 #include <FC/control/IMU.h>
 #include <FC/control/Motors.h>
 #include <FC/control/MotorsController.h>
 #include <FC/drivers/AnalogSensors.h>
-#include <FC/drivers/MicroMag.h>
 #include <FC/drivers/VexRC.h>
 #include <FC/drivers/Buzzer.h>
 #include <FC/drivers/BatteryMonitor.h>
@@ -27,9 +25,6 @@ namespace FC {
 		stmos::ADC adc;
 		stmos::ADC adc2;
 		AnalogSensors analog;
-		
-		MicroMag mag;
-		TCCompass compass;
 		
 		IMU imu;
 		

@@ -5,12 +5,11 @@
 using namespace FC;
 using namespace stmos;
 
-IMU::IMU(AnalogSensors &sensors, TCCompass &compass, const Config &config)
+IMU::IMU(AnalogSensors &sensors, const Config &config)
 : sensors(sensors),
-  compass(compass),
   rollkalman(config.roll_pitch_config),
   pitchkalman(config.roll_pitch_config),
-  yawkalman(config.yaw_config),
+  yawstate(0), yawstatevel(0),
   updatetask("imu", Task::PRIORITY_HIGH, *this, 1024),
   cyclecount(0) { }
   
@@ -27,13 +26,13 @@ bool IMU::ready() {
 }
 
 IMU::State IMU::getState() {
-	State ret = { rollkalman.getState().angle, pitchkalman.getState().angle, yawkalman.getState().angle };
+	State ret = { rollkalman.getState().angle, pitchkalman.getState().angle, yawstate };
 	
 	return ret;	
 }
 
 IMU::State IMU::getVelocityState() {
-	State ret = { rollkalman.getState().vel, pitchkalman.getState().vel, yawkalman.getState().vel };
+	State ret = { rollkalman.getState().vel, pitchkalman.getState().vel, yawstatevel };
 	
 	return ret;	
 }
@@ -52,9 +51,8 @@ void IMU::call() {
 		rollkalman.step((Kalman::Measurement) {{aroll, readings.roll_gyro}});
 		pitchkalman.step((Kalman::Measurement) {{apitch, readings.pitch_gyro}});
 		
-		float heading = compass.calcHeading(rollkalman.getState().angle, pitchkalman.getState().angle);
-		Kalman::Measurement yaw = {{ heading, readings.yaw_gyro }};
-		yawkalman.step(yaw);
+		yawstatevel = readings.yaw_gyro;
+		yawstate += yawstatevel * 0.005;
 		
 		int time = 5 - (Task::getCurrentTick() - starttime);
 		if (time > 0)
