@@ -39,7 +39,7 @@ void MotorsController::call() {
 	if (!running)
 		return;
 		
-	if (throttle < 0.25) {
+	if (throttle < 0.38) {
 		roll_pid.clearInt();
 		pitch_pid.clearInt();
 		yaw_pid.clearInt();
