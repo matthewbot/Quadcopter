@@ -47,8 +47,7 @@ R = [
 
 ### Generate Graphs ###
 
-load "rollpitch.dat" samples;
-samples = [samples(:, 1), samples(:, 3), samples(:, 4), samples(:, 5)]; # leave out pitch gyro
+load "samples.dat" samples;
 rollpitchkalmanfilter;
 
 figure(1);
