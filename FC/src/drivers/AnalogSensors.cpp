@@ -18,8 +18,6 @@ AnalogSensors::AnalogSensors(ADC &adc, const Channels &channels, const Calibrati
 	adc_dma.setup(DMA::DIRECTION_PER_TO_MEM, DMA::PRIORITY_LOW, sizeof(ADC::Sample));
 }
 
-#include <stmos/crt/debug.h>
-
 AnalogSensors::Readings AnalogSensors::getReadings() {
 	ADC::Sample samples[6];
 	adc_dma.start(samples, adc.getScanDMAAddress(), 6, false);
@@ -37,6 +35,6 @@ AnalogSensors::Readings AnalogSensors::getReadings() {
 }
 
 float AnalogSensors::Calibration::getValue(stmos::ADC::Sample in) const {
-	return (in - center) / scale;
+	return (in - center) * scale;
 }
 

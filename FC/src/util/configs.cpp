@@ -4,12 +4,12 @@ using namespace FC;
 
 const AnalogSensors::Channels FC::configs::chans = { {6, 5, 8, 7, 9, 11} };
 const AnalogSensors::Calibrations FC::configs::analog = { {
-	{ { 0, -2206 }, // roll
-	  { 0, 2206 }, // pitch
-	  { 0, -4000 } }, // yaw
-	{ { 32000, -6750 }, // x-axis
-	  { 32000, -6750 }, // y-axis
-	  { 32000, 6750 } } // z-axis
+	{ { 33280, -7.615E-4 }, // roll
+	  { 31648, 7.615E-4 }, // pitch
+	  { 33430, -2.5E4 } }, // yaw
+	{ { 32000, -1.4815E-4 }, // x-axis
+	  { 32000, -1.4815E-4 }, // y-axis
+	  { 32000, 1.4815E-4 } } // z-axis
 } };
 
 const IMU::Config FC::configs::imu = {
@@ -40,7 +40,7 @@ const MotorsController::Config FC::configs::control = {
 		1,
 		ESCTimer::UPDATETIME / 1000.0
 	}, {
-	    0.17, 0.3, 0.045,
+	    0.08, 0.08, 0.028,
 		1,
 		ESCTimer::UPDATETIME / 1000.0
 	}, {
