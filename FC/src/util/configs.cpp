@@ -4,9 +4,9 @@ using namespace FC;
 
 const AnalogSensors::Channels FC::configs::chans = { {6, 5, 8, 7, 9, 11} };
 const AnalogSensors::Calibrations FC::configs::analog = { {
-	{ { 33280, -7.615E-4 }, // roll
-	  { 31648, 7.615E-4 }, // pitch
-	  { 33430, -2.5E4 } }, // yaw
+	{ { 33280, -4.5331E-4 }, // roll
+	  { 31648, 4.5331E-4 }, // pitch
+	  { 33430, -2.5E-4 } }, // yaw
 	{ { 32000, -1.4815E-4 }, // x-axis
 	  { 32000, -1.4815E-4 }, // y-axis
 	  { 32000, 1.4815E-4 } } // z-axis
