@@ -10,24 +10,17 @@ using namespace FC;
 using namespace stmos;
 
 ADC adc(1);
-AnalogSensors::Calibrations calibrations = configs::analog;
-AnalogSensors analog(adc, configs::chans, calibrations);
+AnalogSensors analog(adc, configs::chans, configs::analog);
 USART out(1, 115200);
 
 int main(int argc, char **argv) {	
-	out.print("Calibrating gyros\n");
-	
-	calibrations.gyro.roll.center = adc.sampleChannel(configs::chans.roll_gyro);
-	calibrations.gyro.pitch.center = adc.sampleChannel(configs::chans.pitch_gyro);
-	calibrations.gyro.yaw.center = adc.sampleChannel(configs::chans.yaw_gyro);
-	
 	while (true) {
 		Task::sleep(100);
 		AnalogSensors::Readings readings = analog.getReadings();
 		
 		int i;
 		for (i=0; i<6; i++)
-			out.printf("%f ", readings.array[i]);
+			out.printf("%0.3f ", readings.array[i]);
 		out.print("\n");
 	}
 }

@@ -36,12 +36,6 @@ int main(int argc, char **argv) {
 
 	out.print("Arming\n");
 	motors.arm();
-	
-	out.print("Waiting for gyros\n");
-	Task::sleep(1000);
-	calibrations.gyro.roll.center = adc.sampleChannel(configs::chans.roll_gyro);
-	calibrations.gyro.pitch.center = adc.sampleChannel(configs::chans.pitch_gyro);
-	calibrations.gyro.yaw.center = adc.sampleChannel(configs::chans.yaw_gyro);
 
 	out.print("Ready!\n");
 	while (true) {
@@ -58,7 +52,8 @@ int main(int argc, char **argv) {
 			motors.setThrottle(throttle, rollcorrection, pitchcorrection, yawcorrection);
 			
 			AnalogSensors::Readings readings = analog.getReadings();
-			out.printf("%f %f %f %f %f\n", readings.roll_gyro, readings.pitch_gyro, readings.x_accel, readings.y_accel, readings.z_accel);
+			out.printf("%f %f %f %f %f %f\n", readings.roll_gyro, readings.pitch_gyro, readings.yaw_gyro, readings.x_accel, readings.y_accel, readings.z_accel);
+		
 		} else {
 			motors.off();
 		}
