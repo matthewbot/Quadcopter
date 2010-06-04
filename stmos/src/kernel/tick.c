@@ -9,8 +9,6 @@ tick_t tick_getcount() {
 	return curtick;
 }
 
-#include <stmos/crt/debug.h>
-
 void tick_sleep(struct kernel_task *task, tick_t waketick) {
 	irq_disable_switch();
 	

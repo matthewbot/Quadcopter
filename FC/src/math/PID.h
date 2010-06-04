@@ -15,8 +15,9 @@ namespace FC {
 			float update(float error);
 			float updateVelocity(float error, float derror_dt);
 			inline void clearInt() { int_error = 0; }
+			inline float getIntError() const { return int_error; }
 			
-//		private:
+		private:
 			const Config &config;	
 			float prev_error;
 			float int_error;
