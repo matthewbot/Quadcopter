@@ -141,15 +141,19 @@ void TimerChannel::setCCR(uint16_t ccr) {
 	switch (num) {
 		case 1:
 			tim->CCR1 = ccr;
+			break;
 			
 		case 2:
 			tim->CCR2 = ccr;
+			break;
 		
 		case 3:
 			tim->CCR3 = ccr;
+			break;
 		
 		case 4:
 			tim->CCR4 = ccr;
+			break;
 	}
 }
 
