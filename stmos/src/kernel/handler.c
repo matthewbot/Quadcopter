@@ -50,6 +50,7 @@ void handler_pendsv() {
 		"str r1, [r0, %[sp]];" // save program stack pointer in task structure
 
 		"mov r4, lr;" // save EXC_RETURN in r4, which is callee preserved
+		"bl irqcallback_run;" // run any pending IRQ callbacks
 		"bl sched_run;" // update the current task pointer
 		"mov lr, r4;" // restore EXC_RETURN
 	    
@@ -66,6 +67,5 @@ void handler_pendsv() {
 
 void handler_systick() { 
 	tick_run();
-	irqcallback_run();
 	irq_force_switch();
 }
