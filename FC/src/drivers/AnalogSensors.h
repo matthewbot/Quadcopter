@@ -3,7 +3,6 @@
 
 #include <stmos/peripherals/ADC.h>
 #include <stmos/peripherals/DMA.h>
-#include <stmos/peripherals/IOPin.h>
 
 namespace FC {
 	class AnalogSensors {
@@ -58,7 +57,6 @@ namespace FC {
 			const Calibrations &calibrations;
 			stmos::ADC &adc;
 			stmos::DMAWait adc_dma;
-			stmos::IOPinConfig roll_pin, pitch_pin, yaw_pin, accel_x_pin, accel_y_pin, accel_z_pin;
 	};
 }
 

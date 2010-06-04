@@ -1,5 +1,6 @@
 #include "AnalogSensors.h"
 #include <stmos/util/Task.h>
+#include <stmos/peripherals/IOPin.h>
 
 using namespace FC;
 using namespace stmos;
@@ -7,13 +8,11 @@ using namespace stmos;
 AnalogSensors::AnalogSensors(ADC &adc, const Channels &channels, const Calibrations &calibrations)
 : calibrations(calibrations),
   adc(adc),
-  adc_dma(adc.getScanDMAChannel()),
-  roll_pin(ADC::getChannelPortPin(channels.roll_gyro), IOPin::INPUT_ANALOG),
-  pitch_pin(ADC::getChannelPortPin(channels.pitch_gyro), IOPin::INPUT_ANALOG),
-  yaw_pin(ADC::getChannelPortPin(channels.yaw_gyro), IOPin::INPUT_ANALOG),
-  accel_x_pin(ADC::getChannelPortPin(channels.x_accel), IOPin::INPUT_ANALOG),
-  accel_y_pin(ADC::getChannelPortPin(channels.y_accel), IOPin::INPUT_ANALOG),
-  accel_z_pin(ADC::getChannelPortPin(channels.z_accel), IOPin::INPUT_ANALOG) {
+  adc_dma(adc.getScanDMAChannel()) {
+	int i;
+	for (i=0;i<6;i++)
+		IOPin::setup(ADC::getChannelPortPin(channels.array[i]), IOPin::INPUT_ANALOG);
+		
 	adc.setScanChannels(channels.array, 6);  
 	adc_dma.setup(DMA::DIRECTION_PER_TO_MEM, DMA::PRIORITY_LOW, sizeof(ADC::Sample));
 }
