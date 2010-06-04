@@ -149,6 +149,12 @@ void ADC::stopScan() {
 	adc->CR2 &= ~(ADC_CR2_CONT | ADC_CR2_DMA);
 }
 
+void ADC::singleScan() {
+	ADC_TypeDef *adc = adcs[num];
+	
+	adc->CR2 |= ADC_CR2_SWSTART | ADC_CR2_DMA;
+}
+
 volatile void *ADC::getScanDMAAddress() const {
 	ADC_TypeDef *adc = adcs[num];
 	return &adc->DR;

@@ -29,9 +29,8 @@ int main(int argc, char **argv) {
 		Task::sleep(500);
 		out.print("Scan: ");
 		adc_dma.start(buf, adc.getScanDMAAddress(), 3, false);
-		adc.startScan();
+		adc.singleScan();
 		adc_dma.wait();
-		adc.stopScan();
 		out.printf("%d %d %d!\n", buf[0], buf[1], buf[2]);
 		
 		Task::sleep(500);

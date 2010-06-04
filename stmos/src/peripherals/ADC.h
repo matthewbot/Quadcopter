@@ -42,6 +42,7 @@ namespace stmos {
 			void setScanChannels(const Channel *chans, size_t chancount);
 			void startScan();
 			void stopScan();
+			void singleScan();
 			volatile void *getScanDMAAddress() const;
 			int getScanDMAChannel() const;
 			

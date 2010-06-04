@@ -21,9 +21,8 @@ AnalogSensors::AnalogSensors(ADC &adc, const Channels &channels, const Calibrati
 AnalogSensors::Readings AnalogSensors::getReadings() {
 	ADC::Sample samples[6];
 	adc_dma.start(samples, adc.getScanDMAAddress(), 6, false);
-	adc.startScan();
+	adc.singleScan();
 	adc_dma.wait();
-	adc.stopScan();
 	
 	Readings readings;
 	int i;
