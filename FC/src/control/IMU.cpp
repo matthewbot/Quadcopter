@@ -4,6 +4,7 @@
 
 using namespace FC;
 using namespace stmos;
+using namespace std;
 
 IMU::IMU(AnalogSensors &sensors, const Config &config)
 : sensors(sensors),
@@ -47,6 +48,9 @@ void IMU::call() {
 		float g = sqrtf(sqr(readings.x_accel) + sqr(readings.y_accel) + sqr(readings.z_accel));
 		float apitch = -asinf(readings.y_accel / g);
 		float aroll = -asinf(readings.x_accel / (cosf(apitch)*g));
+
+		if (isnan(apitch) || isnan(aroll))
+			apitch = aroll = 0;
 
 		rollkalman.step((Kalman::Measurement) {{aroll, readings.roll_gyro}});
 		pitchkalman.step((Kalman::Measurement) {{apitch, readings.pitch_gyro}});
