@@ -17,6 +17,7 @@ namespace FC {
 			struct Config {
 				Kalman::Config roll_pitch_config;
 				Kalman::Config yaw_config;
+				float roll_offset, pitch_offset;
 			};
 			
 			IMU(AnalogSensors &sensors, const Config &config);
@@ -32,6 +33,7 @@ namespace FC {
 			inline float getYaw() { return getState().yaw; }
 			
 		private:
+			const Config &config;
 			AnalogSensors &sensors;
 			Kalman rollkalman, pitchkalman;
 			float yawstate, yawstatevel;

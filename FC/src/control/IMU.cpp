@@ -7,7 +7,7 @@ using namespace stmos;
 using namespace std;
 
 IMU::IMU(AnalogSensors &sensors, const Config &config)
-: sensors(sensors),
+: config(config), sensors(sensors),
   rollkalman(config.roll_pitch_config),
   pitchkalman(config.roll_pitch_config),
   yawstate(0), yawstatevel(0),
@@ -48,6 +48,9 @@ void IMU::call() {
 		float g = sqrtf(sqr(readings.x_accel) + sqr(readings.y_accel) + sqr(readings.z_accel));
 		float apitch = -asinf(readings.y_accel / g);
 		float aroll = -asinf(readings.x_accel / (cosf(apitch)*g));
+
+		apitch += config.pitch_offset;
+		aroll += config.roll_offset;
 
 		if (isnan(apitch) || isnan(aroll))
 			apitch = aroll = 0;
