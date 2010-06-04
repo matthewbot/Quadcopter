@@ -9,6 +9,7 @@ namespace FC {
 	namespace configs {
 		extern const AnalogSensors::Channels chans;
 		extern const AnalogSensors::Calibrations analog;
+		extern const float alphas[];
 		extern const IMU::Config imu;
 		extern const MotorsController::Config control;
 	}

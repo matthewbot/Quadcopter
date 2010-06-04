@@ -20,7 +20,7 @@ using namespace stmos;
 USART out(1, 115200);
 
 ADC adc(1);
-AnalogSensors sensors(adc, configs::chans, configs::analog);
+AnalogSensors sensors(adc, configs::chans, configs::analog, configs::alphas);
 
 IMU imu(sensors, configs::imu);
 

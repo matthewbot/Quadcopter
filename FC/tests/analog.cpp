@@ -10,7 +10,7 @@ using namespace FC;
 using namespace stmos;
 
 ADC adc(1);
-AnalogSensors analog(adc, configs::chans, configs::analog);
+AnalogSensors analog(adc, configs::chans, configs::analog, configs::alphas);
 USART out(1, 115200);
 
 int main(int argc, char **argv) {	

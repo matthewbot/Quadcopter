@@ -24,7 +24,7 @@ Motors motors(esctim);
 
 ADC adc(1);
 AnalogSensors::Calibrations calibrations = configs::analog;
-AnalogSensors analog(adc, configs::chans, calibrations);
+AnalogSensors analog(adc, configs::chans, calibrations, configs::alphas);
 
 Buzzer buzzer;
 BatteryMonitor batmon(adc, 13);

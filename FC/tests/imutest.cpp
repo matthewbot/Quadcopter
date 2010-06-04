@@ -7,7 +7,7 @@ using namespace FC;
 using namespace stmos;
 
 ADC adc(1);
-AnalogSensors sensors(adc, configs::chans, configs::analog);
+AnalogSensors sensors(adc, configs::chans, configs::analog, configs::alphas);
 
 IMU imu(sensors, configs::imu);
 USART out(1, 115200);

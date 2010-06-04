@@ -12,6 +12,11 @@ const AnalogSensors::Calibrations FC::configs::analog = { {
 	  { 32768, 1.4815E-4 } } // z-axis
 } };
 
+const float FC::configs::alphas[] = {
+	1, 1, 1,
+	0.01, 0.01, 0.01
+};
+
 const IMU::Config FC::configs::imu = {
 	{ // roll_pitch_kalman
 		{ // Q

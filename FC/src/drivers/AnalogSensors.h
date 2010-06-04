@@ -1,11 +1,14 @@
 #ifndef FC_DRIVERS_ANALOGSENSORS_H
 #define FC_DRIVERS_ANALOGSENSORS_H
 
+#include <FC/math/LowpassFilter.h>
 #include <stmos/peripherals/ADC.h>
 #include <stmos/peripherals/DMA.h>
+#include <stmos/util/Task.h>
+#include <stmos/util/Callback.h>
 
 namespace FC {
-	class AnalogSensors {
+	class AnalogSensors : stmos::Callback {
 		public:
 			union Channels {
 				struct {
@@ -49,14 +52,17 @@ namespace FC {
 				float array[6];
 			};
 		
-			AnalogSensors(stmos::ADC &adc, const Channels &channels, const Calibrations &calibrations);
+			AnalogSensors(stmos::ADC &adc, const Channels &channels, const Calibrations &calibrations, const float *alphas);
 	
 			Readings getReadings();
 			
+			virtual void call();
 		private:
 			const Calibrations &calibrations;
 			stmos::ADC &adc;
 			stmos::DMAWait adc_dma;
+			LowpassFilter filters[6];
+			stmos::Task task;
 	};
 }
 
