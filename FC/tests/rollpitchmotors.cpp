@@ -23,8 +23,7 @@ ESCTimer esctim;
 Motors motors(esctim);
 
 ADC adc(1);
-AnalogSensors::Calibrations calibrations = configs::analog;
-AnalogSensors analog(adc, configs::chans, calibrations, configs::alphas);
+AnalogSensors analog(adc, configs::analog);
 
 Buzzer buzzer;
 BatteryMonitor batmon(adc, 13);

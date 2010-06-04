@@ -51,14 +51,20 @@ namespace FC {
 				
 				float array[6];
 			};
+			
+			struct Config {
+				Channels channels;
+				Calibrations calibrations;
+				float alphas[6];
+			};
 		
-			AnalogSensors(stmos::ADC &adc, const Channels &channels, const Calibrations &calibrations, const float *alphas);
+			AnalogSensors(stmos::ADC &adc, const Config &config);
 	
 			Readings getReadings();
 			
 			virtual void call();
 		private:
-			const Calibrations &calibrations;
+			const Config &config;
 			stmos::ADC &adc;
 			stmos::DMAWait adc_dma;
 			LowpassFilter filters[6];

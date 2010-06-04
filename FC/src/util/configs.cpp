@@ -2,19 +2,20 @@
 
 using namespace FC;
 
-const AnalogSensors::Channels FC::configs::chans = { {6, 5, 8, 7, 9, 11} };
-const AnalogSensors::Calibrations FC::configs::analog = { {
-	{ { 32768, -4.5331E-4 }, // roll
-	  { 32768, 4.5331E-4 }, // pitch
-	  { 32768, -2.5E-4 } }, // yaw
-	{ { 32768, -1.4815E-4 }, // x-axis
-	  { 32768, -1.4815E-4 }, // y-axis
-	  { 32768, 1.4815E-4 } } // z-axis
-} };
-
-const float FC::configs::alphas[] = {
-	1, 1, 1,
-	0.01, 0.01, 0.01
+const AnalogSensors::Config FC::configs::analog = {
+	{ {6, 5, 8, 7, 9, 11} }, // channels
+	{ { // calibrations
+		{ // gyros
+			{ 32768, -4.5331E-4 }, // roll
+			{ 32768, 4.5331E-4 }, // pitch
+			{ 32768, -2.5E-4 } // yaw
+		}, { // accels
+			{ 32768, -1.4815E-4 }, // x-axis
+			{ 32768, -1.4815E-4 }, // y-axis
+			{ 32768, 1.4815E-4 }  // z-axis
+		}
+	} },
+	{ 1, 1, 1, 0.01, 0.01, 0.01 } // alphas
 };
 
 const IMU::Config FC::configs::imu = {

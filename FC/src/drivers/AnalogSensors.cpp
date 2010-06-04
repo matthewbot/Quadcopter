@@ -5,19 +5,19 @@
 using namespace FC;
 using namespace stmos;
 
-AnalogSensors::AnalogSensors(ADC &adc, const Channels &channels, const Calibrations &calibrations, const float *alphas)
-: calibrations(calibrations),
+AnalogSensors::AnalogSensors(ADC &adc, const Config &config)
+: config(config),
   adc(adc),
   adc_dma(adc.getScanDMAChannel()),
   task("analog", Task::PRIORITY_HIGH+10, *this) {
 	int i;
 	for (i=0;i<6;i++)
-		IOPin::setup(ADC::getChannelPortPin(channels.array[i]), IOPin::INPUT_ANALOG);
+		IOPin::setup(ADC::getChannelPortPin(config.channels.array[i]), IOPin::INPUT_ANALOG);
 	
 	for (i=0;i<6;i++)
-		filters[i].setAlpha(alphas[i]);
+		filters[i].setAlpha(config.alphas[i]);
 	
-	adc.setScanChannels(channels.array, 6);  
+	adc.setScanChannels(config.channels.array, 6);  
 	adc_dma.setup(DMA::DIRECTION_PER_TO_MEM, DMA::PRIORITY_LOW, sizeof(ADC::Sample));
 	task.start();
 }
@@ -41,7 +41,7 @@ void AnalogSensors::call() {
 		
 		int i;
 		for (i=0;i<6;i++) {
-			float val = calibrations.array[i].getValue(samples[i]);
+			float val = config.calibrations.array[i].getValue(samples[i]);
 			filters[i].filter(val);
 		}
 		
