@@ -53,6 +53,5 @@ void MotorsController::call() {
 	pitch_correction = pitch_pid.update(pitch_setpoint - imustate.pitch);
 	yaw_correction = yaw_pid.update(yaw_setpoint - imustate.yaw);
 	
-	//motors.setThrottle(throttle, roll_correction, 0, 0);
 	motors.setThrottle(throttle, roll_correction, pitch_correction, yaw_correction);
 }

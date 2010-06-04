@@ -34,10 +34,10 @@ int main(int argc, char **argv) {
 			float yawcorrection = (chans.analogs[0] / 50.0) / 6;	
 			float pitchcorrection = (chans.analogs[2] / 50.0) / 6;
 			float rollcorrection = (-chans.analogs[3] / 50.0) / 6;
-		
-			out.printf("%f %f %f %f\n", rollcorrection, pitchcorrection, yawcorrection, throttle);
 			
 			motors.setThrottle(throttle, rollcorrection, pitchcorrection, yawcorrection);
+			
+			out.printf("%f %f %f %f\n", motors.getNorthThrottle(), motors.getSouthThrottle(), motors.getWestThrottle(), motors.getEastThrottle());
 		} else {
 			out.print("Not synced\n");
 			motors.off();
