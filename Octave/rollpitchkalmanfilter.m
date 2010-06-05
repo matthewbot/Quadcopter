@@ -31,8 +31,8 @@ for samplenum = 1:samplecount
 	g = sqrt(sample(4)^2 + sample(5)^2 + sample(6)^2);
 	pitchaccel = -asin(sample(5) / g);
 	rollaccel = -asin(sample(4) / (cos(pitchaccel)*g));
-	accel = rollaccel;
-	gyro = sample(1); 
+	accel = rollaccel+.1;
+	gyro = sample(1)+.195; 
 	z = [accel; gyro]; 
 
 	# Kalman prediction phase
