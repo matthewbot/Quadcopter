@@ -33,7 +33,10 @@ IMU::State IMU::getState() {
 }
 
 IMU::State IMU::getVelocityState() {
-	State ret = { rollkalman.getState().vel, pitchkalman.getState().vel, yawstatevel };
+	State ret = { 
+		rollkalman.getState().vel - rollkalman.getState().veloffset, 
+		pitchkalman.getState().vel - pitchkalman.getState().veloffset, 
+		yawstatevel };
 	
 	return ret;	
 }

@@ -15,7 +15,7 @@ const AnalogSensors::Config FC::configs::analog = {
 			{ 32768, 1.4815E-4 }  // z-axis
 		}
 	} },
-	{ 1, 1, 1, 0.01, 0.01, 0.01 } // alphas
+	{ 1, 1, 1, 0.1, 0.1, 0.1 } // alphas
 };
 
 const IMU::Config FC::configs::imu = {
