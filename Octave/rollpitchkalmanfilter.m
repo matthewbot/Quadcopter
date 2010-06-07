@@ -24,6 +24,11 @@ accels = zeros(samplecount, 1);
 angles = zeros(samplecount, 1);
 gyroangles = zeros(samplecount, 1);
 cur_gyroangle = 0;
+intveloffsets = zeros(samplecount, 1);
+cur_intveloffset = 0;
+gyros = zeros(samplecount, 1);
+vels = zeros(samplecount, 1);
+veloffsets = zeros(samplecount, 1);
 
 for samplenum = 1:samplecount
 	# calculate a sample
@@ -55,5 +60,10 @@ for samplenum = 1:samplecount
 	angles(samplenum) = x(1);
 	cur_gyroangle += gyro*DT;
 	gyroangles(samplenum) = cur_gyroangle;
+	cur_intveloffset += x(3)*DT;
+	intveloffsets(samplenum) = cur_intveloffset;
+	gyros(samplenum) = gyro;
+	vels(samplenum) = x(2);
+	veloffsets(samplenum) = x(3);
 endfor
 

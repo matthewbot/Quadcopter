@@ -21,12 +21,12 @@ F = [
 # state covariance
 # or: how much is the actual state expected to deviate from the above predictions
 
-Qvec = [
-	0.00005; # angle
-	0.005;    # vel
-	0.00008;  # veloffset (the gyro's rate of change of drift is pretty low, even though it builds up over time)
+
+Q = [
+	1E-7, 0, 0;
+	0, 2E-8, 0;
+	0, 0, 1E-9;
 ];
-Q = Qvec*transpose(Qvec); 
 
 # observation model
 # or: how our state maps to an observation
@@ -34,24 +34,24 @@ Q = Qvec*transpose(Qvec);
 
 H = [
 	1, 0, 0;  # accel = angle
-	0, 1, -1; # gyro = vel - veloffset
+	0, 1, 1; # gyro = vel + veloffset
 ];
 
 # observation covariance
 # or: how much our sensors are expected to deviate from reality
 
 R = [
-	.0002, 0; # accel
-	0, 0.003; # gyro
+	5.3476E-4, -1.3563E-5; # accel
+	-1.3563E-5, 2.3594E-5; # gyro
 ]; 
 
 ### Generate Graphs ###
 
-load "samples.dat" samples;
+#load "samples.dat" samples;
 rollpitchkalmanfilter;
 
 figure(1);
-plot(accels, 'r', spencer(accels), 'y', angles, 'b', gyroangles, 'g');
+plot(accels, 'r', angles, 'b', gyroangles, 'g', intveloffsets, 'c');
 title("Airborne roll test")
 xlabel("Sample (200hz)")
 ylabel("Roll (rad)")
@@ -59,10 +59,9 @@ axis([0, samplecount, -0.5, 0.5])
 print -dpng "-S600,500" roll.png
 
 figure(2);
-plot(accels, 'r', spencer(accels), 'y', angles, 'b', gyroangles, 'g');
-title("Settling")
-xlabel("Sample (200 samples/sec)")
-ylabel("Roll (rad)")
-axis([2200, samplecount, -.1, .1])
-print -dsvg "-S500,250" roll_settling.svg
+plot(gyros, 'r', vels, 'b', veloffsets, 'g');
+xlabel("Sample (200hz)")
+ylabel("Roll velocity (rad/sec)")
+axis([0, samplecount, -0.5, 0.5])
+
 
