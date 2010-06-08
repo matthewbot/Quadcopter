@@ -75,14 +75,19 @@ int main(int argc, char **argv) {
 			
 			control.setControlPoints(throttle, rollsetpoint, pitchsetpoint, heading);
 			
-			IMU::State state = imu.getState();
+			//IMU::State state = imu.getState();
+			//IMU::State velstate = imu.getVelocityState();
 			//out.printf("%f %f\n", pitchsetpoint, state.pitch);
-			//out.printf("%f %f\n", rollsetpoint, state.roll);
-			out.printf("%f %f\n", throttle, batmon.getCellVoltage());
+			//out.printf("%f %f %f %f %f\n", rollsetpoint, state.roll, velstate.roll, control.getRollCorrection()*10, batmon.getCellVoltage());
+			//out.printf("%f %f\n", throttle, batmon.getCellVoltage());
 			//out.printf("%f %f %f\n", state.yaw, compass.readHeading(), batmon.getCellVoltage());
 			//out.printf("%f\n", motors.getNorthThrottle());
 			//out.printf("%f %f %f\n", control.roll_pid.int_error, control.pitch_pid.int_error, control.yaw_pid.int_error);
-			Task::sleep(50);
+			AnalogSensors::Readings readings = sensors.getReadings();
+			out.printf("%f %f %f %f %f %f\n", readings.roll_gyro, readings.pitch_gyro, readings.yaw_gyro, readings.x_accel, readings.y_accel, readings.z_accel);
+		
+			
+			Task::sleep(5);
 		}
 		
 		control.stop();

@@ -19,7 +19,8 @@ int main(int argc, char **argv) {
 		Task::sleep(20);
 		
 		IMU::State state = imu.getState();
-		out.printf("%0.3f %0.3f %0.3f\n", state.roll, state.pitch, state.yaw);
+		IMU::State velstate = imu.getVelocityState();
+		out.printf("%0.3f %0.3f\n", state.roll, velstate.roll);
 	}
 }
 

@@ -6,8 +6,8 @@ const AnalogSensors::Config FC::configs::analog = {
 	{ {6, 5, 8, 7, 9, 11} }, // channels
 	{ { // calibrations
 		{ // gyros
-			{ 32768, -4.5331E-4 }, // roll
-			{ 32768, 4.5331E-4 }, // pitch
+			{ 32768, -7.407E-4 }, // roll
+			{ 32768, 7.407E-4 }, // pitch
 			{ 32768, -2.5E-4 } // yaw
 		}, { // accels
 			{ 32768, -1.4815E-4 }, // x-axis
@@ -15,18 +15,18 @@ const AnalogSensors::Config FC::configs::analog = {
 			{ 32768, 1.4815E-4 }  // z-axis
 		}
 	} },
-	{ .1, .1, .1, 0.01, 0.01, 0.01 } // alphas
+	{ .3, .3, .3, 0.01, 0.01, 0.01 } // alphas
 };
 
 const IMU::Config FC::configs::imu = {
 	{ // roll_pitch_kalman
 		{ // Q
-			2.5E-9, 2.5E-7, 4E-9,
-			2.5E-7, 2.5E-5, 4E-7,
-			4E-9, 4E-7, 6.4E-9
+			1E-7, 0, 0,
+			0, 1.5E-5, 0,
+			0, 0, 1E-9
 		}, { // R
-			.0002, 0,
-			0,  .003
+			1.9725E-5, -5.0045E-6,
+			-5.0045E-6, 2.2327E-3,
 		}
 	}, { // yaw_kalman
 		{ // Q
@@ -38,7 +38,7 @@ const IMU::Config FC::configs::imu = {
 			0, .0001
 		}
 	},
-	0, // roll_offset
+	0.08, // roll_offset
 	0 // pitch_offset
 };
 
