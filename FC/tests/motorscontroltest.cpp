@@ -60,6 +60,7 @@ int main(int argc, char **argv) {
 				while (!vex.getSynced()) { Task::sleep(100); }
 				control.start();
 			}
+			sensors.centerGyros();
 		
 			VexRC::Channels chans = vex.getChannels();
 	
