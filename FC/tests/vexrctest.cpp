@@ -21,17 +21,22 @@ static const char *digitalToString(VexRC::DigitalChannel chan) {
 	};
 }
 
-int main(int argc, char **argv) {	
+int main(int argc, char **argv) {
+	bool prevsynced=true;
+		
 	while (true) {
-		Task::sleep(50);
+		Task::sleep(5);
 		
 		if (vex.getSynced()) {
 			VexRC::Channels chans = vex.getChannels();
 		
 			out.printf("%d %d %d %d ", chans.analogs[0], chans.analogs[1], chans.analogs[2], chans.analogs[3]);
 			out.printf("%s %s\n", digitalToString(chans.left), digitalToString(chans.right));
+			prevsynced = true;
 		} else {
-			out.print("Not synced\n");
+			if (prevsynced)
+				out.print("Not synced\n");
+			prevsynced = false;
 		}
 	}
 }
