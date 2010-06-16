@@ -16,6 +16,9 @@ AnalogSensors::AnalogSensors(ADC &adc, const Config &config)
 	
 	for (i=0;i<6;i++)
 		filters[i].setAlpha(config.alphas[i]);
+
+	for (i=0;i<6;i++)
+		sensorcenters[i] = 32768;
 	
 	adc.setScanChannels(config.channels.array, 6);  
 	adc_dma.setup(DMA::DIRECTION_PER_TO_MEM, DMA::PRIORITY_LOW, sizeof(ADC::Sample));
@@ -41,7 +44,7 @@ void AnalogSensors::call() {
 		
 		int i;
 		for (i=0;i<6;i++) {
-			float val = config.calibrations.array[i].getValue(samples[i]);
+			float val = config.calibrations.array[i].getValue(samples[i], sensorcenters[i]);
 			filters[i].filter(val);
 		}
 		
@@ -49,7 +52,7 @@ void AnalogSensors::call() {
 	}
 }
 
-float AnalogSensors::Calibration::getValue(stmos::ADC::Sample in) const {
+float AnalogSensors::Calibration::getValue(stmos::ADC::Sample in, stmos::ADC::Sample center) const {
 	return (in - center) * scale;
 }
 

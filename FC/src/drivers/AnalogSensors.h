@@ -20,10 +20,9 @@ namespace FC {
 			};
 	
 			struct Calibration {
-				stmos::ADC::Sample center;
 				float scale;
 				
-				float getValue(stmos::ADC::Sample in) const;
+				float getValue(stmos::ADC::Sample in, stmos::ADC::Sample center) const;
 			} __attribute__((packed));
 	
 			struct AccelerometerCalibration {
@@ -63,8 +62,10 @@ namespace FC {
 			Readings getReadings();
 			
 			virtual void call();
-		private:
+			
+		private:		
 			const Config &config;
+			stmos::ADC::Sample sensorcenters[6];
 			stmos::ADC &adc;
 			stmos::DMAWait adc_dma;
 			LowpassFilter filters[6];
