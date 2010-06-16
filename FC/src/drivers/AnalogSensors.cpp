@@ -29,7 +29,7 @@ AnalogSensors::AnalogSensors(ADC &adc, const Config &config)
 void AnalogSensors::centerGyros() {
 	int totsamples[3] = {0, 0, 0};
 	int i;
-	for (i=0;i<100;i++) {
+	for (i=0;i<1000;i++) {
 		ADC::Sample samples[6];
 		getSamples(samples);
 		int j;
@@ -40,7 +40,7 @@ void AnalogSensors::centerGyros() {
 	}
 	
 	for (i=0;i<3;i++) {
-		sensorcenters[i] = totsamples[i]/100;
+		sensorcenters[i] = totsamples[i]/1000;
 	}
 }
 
