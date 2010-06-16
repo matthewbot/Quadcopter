@@ -15,18 +15,18 @@ const AnalogSensors::Config FC::configs::analog = {
 			{ 32768, 1.4815E-4 }  // z-axis
 		}
 	} },
-	{ .3, .3, .3, 0.01, 0.01, 0.01 } // alphas
+	{ .5, .5, .5, .2, .2, .2 } // alphas
 };
 
 const IMU::Config FC::configs::imu = {
 	{ // roll_pitch_kalman
 		{ // Q
 			1E-7, 0, 0,
-			0, 1.5E-5, 0,
+			0, 1E-4, 0,
 			0, 0, 1E-9
 		}, { // R
-			1.9725E-5, -5.0045E-6,
-			-5.0045E-6, 2.2327E-3,
+			6.7716e-4, -4.8451e-4,
+			-4.8451e-4, 3.9255e-3,
 		}
 	}, { // yaw_kalman
 		{ // Q
@@ -44,11 +44,11 @@ const IMU::Config FC::configs::imu = {
 
 const MotorsController::Config FC::configs::control = {
 	{
-		0.07, 0.1, 0.032,
+		0.045, 0.01, -0.01,
 		1,
 		ESCTimer::UPDATETIME / 1000.0
 	}, {
-	    0.07, 0.1, 0.032,
+	    0.045, 0.01, -0.01,
 		1,
 		ESCTimer::UPDATETIME / 1000.0
 	}, {

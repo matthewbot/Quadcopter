@@ -24,7 +24,7 @@ F = [
 
 Q = [
 	1E-7, 0, 0;
-	0, 1.5E-5, 0;
+	0, 1E-4, 0;
 	0, 0, 1E-9;
 ];
 
@@ -41,8 +41,8 @@ H = [
 # or: how much our sensors are expected to deviate from reality
 
 R = [
-	1.9725E-5, -5.0045E-6; # accel
-	-5.0045E-6, 2.2327E-3; # gyro
+	6.7716e-4, -4.8451e-4; # accel
+	-4.8451e-4, 3.9255e-3; # gyro
 ]; 
 
 ### Generate Graphs ###
