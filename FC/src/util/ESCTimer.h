@@ -8,7 +8,7 @@ namespace FC {
 		public:
 			ESCTimer();
 			
-			static const long UPDATETIME = 10; // 20ms pulse type
+			static const long UPDATETIME = 20; // 20ms pulse type
 	};
 }
 
