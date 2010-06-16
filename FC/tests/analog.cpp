@@ -13,12 +13,17 @@ ADC adc(1);
 AnalogSensors analog(adc, configs::analog);
 USART out(1, 115200);
 
-int main(int argc, char **argv) {	
+int main(int argc, char **argv) {
+	int i;	
+	out.print("Centers ");
+	for (i=0; i<6; i++)
+		out.printf("%u ", analog.getSensorCenter(i));
+	out.print("\n");
+
 	while (true) {
 		Task::sleep(100);
 		AnalogSensors::Readings readings = analog.getReadings();
 		
-		int i;
 		for (i=0; i<6; i++)
 			out.printf("%0.3f ", readings.array[i]);
 		out.print("\n");

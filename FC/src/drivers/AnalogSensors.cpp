@@ -22,7 +22,26 @@ AnalogSensors::AnalogSensors(ADC &adc, const Config &config)
 	
 	adc.setScanChannels(config.channels.array, 6);  
 	adc_dma.setup(DMA::DIRECTION_PER_TO_MEM, DMA::PRIORITY_LOW, sizeof(ADC::Sample));
+	centerGyros();
 	task.start();
+}
+
+void AnalogSensors::centerGyros() {
+	int totsamples[3] = {0, 0, 0};
+	int i;
+	for (i=0;i<100;i++) {
+		ADC::Sample samples[6];
+		getSamples(samples);
+		int j;
+		for (j=0;j<3;j++) {
+			totsamples[j] += samples[j];
+		}
+		Task::sleep(1);
+	}
+	
+	for (i=0;i<3;i++) {
+		sensorcenters[i] = totsamples[i]/100;
+	}
 }
 
 AnalogSensors::Readings AnalogSensors::getReadings() {
@@ -37,10 +56,8 @@ AnalogSensors::Readings AnalogSensors::getReadings() {
 
 void AnalogSensors::call() {
 	while (true) {
-		ADC::Sample samples[6];		
-		adc_dma.start(samples, adc.getScanDMAAddress(), 6, false);
-		adc.singleScan();
-		adc_dma.wait();
+		ADC::Sample samples[6];
+		getSamples(samples);
 		
 		int i;
 		for (i=0;i<6;i++) {
@@ -50,6 +67,12 @@ void AnalogSensors::call() {
 		
 		Task::sleep(1);
 	}
+}
+
+void AnalogSensors::getSamples(ADC::Sample *samples) {	
+	adc_dma.start(samples, adc.getScanDMAAddress(), 6, false);
+	adc.singleScan();
+	adc_dma.wait();
 }
 
 float AnalogSensors::Calibration::getValue(stmos::ADC::Sample in, stmos::ADC::Sample center) const {

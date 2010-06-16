@@ -58,12 +58,16 @@ namespace FC {
 			};
 		
 			AnalogSensors(stmos::ADC &adc, const Config &config);
+			void centerGyros();
+			inline stmos::ADC::Sample getSensorCenter(int i) { return sensorcenters[i]; }
 	
 			Readings getReadings();
 			
 			virtual void call();
 			
 		private:		
+			void getSamples(stmos::ADC::Sample *samples);
+		
 			const Config &config;
 			stmos::ADC::Sample sensorcenters[6];
 			stmos::ADC &adc;
