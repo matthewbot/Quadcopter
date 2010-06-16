@@ -49,18 +49,22 @@ int main(int argc, char **argv) {
 	motors.arm();
 
 	float heading = imu.getYaw();
+	buzzer.buzz(300);
 
 	while (true) {
 		control.start();
 		
 		while (true) {
+			bool up = false;
 			if (!vex.getSynced()) {
 				control.stop();
 				motors.off();
 				while (!vex.getSynced()) { Task::sleep(100); }
 				control.start();
+				sensors.centerGyros();
+				heading = imu.getYaw();
+				buzzer.buzz(300);
 			}
-			sensors.centerGyros();
 		
 			VexRC::Channels chans = vex.getChannels();
 	
@@ -72,19 +76,26 @@ int main(int argc, char **argv) {
 				throttle = 0;
 			float rollsetpoint = (-chans.analogs[3] / 50.0) * 0.3;
 			float pitchsetpoint = (-chans.analogs[2] / 50.0) * 0.3;
-			heading += (chans.analogs[0] / 50.0) * (M_PI / 25);
+			heading += (chans.analogs[0] / 50.0) * (M_PI / 4) * .005;
 			
 			control.setControlPoints(throttle, rollsetpoint, pitchsetpoint, heading);
+			if (!up) {
+				if (throttle > 0.4)
+					up = true;
+				else
+					control.clearIntegrals();
+			}
 			
 			IMU::State state = imu.getState();
 			IMU::State velstate = imu.getVelocityState();
 			//out.printf("%f %f\n", pitchsetpoint, state.pitch);
-			out.printf("%f %f %f %f %f\n", rollsetpoint, state.roll, velstate.roll, control.getRollCorrection()*500, batmon.getCellVoltage());
+			//out.printf("%f %f %f %f %f\n", rollsetpoint, state.roll, velstate.roll, control.getRollCorrection()*50, batmon.getCellVoltage());
 			//out.printf("%f %f\n", throttle, batmon.getCellVoltage());
-			//out.printf("%f %f %f\n", state.yaw, compass.readHeading(), batmon.getCellVoltage());
+			//out.printf("%.3f %.3f %.3f\n", state.yaw, heading, control.getYawCorrection()*50);
+			out.printf("%f\n", throttle);
 			//out.printf("%f\n", motors.getNorthThrottle());
 			//out.printf("%f %f %f\n", control.roll_pid.int_error, control.pitch_pid.int_error, control.yaw_pid.int_error);
-			AnalogSensors::Readings readings = sensors.getReadings();
+			//AnalogSensors::Readings readings = sensors.getReadings();
 			//out.printf("%f %f %f %f %f %f\n", readings.roll_gyro, readings.pitch_gyro, readings.yaw_gyro, readings.x_accel, readings.y_accel, readings.z_accel);
 		
 			

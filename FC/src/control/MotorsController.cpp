@@ -35,15 +35,18 @@ void MotorsController::setControlPoints(float throttle, float roll, float pitch,
 	yaw_setpoint = yaw;
 }
 
+void MotorsController::clearIntegrals() {
+	roll_pid.clearInt();
+	pitch_pid.clearInt();
+	yaw_pid.clearInt();
+}
+
 void MotorsController::call() {
 	if (!running)
 		return;
 		
-	if (throttle < 0.30) {
-		roll_pid.clearInt();
-		pitch_pid.clearInt();
-		yaw_pid.clearInt();
-		motors.setThrottle(throttle, 0, 0, 0);
+	if (throttle < 0.1) {
+		motors.setThrottle(0, 0, 0, 0);
 		return;
 	}
 		

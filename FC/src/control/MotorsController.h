@@ -23,12 +23,13 @@ namespace FC {
 			void stop();
 			
 			void setControlPoints(float throttle, float roll, float pitch, float yaw);
+			void clearIntegrals();
 			
 			inline float getRollCorrection() const { return roll_correction; }
 			inline float getPitchCorrection() const { return pitch_correction; }
 			inline float getYawCorrection() const { return yaw_correction; }
 			
-		//private:
+		private:
 			IMU &imu;
 			Motors &motors;
 			
