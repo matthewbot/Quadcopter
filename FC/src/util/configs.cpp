@@ -6,8 +6,8 @@ const AnalogSensors::Config FC::configs::analog = {
 	{ {6, 5, 8, 7, 9, 11} }, // channels
 	{ { // calibrations
 		{ // gyros
-			{ -7.407E-4 }, // roll
-			{ 7.407E-4 }, // pitch
+			{ -4.5E-4 }, // roll
+			{ 3.8E-4 }, // pitch
 			{ -2.5E-4 } // yaw
 		}, { // accels
 			{ -1.4815E-4 }, // x-axis
