@@ -12,6 +12,7 @@ namespace stmos {
 			typedef uint8_t Address;
 		
 			I2C(int num);
+			void reset();
 			
 			void start(Address addr);
 			void send(const uint8_t *buf, size_t size);
