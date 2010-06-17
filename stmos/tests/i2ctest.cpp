@@ -11,8 +11,8 @@ int main(int argc, char **argv) {
 	out.print("I2C test!\n");
 	
 	out.print("Send data\n");
-	i2c.start(0x50);
-	const uint8_t sendbuf[] = {0, 0, 108, 88, 77};
+	i2c.start(0x50, I2C::SEND);
+	const uint8_t sendbuf[] = {0, 0, 213, 88, 77, 1};
 	i2c.send(sendbuf, sizeof(sendbuf));
 	i2c.stop();
 	
@@ -20,11 +20,12 @@ int main(int argc, char **argv) {
 	
 	out.print("Set address\n");
 	uint8_t recvbuf[5];
-	i2c.start(0x50);
+	i2c.start(0x50, I2C::SEND);
 	i2c.send(sendbuf, 2);
 	
 	out.print("Read\n");
-	i2c.receive(0x50, recvbuf, sizeof(recvbuf));
+	i2c.start(0x50, I2C::RECEIVE);
+	i2c.receive(recvbuf, sizeof(recvbuf), true);
 	i2c.stop();
 	
 	unsigned int i;

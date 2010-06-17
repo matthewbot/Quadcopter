@@ -13,19 +13,19 @@ EEPROM::EEPROM(I2C &i2c, I2C::Address i2caddr)
   
 void EEPROM::read(Address addr, uint8_t *data, size_t len) {
 	waitReady();
-	write(addr, NULL, 0);
-	i2c.receive(i2caddr, data, len);
+	setAddress(addr);
+	
+	i2c.start(i2caddr, I2C::RECEIVE);
+	i2c.receive(data, len, true);
+	i2c.stop();
 }
 
 void EEPROM::write(Address addr, const uint8_t *data, size_t len) {
 	waitReady();
 	setAddress(addr);
 	
-	if (len) {
-		i2c.send(data, len);
-		lastwritetime = Task::getCurrentTick();
-	}
-	
+	i2c.send(data, len);
+	lastwritetime = Task::getCurrentTick();
 	i2c.stop();
 }
 
@@ -47,7 +47,7 @@ void EEPROM::setAddress(Address addr) {
 	uint16_t addr_swapped;
 	asm("rev16 %0, %1" : "=r"(addr_swapped) : "r"(addr));
 
-	i2c.start(i2caddr);
+	i2c.start(i2caddr, I2C::SEND);
 	i2c.send((const uint8_t *)&addr_swapped, 2);
 }
 
