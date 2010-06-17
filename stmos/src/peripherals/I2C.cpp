@@ -73,15 +73,12 @@ void I2C::receive(I2C::Address addr, uint8_t *buf, size_t size) {
 	while (size--) {
 		if (size == 0) {
 			i2c->CR1 &= ~I2C_CR1_ACK;
-			i2c->CR1 |= I2C_CR1_STOP;
 		}
 		
 		while (!(i2c->SR1 & I2C_SR1_RXNE)) { }
 		
 		*buf++ = i2c->DR;
 	}	
-	
-	while (i2c->CR1 & I2C_CR1_STOP) { }
 }
 
 static void send_start(I2C_TypeDef *i2c) {

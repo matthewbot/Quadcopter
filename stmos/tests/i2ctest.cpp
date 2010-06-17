@@ -25,6 +25,7 @@ int main(int argc, char **argv) {
 	
 	out.print("Read\n");
 	i2c.receive(0x50, recvbuf, sizeof(recvbuf));
+	i2c.stop();
 	
 	unsigned int i;
 	for (i=0;i<sizeof(recvbuf);i++)
