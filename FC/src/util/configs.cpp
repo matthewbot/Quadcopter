@@ -44,15 +44,15 @@ const IMU::Config FC::configs::imu = {
 
 const MotorsController::Config FC::configs::control = {
 	{
-		0.045, 0.01, -0.01,
+		0.13, 0.03, -0.032,
 		1,
 		ESCTimer::UPDATETIME / 1000.0
 	}, {
-	    0.045, 0.01, -0.01,
+	    0.13, 0.03, -0.032,
 		1,
 		ESCTimer::UPDATETIME / 1000.0
 	}, {
-		0, 0, 0,
+		0.02, 0, 0,
 		.1,
 		ESCTimer::UPDATETIME / 1000.0
 	}
