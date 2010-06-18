@@ -12,7 +12,7 @@ namespace FC {
 			EEPROM(stmos::I2C &i2c, stmos::I2C::Address i2caddr);
 			
 			typedef uint16_t Address;
-			static const int PAGELENGTH = 128;
+			static const int PAGELENGTH = 64;
 			static inline Address pageAddress(int page) { return (Address)(page * PAGELENGTH); }
 			static inline Address byteAddress(int page, int byte) { return pageAddress(page) + byte; }
 			

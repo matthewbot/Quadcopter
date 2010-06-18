@@ -1,4 +1,3 @@
-#include <FC/control/Logger.h>
 #include <FC/drivers/EEPROM.h>
 #include <stmos/peripherals/USART.h>
 
@@ -10,6 +9,11 @@ I2C i2c(1);
 EEPROM eeprom(i2c, 0x50);
 
 int main(int argc, char **argv) {	
+	out.print("Writing to EEPROM!\n");
+	
+	const uint8_t writedata[] = { 99, 22, 44 };
+	eeprom.write(EEPROM::pageAddress(0), writedata, sizeof(writedata));
+	
 	out.print("Begin raw read EEPROM test\n");
 	
 	uint8_t data[10];
