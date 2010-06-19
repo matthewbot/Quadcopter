@@ -1,8 +1,6 @@
 #include "sched.h"
 #include "irq.h"
 #include <stmos/util/cexts.h>
-#include <stmos/crt/nvic.h>
-#include <stm32f10x.h>
 #include <stdbool.h>
 
 // not static so some assembly code can poke it

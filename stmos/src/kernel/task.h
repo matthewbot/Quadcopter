@@ -28,11 +28,11 @@ struct kernel_task {
 	struct kernel_task *list_prev;
 	void *sp;
 	
-	char name[10];
+	char name[16];
 	kernel_taskpri pri;
 	
-	enum task_state state : 7;
-	bool needfree : 1;	
+	enum task_state state;
+	bool needfree;	
 	
 	union {
 		uint32_t num;

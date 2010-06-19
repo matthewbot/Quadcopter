@@ -33,13 +33,10 @@ struct kernel_task *task_new_inplace(const char *name, kernel_taskpri pri, kerne
 	*--sp = (uint32_t)data; // R0
 	sp -= 8; // R11 - R4
 	
+	memset(task, '\0', sizeof(struct kernel_task));
 	task->sp = sp;
 	task->pri = pri;
 	strncpy(task->name, name, sizeof(task->name));
-	task->list_prev = task->list_next = NULL;
-	task->userdata = NULL;
-	task->state = TASK_STATE_NONE;
-	task->needfree = false;
 	task->stackguard = TASK_STACKGUARD_VALUE;
 	return task;
 }
