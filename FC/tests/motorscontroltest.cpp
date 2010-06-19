@@ -1,10 +1,12 @@
 #include <FC/control/Motors.h>
 #include <FC/control/IMU.h>
 #include <FC/control/MotorsController.h>
+#include <FC/control/Logger.h>
 #include <FC/drivers/AnalogSensors.h>
 #include <FC/drivers/VexRC.h>
 #include <FC/drivers/Buzzer.h>
 #include <FC/drivers/BatteryMonitor.h>
+#include <FC/drivers/EEPROM.h>
 #include <FC/util/ESCTimer.h>
 #include <FC/util/PPMTimer.h>
 #include <FC/util/configs.h>
@@ -33,10 +35,18 @@ MotorsController control(controlconfig, imu, motors, esctim);
 PPMTimer ppmtim;
 VexRC vex(ppmtim, 4);
 
+I2C i2c(1);
+EEPROM eeprom(i2c, 0x50);
+
 Buzzer buzzer;
 BatteryMonitor batmon(adc, 13);
 
 static void docalibrate(const char *type, PID::Config *pid);
+
+struct LogEntry {
+	AnalogSensors::Readings analogs;
+	IMU::State state;
+};
 
 int main(int argc, char **argv) {
 	imu.start();
@@ -53,6 +63,8 @@ int main(int argc, char **argv) {
 
 	while (true) {
 		control.start();
+		Logger logger(eeprom, 0);
+		bool logging = false;
 		
 		while (true) {
 			bool up = false;
@@ -68,8 +80,12 @@ int main(int argc, char **argv) {
 		
 			VexRC::Channels chans = vex.getChannels();
 	
-			if (chans.left != VexRC::NONE || chans.right != VexRC::NONE)
+			if (chans.right != VexRC::NONE)
 				break;
+			if (chans.left == VexRC::UP)
+				logging = true;
+			else if (chans.left == VexRC::DOWN)
+				logging = false;
 	
 			float throttle = chans.analogs[1] / 50.0;
 			if (throttle < 0)
@@ -86,18 +102,10 @@ int main(int argc, char **argv) {
 					control.clearIntegrals();
 			}
 			
-			IMU::State state = imu.getState();
-			IMU::State velstate = imu.getVelocityState();
-			//out.printf("%f %f\n", pitchsetpoint, state.pitch);
-			//out.printf("%f %f %f %f %f\n", rollsetpoint, state.roll, velstate.roll, control.getRollCorrection()*50, batmon.getCellVoltage());
-			//out.printf("%f %f\n", throttle, batmon.getCellVoltage());
-			//out.printf("%.3f %.3f %.3f\n", state.yaw, heading, control.getYawCorrection()*50);
-			out.printf("%f\n", throttle);
-			//out.printf("%f\n", motors.getNorthThrottle());
-			//out.printf("%f %f %f\n", control.roll_pid.int_error, control.pitch_pid.int_error, control.yaw_pid.int_error);
-			//AnalogSensors::Readings readings = sensors.getReadings();
-			//out.printf("%f %f %f %f %f %f\n", readings.roll_gyro, readings.pitch_gyro, readings.yaw_gyro, readings.x_accel, readings.y_accel, readings.z_accel);
-		
+			if (logging) {
+				LogEntry entry = { sensors.getReadings(), imu.getState() };
+				logger.write((uint8_t *)&entry, sizeof(entry));
+			}
 			
 			Task::sleep(5);
 		}
@@ -106,6 +114,18 @@ int main(int argc, char **argv) {
 		motors.off();
 		out.print("Push enter\n");
 		while (out.getch() != '\r') { }
+		
+		out.print("Log dump:");
+		LogReader reader(eeprom, 0);
+		struct LogEntry entry;
+		while (reader.read((uint8_t *)&entry, sizeof(entry)) == sizeof(entry)) {
+			int i;
+			for (i=0;i<6;i++) {
+				out.printf("%.3f ", entry.analogs.array[i]);
+			}
+			out.printf("%.3f %.3f %.3f\n", entry.state.roll, entry.state.pitch, entry.state.yaw);
+		}
+		
 		docalibrate("Roll", &controlconfig.roll_config);
 		docalibrate("Pitch", &controlconfig.pitch_config);
 		docalibrate("Yaw", &controlconfig.yaw_config);
