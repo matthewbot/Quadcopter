@@ -40,6 +40,8 @@ struct kernel_task {
 		uint32_t num;
 	} list_data;
 	
+	uint32_t curcycles;
+	uint32_t prevcycles;
 	void *userdata;
 	uint16_t stackguard;
 };

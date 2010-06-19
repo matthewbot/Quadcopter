@@ -71,6 +71,12 @@ void Task::stop() {
 	irq_enable_switch();
 }
 
+float Task::getCPUUsage() {
+	assert(ktask);
+	
+	return ktask->prevcycles / 7200000.0; // TODO abstract me (SysTick period * 100ms)
+}
+
 void Task::sleep(unsigned long msecs) {
 	tick_t waketick = tick_getcount() + msecs;
 	struct kernel_task *curtask = sched_get_current_task();

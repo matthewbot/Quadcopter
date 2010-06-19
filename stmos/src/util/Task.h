@@ -25,6 +25,7 @@ namespace stmos {
 			void suspend();
 			void resume();
 			void stop();
+			float getCPUUsage();
 					
 			static unsigned long getCurrentTick();
 			static void sleep(unsigned long msecs);

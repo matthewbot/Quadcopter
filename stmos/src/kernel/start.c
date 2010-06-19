@@ -16,7 +16,6 @@ static char idletask_mem[256];
 
 __attribute__((noreturn))
 void kernel_start() {
-	tasklist_init();
 	mutex_init(&malloc_mutex);
 	struct kernel_task *idletask = task_new_inplace("idle", KERNEL_PRIORITY_IDLE, idletaskfunc, NULL, idletask_mem, sizeof(idletask_mem));
 	struct kernel_task *maintask = task_new("main", KERNEL_PRIORITY_MID, maintaskfunc, NULL, 1024*4);

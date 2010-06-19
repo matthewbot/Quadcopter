@@ -3,6 +3,7 @@
 #include "sched.h"
 #include "irq.h"
 #include "irqcallback.h"
+#include "tasklist.h"
 #include <stmos/crt/nvic.h>
 #include <stmos/crt/fault.h>
 #include <stm32f10x.h>
@@ -67,5 +68,7 @@ void handler_pendsv() {
 
 void handler_systick() { 
 	tick_run();
+	tasklist_update();
 	irq_force_switch();
 }
+

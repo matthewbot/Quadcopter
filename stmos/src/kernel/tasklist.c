@@ -1,18 +1,17 @@
 #include "tasklist.h"
-#include "mutex.h"
+#include "irq.h"
 #include "task.h"
+#include <stm32f10x.h>
 #include <stdint.h>
 
-static struct kernel_mutex tasklist_mutex;
 static struct kernel_task *tasklist_head;
 volatile uint8_t tasklist_count;
 
-void tasklist_init() {
-	mutex_init(&tasklist_mutex);
-}
+static uint32_t tasklist_lastswapcycle;
+static int tasklist_updatecount;
 
 void tasklist_task_created(struct kernel_task *task) {
-	mutex_wait(&tasklist_mutex);
+	irq_disable_switch();
 	
 	task->tasklist_next = tasklist_head;
 	task->tasklist_prev = NULL;
@@ -21,11 +20,11 @@ void tasklist_task_created(struct kernel_task *task) {
 	tasklist_head = task;
 	tasklist_count++;
 	
-	mutex_release(&tasklist_mutex);
+	irq_enable_switch();
 }
 
 void tasklist_task_freed(struct kernel_task *task) {
-	mutex_wait(&tasklist_mutex);
+	irq_disable_switch();
 	
 	if (task->tasklist_prev)
 		task->tasklist_prev->tasklist_next = task->tasklist_next;
@@ -34,7 +33,34 @@ void tasklist_task_freed(struct kernel_task *task) {
 	task->tasklist_next->tasklist_prev = task->tasklist_prev;
 	tasklist_count--;
 	
-	mutex_release(&tasklist_mutex);
+	irq_enable_switch();
+}
+
+void tasklist_task_swapedout(struct kernel_task *task) {
+	uint32_t cycle = SysTick->VAL;
+
+	if (task) {
+		int delta = tasklist_lastswapcycle - cycle;
+		if (delta <= 0)
+			delta += 72000; // TODO refactor systick stuff
+		task->curcycles += delta;
+	}
+	
+	tasklist_lastswapcycle = cycle;
+}
+
+void tasklist_update() {
+	if (++tasklist_updatecount < 100) // update every 100 ms
+		return;
+	tasklist_updatecount = 0;
+	
+	struct kernel_task *curtask = tasklist_head;
+	
+	while (curtask) {
+		curtask->prevcycles = curtask->curcycles;
+		curtask->curcycles = 0;
+		curtask = curtask->tasklist_next;
+	}
 }
 
 int tasklist_get_count() {

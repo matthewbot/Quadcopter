@@ -1,5 +1,6 @@
 #include "sched.h"
 #include "irq.h"
+#include "tasklist.h"
 #include <stmos/util/cexts.h>
 #include <stdbool.h>
 
@@ -54,7 +55,8 @@ void sched_setup() {
 
 void sched_run() {
 	task_assertstack(sched_curtask);
-
+	tasklist_task_swapedout(sched_curtask);
+	
 	// first, we need to determine the next task
 	if (UNLIKELY(nexttask != NULL)) { // if the next task has been saved (because the current task no longer is linked in the list)
 		sched_curtask = nexttask; // use it as the current task

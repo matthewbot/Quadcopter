@@ -3,11 +3,12 @@
 
 struct kernel_task;
 
-void tasklist_init();
-
 void tasklist_task_created(struct kernel_task *task);
 void tasklist_task_freed(struct kernel_task *task);
+void tasklist_task_swapedout(struct kernel_task *task);
+void tasklist_update();
 
 int tasklist_get_count();
+
 
 #endif
