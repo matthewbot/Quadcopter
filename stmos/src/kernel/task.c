@@ -1,5 +1,6 @@
 #include "task.h"
 #include "irq.h"
+#include "tasklist.h"
 #include <stm32f10x.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -38,6 +39,8 @@ struct kernel_task *task_new_inplace(const char *name, kernel_taskpri pri, kerne
 	task->pri = pri;
 	strncpy(task->name, name, sizeof(task->name));
 	task->stackguard = TASK_STACKGUARD_VALUE;
+	tasklist_task_created(task);
+	
 	return task;
 }
 
@@ -103,7 +106,8 @@ void task_gc() {
 			break;
 		freetasks = task->list_next;
 		
-		irq_enable_switch(); // free is protected w/ a mutex, must enable context switches
+		irq_enable_switch(); // the next two commands use mutexes, so context switches must be enabled
+		tasklist_task_freed(task);
 		free(task);
 	}
 	

@@ -26,6 +26,8 @@ enum task_state {
 struct kernel_task {
 	struct kernel_task *list_next;
 	struct kernel_task *list_prev;
+	struct kernel_task *tasklist_next;
+	struct kernel_task *tasklist_prev;
 	void *sp;
 	
 	char name[16];
