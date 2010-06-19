@@ -1,4 +1,5 @@
 #include <FC/drivers/VexRC.h>
+#include <FC/drivers/Buzzer.h>
 #include <FC/util/PPMTimer.h>
 #include <stmos/peripherals/USART.h>
 #include <stmos/util/Task.h>
@@ -9,6 +10,7 @@ using namespace stmos;
 PPMTimer tim;
 VexRC vex(tim, 4);
 USART out(1, 115200);
+Buzzer buzzer;
 
 static const char *digitalToString(VexRC::DigitalChannel chan) {
 	switch (chan) {
@@ -34,8 +36,10 @@ int main(int argc, char **argv) {
 			out.printf("%s %s\n", digitalToString(chans.left), digitalToString(chans.right));
 			prevsynced = true;
 		} else {
-			if (prevsynced)
+			if (prevsynced) {
+				buzzer.buzz(100);
 				out.print("Not synced\n");
+			}
 			prevsynced = false;
 		}
 	}
