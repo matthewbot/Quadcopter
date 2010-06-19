@@ -44,7 +44,7 @@ void sched_remove_task(struct kernel_task *task) {
 	task_list_remove(task);
 	task->state = TASK_STATE_NONE;
 	
-	if (UNLIKELY(task->pri == schedlist_maxpri)) 
+	if (task->pri == schedlist_maxpri) 
 		schedlist_maxpri = schedlist->pri;
 		
 	irq_enable_switch();
@@ -67,7 +67,7 @@ void sched_run() {
 			goto schedfirst; // we need to schedule the first task
 	}
 	
-	if (UNLIKELY(sched_curtask->pri > schedlist_maxpri)) // if our new task is actually a lower priority than the current max
+	if (sched_curtask->pri > schedlist_maxpri) // if our new task is actually a lower priority than the current max
 		goto schedfirst; // we need to schedule from the top again
 		
 	return; // otherwise we're done!
