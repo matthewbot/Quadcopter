@@ -21,12 +21,13 @@ F = [
 # state covariance
 # or: how much is the actual state expected to deviate from the above predictions
 
+Qvec = [1E-5; 8E-3; 5E-4];
 
-Q = [
-	1E-7, 0, 0;
-	0, 1E-4, 0;
-	0, 0, 1E-9;
-];
+Q = Qvec * transpose(Qvec);
+for i=1:2
+	Q(i, 3) = 0;
+	Q(3, i) = 0;
+endfor
 
 # observation model
 # or: how our state maps to an observation
@@ -62,6 +63,6 @@ figure(2);
 plot(gyros, 'r', vels, 'b', veloffsets, 'g');
 xlabel("Sample (200hz)")
 ylabel("Roll velocity (rad/sec)")
-axis([0, samplecount, -0.5, 0.5])
+axis([0, samplecount, -1, 1])
 
 
