@@ -1,4 +1,5 @@
 #include "IOPin.h"
+#include <stmos/util/IRQFunction.h>
 #include <stmos/crt/nvic.h>
 #include <stm32f10x.h>
 #include <stdint.h>
@@ -160,6 +161,7 @@ static void run_exti_callback(int irq) {
 }
 
 static void exti_irq_handler() {
+	IRQFunction irqfunc;
 	int irq;
 	const uint32_t PR = EXTI->PR;
 	

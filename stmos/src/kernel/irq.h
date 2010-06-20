@@ -10,4 +10,7 @@ void irq_force_switch();
 void irq_enter_critical(int irq);
 void irq_leave_critical(int irq);
 
+void irq_enter();
+void irq_leave();
+
 #endif

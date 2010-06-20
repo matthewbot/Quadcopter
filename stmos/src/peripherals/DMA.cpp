@@ -1,4 +1,5 @@
 #include "DMA.h"
+#include <stmos/util/IRQFunction.h>
 #include <stmos/util/CriticalSection.h>
 #include <stmos/crt/nvic.h>
 #include <stm32f10x.h>
@@ -88,6 +89,7 @@ size_t DMA::getRemaining() const {
 }
 
 static void irqhandler() {
+	IRQFunction irqfunc;
 	int ch = nvic_get_activeirq() - DMA1_Channel1_IRQn;
 	irqhandlers[ch]->call();
 	DMA1->IFCR = 1 << (ch)*4;

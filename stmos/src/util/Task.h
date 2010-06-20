@@ -27,6 +27,7 @@ namespace stmos {
 			void stop();
 			float getCPUUsage();
 					
+			static float getIRQCPUUsage();
 			static unsigned long getCurrentTick();
 			static void sleep(unsigned long msecs);
 			static Task *getCurrentTask();

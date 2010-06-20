@@ -1,4 +1,5 @@
 #include "SPI.h"
+#include <stmos/util/IRQFunction.h>
 #include <stmos/util/Lock.h>
 #include <stmos/crt/nvic.h>
 #include <stm32f10x.h>
@@ -66,9 +67,8 @@ void SPI::sendReceive(const uint8_t *sendbuf, uint8_t *recvbuf, size_t len) {
 	notifier.waitLeave(crit);
 }
 
-#include <stmos/crt/debug.h>
-
 void SPI::irq() {
+	IRQFunction irqfunc;
 	SPI_TypeDef *spi = spis[num];
 	
 	uint32_t sr = spi->SR;

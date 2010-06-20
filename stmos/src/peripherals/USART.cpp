@@ -1,6 +1,7 @@
 #include "USART.h"
 #include <stmos/util/Task.h>
 #include <stmos/util/Lock.h>
+#include <stmos/util/IRQFunction.h>
 #include <stmos/crt/nvic.h>
 #include <stm32f10x.h>
 #include <cstring>
@@ -138,6 +139,7 @@ int USART::receive(uint8_t *buf, size_t maxlen) {
 }
 
 void USART::irq() {
+	IRQFunction irqfunc;
 	USART_TypeDef *usart = usarts[num-1];
 	
 	uint32_t sr = usart->SR;

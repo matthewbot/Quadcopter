@@ -5,6 +5,7 @@ extern "C" {
 	#include <stmos/kernel/sched.h>
 	#include <stmos/kernel/tick.h>
 	#include <stmos/kernel/irq.h>
+	#include <stmos/kernel/tasklist.h>
 	#include <stmos/crt/panic.h>
 }
 
@@ -75,6 +76,10 @@ float Task::getCPUUsage() {
 	assert(ktask);
 	
 	return ktask->prevcycles / 7200000.0; // TODO abstract me (SysTick period * 100ms)
+}
+
+float Task::getIRQCPUUsage() {
+	return tasklist_get_irq_cycles() / 7200000.0;
 }
 
 void Task::sleep(unsigned long msecs) {

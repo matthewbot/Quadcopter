@@ -1,4 +1,5 @@
 #include "Timer.h"
+#include <stmos/util/IRQFunction.h>
 #include <stmos/crt/nvic.h>
 #include <cstddef>
 #include <stm32f10x.h>
@@ -293,11 +294,8 @@ void OutputCompareTimerChannel::setMode(Mode mode) {
 	}
 }
 
-extern "C" {
-#include <stmos/crt/debug.h>
-}
-
 static void tim_handler(int num) {
+	IRQFunction irqfunc;
 	TIM_TypeDef *tim = timers[num];
 	uint16_t sr = tim->SR;
 	Callback *callback = NULL;

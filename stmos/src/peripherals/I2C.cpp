@@ -1,4 +1,5 @@
 #include "I2C.h"
+#include <stmos/util/IRQFunction.h>
 #include <stmos/util/CriticalSection.h>
 #include <stmos/crt/nvic.h>
 #include <stm32f10x.h>
@@ -93,6 +94,7 @@ void I2C::receive(uint8_t *buf, size_t size, bool nack) {
 }
 
 void I2C::irq() {
+	IRQFunction irqfunc;
 	I2C_TypeDef *i2c = i2cs[num];
 	
 	uint32_t sr = i2c->SR1;

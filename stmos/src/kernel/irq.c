@@ -1,4 +1,5 @@
 #include "irq.h"
+#include "tasklist.h"
 #include <stmos/crt/nvic.h>
 #include <stm32f10x.h>
 
@@ -35,5 +36,15 @@ void irq_leave_critical(int irq) {
 	nvic_set_enabled(irq, true);
 	irq_enable_switch();
 }
+
+void irq_enter() {
+	tasklist_irq_began();
+}
+
+void irq_leave() {
+	tasklist_irq_ended();
+}
+
+
 
 
