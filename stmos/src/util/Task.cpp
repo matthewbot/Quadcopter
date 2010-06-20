@@ -21,7 +21,9 @@ Task::Task(const char *name, uint8_t pri, Callback &callback, size_t stacksize)
 }
 
 // private constructor, only used to create the hidden Task object representing the main task
-Task::Task() : ktask(sched_get_current_task()) { } // main task always runs global constructors
+Task::Task() : ktask(sched_get_current_task()) { // main task always runs global constructors
+	ktask->userdata = this;
+}
 
 Task::~Task() {
 	stop();
