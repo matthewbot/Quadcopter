@@ -25,6 +25,7 @@ namespace FC {
 			void start();
 			void stop();
 			bool ready();
+			inline float getCPUUsage() { return updatetask.getCPUUsage(); }
 			
 			State getState();
 			State getVelocityState();
