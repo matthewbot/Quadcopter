@@ -64,7 +64,7 @@ int nvic_get_activeirq() {
 }
 
 void nvic_pendsv() {
-	SCB->ICSR |= SCB_ICSR_PENDSVSET; // force context switch through PendSV
+	SCB->ICSR = SCB_ICSR_PENDSVSET; // force context switch through PendSV
 }
 
 void nvic_init() {
