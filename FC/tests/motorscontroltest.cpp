@@ -46,6 +46,7 @@ static void docalibrate(const char *type, PID::Config *pid);
 struct LogEntry {
 	AnalogSensors::Readings analogs;
 	IMU::State state;
+	float throttle;
 };
 
 int main(int argc, char **argv) {
@@ -103,7 +104,7 @@ int main(int argc, char **argv) {
 			}
 			
 			if (logging) {
-				LogEntry entry = { sensors.getReadings(), imu.getState() };
+				LogEntry entry = { sensors.getReadings(), imu.getState(), throttle };
 				logger.write((uint8_t *)&entry, sizeof(entry));
 			}
 			
@@ -123,7 +124,8 @@ int main(int argc, char **argv) {
 			for (i=0;i<6;i++) {
 				out.printf("%.3f ", entry.analogs.array[i]);
 			}
-			out.printf("%.3f %.3f %.3f\n", entry.state.roll, entry.state.pitch, entry.state.yaw);
+			out.printf("%.3f %.3f %.3f ", entry.state.roll, entry.state.pitch, entry.state.yaw);
+			out.printf("%.3f\n", entry.throttle);
 		}
 		
 		docalibrate("Roll", &controlconfig.roll_config);
