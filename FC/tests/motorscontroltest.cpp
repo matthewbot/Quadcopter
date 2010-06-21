@@ -2,7 +2,8 @@
 #include <FC/control/IMU.h>
 #include <FC/control/MotorsController.h>
 #include <FC/control/Logger.h>
-#include <FC/drivers/AnalogSensors.h>
+#include <FC/control/AnalogSensors.h>
+#include <FC/drivers/AnalogSampler.h>
 #include <FC/drivers/VexRC.h>
 #include <FC/drivers/Buzzer.h>
 #include <FC/drivers/BatteryMonitor.h>
@@ -22,7 +23,8 @@ using namespace stmos;
 USART out(1, 115200);
 
 ADC adc(1);
-AnalogSensors sensors(adc, configs::analog);
+AnalogSampler sampler(adc, configs::analogchannels);
+AnalogSensors sensors(sampler, configs::analogconfig);
 
 IMU imu(sensors, configs::imu);
 

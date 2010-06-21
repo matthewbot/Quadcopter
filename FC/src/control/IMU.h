@@ -2,7 +2,7 @@
 #define FC_CONTROL_IMU_H
 
 #include <FC/math/Kalman.h>
-#include <FC/drivers/AnalogSensors.h>
+#include <FC/control/AnalogSensors.h>
 #include <stmos/util/NonCopyable.h>
 #include <stmos/util/Callback.h>
 #include <stmos/util/Task.h>

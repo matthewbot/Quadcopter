@@ -2,7 +2,6 @@
 #define FC_CONTROL_TCCOMPASS_H
 
 #include <FC/drivers/MicroMag.h>
-#include <FC/drivers/AnalogSensors.h>
 #include <stmos/peripherals/ADC.h>
 #include <stmos/util/NonCopyable.h>
 #include <stmos/util/Callback.h>

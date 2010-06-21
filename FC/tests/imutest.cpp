@@ -1,5 +1,6 @@
 #include <FC/control/IMU.h>
-#include <FC/drivers/AnalogSensors.h>
+#include <FC/control/AnalogSensors.h>
+#include <FC/drivers/AnalogSampler.h>
 #include <FC/util/configs.h>
 #include <stmos/peripherals/USART.h>
 
@@ -7,7 +8,8 @@ using namespace FC;
 using namespace stmos;
 
 ADC adc(1);
-AnalogSensors sensors(adc, configs::analog);
+AnalogSampler sampler(adc, configs::analogchannels);
+AnalogSensors sensors(sampler, configs::analogconfig);
 
 IMU imu(sensors, configs::imu);
 USART out(1, 115200);

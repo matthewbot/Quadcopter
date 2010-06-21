@@ -1,10 +1,8 @@
 #include <FC/control/Motors.h>
+#include <FC/control/AnalogSensors.h>
 #include <FC/drivers/VexRC.h>
-#include <FC/drivers/AnalogSensors.h>
-#include <FC/drivers/MicroMag.h>
 #include <FC/drivers/Buzzer.h>
 #include <FC/drivers/BatteryMonitor.h>
-#include <FC/control/TCCompass.h>
 #include <FC/util/ESCTimer.h>
 #include <FC/util/PPMTimer.h>
 #include <FC/util/configs.h>
@@ -23,7 +21,8 @@ ESCTimer esctim;
 Motors motors(esctim);
 
 ADC adc(1);
-AnalogSensors analog(adc, configs::analog);
+AnalogSampler sampler(adc, configs::analogchannels);
+AnalogSensors analog(sampler, configs::analogconfig);
 
 Buzzer buzzer;
 BatteryMonitor batmon(adc, 13);
