@@ -8,7 +8,7 @@ const AnalogSampler::Channels FC::configs::analogchannels = { {
 
 const AnalogSensors::Config FC::configs::analogconfig = {
 	{
-		-4.45E-4, 4.45E-4, -2.5E-4,
+		-5.94E-4, 5.94E-4, -2.5E-4,
 		-1.50E-4, -1.56E-4, 1.54E-4
 	},
 	{
@@ -20,9 +20,9 @@ const AnalogSensors::Config FC::configs::analogconfig = {
 const IMU::Config FC::configs::imu = {
 	{ // roll_pitch_kalman
 		{ // Q
-			1E-10, 1E-8, 0,
-			1E-8, 1E-6, 0,
-			0, 0, 1E-8,
+			1E-10, 6E-7, 0,
+			6E-7, 3.6E-3, 0,
+			0, 0, 1E-12,
 		}, { // R
 			6.7716e-4, -4.8451e-4,
 			-4.8451e-4, 3.9255e-3,
@@ -43,16 +43,18 @@ const IMU::Config FC::configs::imu = {
 
 const MotorsController::Config FC::configs::control = {
 	{
-		0.1, 0.02, -0.03,
+		0.05, 0, -0.04,
 		.1,
 		ESCTimer::UPDATETIME / 1000.0
 	}, {
-	    0.1, 0.02, -0.03,
+	    0.05, 0, -0.05,
 		.1,
 		ESCTimer::UPDATETIME / 1000.0
 	}, {
 		0.02, 0, 0,
 		.1,
 		ESCTimer::UPDATETIME / 1000.0
-	}
+	},
+	
+	0.3, 0.3
 };

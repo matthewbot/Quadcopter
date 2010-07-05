@@ -21,7 +21,7 @@ F = [
 # state covariance
 # or: how much is the actual state expected to deviate from the above predictions
 
-Qvec = [1E-5; 1E-2; 1E-6];
+Qvec = [1E-5; 6E-2; 1E-6];
 
 Q = Qvec * transpose(Qvec);
 for i=1:2

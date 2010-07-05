@@ -15,6 +15,9 @@ namespace FC {
 				PID::Config roll_config;
 				PID::Config pitch_config;
 				PID::Config yaw_config;
+				
+				float rollpitch_stickfactor;
+				float yaw_stickfactor;
 			} __attribute__((packed));
 		
 			MotorsController(const Config &config, IMU &imu, Motors &motors, ESCTimer &esctimer);
@@ -30,6 +33,7 @@ namespace FC {
 			inline float getYawCorrection() const { return yaw_correction; }
 			
 		private:
+			const Config &config;
 			IMU &imu;
 			Motors &motors;
 			

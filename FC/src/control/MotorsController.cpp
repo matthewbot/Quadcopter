@@ -4,7 +4,8 @@ using namespace FC;
 using namespace stmos;
 
 MotorsController::MotorsController(const Config &config, IMU &imu, Motors &motors, ESCTimer &esctimer)
-: imu(imu),
+: config(config),
+  imu(imu),
   motors(motors),
   running(false),
   roll_pid(config.roll_config),
@@ -51,10 +52,14 @@ void MotorsController::call() {
 	}
 		
 	IMU::State imustate = imu.getState();
+	float rollvel = config.rollpitch_stickfactor * (roll_setpoint - imustate.roll);
+	float pitchvel = config.rollpitch_stickfactor * (pitch_setpoint - imustate.pitch);
+	float yawvel = config.yaw_stickfactor * (yaw_setpoint - imustate.yaw);
+	
 	IMU::State imuvelstate = imu.getVelocityState();
-	roll_correction = roll_pid.updateVelocity(roll_setpoint - imustate.roll, imuvelstate.roll);
-	pitch_correction = pitch_pid.updateVelocity(pitch_setpoint - imustate.pitch, imuvelstate.pitch);
-	yaw_correction = yaw_pid.update(yaw_setpoint - imustate.yaw);
+	roll_correction = roll_pid.update(rollvel - imuvelstate.roll);
+	pitch_correction = pitch_pid.update(pitchvel - imuvelstate.pitch);
+	yaw_correction = yaw_pid.update(yawvel - imuvelstate.yaw);
 	
 	motors.setThrottle(throttle, roll_correction, pitch_correction, yaw_correction);
 }
