@@ -20,13 +20,13 @@ const static float Ft[3*3] = {
 
 const static float H[2*3] = {
 	1, 0, 0,
-	0, 1, -1
+	0, 1, 1
 };
 
 const static float Ht[3*2] = {
 	1, 0,
 	0, 1,
-	0, -1
+	0, 1
 };
 
 
@@ -39,7 +39,10 @@ const static float I33[3*3] = {
 Kalman::Kalman(const Config &config) : config(config) {
 	x.angle = 0;
 	x.vel = x.veloffset = 0;
-	mat::set_identity(P, 3);
+	int i;
+	for (i=0;i<8;i++)
+		P[i] = 1;
+	P[8] = 10;
 }
 
 void Kalman::step(const Measurement &z) {
@@ -56,7 +59,7 @@ void Kalman::step(const Measurement &z) {
 	
 	static Measurement y;
 	y.accelangle = z.accelangle - x_pred.angle;
-	y.gyrovel = z.gyrovel - (x_pred.vel - x_pred.veloffset);
+	y.gyrovel = z.gyrovel - (x_pred.vel + x_pred.veloffset);
 	
 	static float S[2*2];
 	mat::multiply(H, P_pred, 2, 3, 3, tmp);
