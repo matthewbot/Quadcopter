@@ -1,11 +1,12 @@
 #!/usr/bin/python
 
-import serial
+import cp2103
 import threading
+import time
 
 class SerialIOThread:
 	def __init__(self, port, baud, rxcallback):
-		self.serial = serial.Serial(port, baud, timeout=0.1)
+		self.serial = cp2103.CP2103(port, baud, timeout=0.1)
 				
 		self.rxcallback = rxcallback
 		self.rxstop = False
@@ -15,6 +16,13 @@ class SerialIOThread:
 
 	def Write(self, str):
 		self.serial.write(str)
+	
+	def Reset(self, program=False):
+		self.serial.set_gpios(False, program)
+		time.sleep(.1)
+		self.serial.set_gpios(True, program)
+		time.sleep(.3)
+		self.serial.set_gpios(True)
 	
 	def Close(self):
 		self.rxstop = True

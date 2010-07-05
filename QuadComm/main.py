@@ -45,7 +45,7 @@ class MainFrame(wx.Frame):
 		self.StartIOThread()
 		
 	def StartIOThread(self):
-		self.iothread = serialthread.SerialIOThread("/dev/ttyS0", 115200, self.WriteCallback)
+		self.iothread = serialthread.SerialIOThread("/dev/ttyUSB0", 115200, self.WriteCallback)
 		
 	def StopIOThread(self):
 		self.iothread.Close()
@@ -111,6 +111,7 @@ class MainFrame(wx.Frame):
 		self.flashthread.start()
 		
 	def DoFlash(self, filename):
+		self.iothread.Reset(True)
 		self.StopIOThread()
 		
 		def callback(mode, pos, tot):
@@ -122,7 +123,7 @@ class MainFrame(wx.Frame):
 		
 		result = False
 		try:
-			result = bootloader.write(filename, "/dev/ttyS0", callback=callbackwrap, go=True)
+			result = bootloader.write(filename, "/dev/ttyUSB0", callback=callbackwrap, go=True)
 		except Exception as err:
 			result = err
 		
@@ -134,6 +135,7 @@ class MainFrame(wx.Frame):
 			self.WriteCallback("Flash exception: " + str(result) + "\n", "error")
 			
 		self.StartIOThread()
+		self.iothread.Reset()
 		
 	def OnClose(self, event):
 		self.StopIOThread()
