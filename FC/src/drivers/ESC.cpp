@@ -28,3 +28,9 @@ float ESC::getThrottle() {
 	return (chan.getCCR() - 1000) / 1000.0;
 }
 
+void ESC::enterProgramMode() {
+	chan.setCCR(2000);
+	chan.enable();
+	armed = true;
+}
+

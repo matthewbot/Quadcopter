@@ -14,7 +14,8 @@ namespace FC {
 			void setThrottle(float throttle);
 			float getThrottle();
 			inline void off() { setThrottle(0); }
-		
+			
+			void enterProgramMode();
 		private:
 			stmos::OutputCompareTimerChannel chan;
 			bool armed;
