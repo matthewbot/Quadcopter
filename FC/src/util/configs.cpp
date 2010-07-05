@@ -20,9 +20,9 @@ const AnalogSensors::Config FC::configs::analogconfig = {
 const IMU::Config FC::configs::imu = {
 	{ // roll_pitch_kalman
 		{ // Q
-			1E-10, 8E-8, 0,
-			8E-8, 6.4E-5, 0,
-			0, 0, 2.5E-7,
+			1E-10, 1E-8, 0,
+			1E-8, 1E-6, 0,
+			0, 0, 1E-8,
 		}, { // R
 			6.7716e-4, -4.8451e-4,
 			-4.8451e-4, 3.9255e-3,
@@ -38,17 +38,17 @@ const IMU::Config FC::configs::imu = {
 		}
 	},
 	0, // roll_offset
-	0 // pitch_offset
+	0.03 // pitch_offset
 };
 
 const MotorsController::Config FC::configs::control = {
 	{
-		0.13, 0.03, -0.032,
-		1,
+		0.1, 0.02, -0.03,
+		.1,
 		ESCTimer::UPDATETIME / 1000.0
 	}, {
-	    0.13, 0.03, -0.032,
-		1,
+	    0.1, 0.02, -0.03,
+		.1,
 		ESCTimer::UPDATETIME / 1000.0
 	}, {
 		0.02, 0, 0,
