@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
 		
 		IMU::State state = imu.getState();
 		IMU::State velstate = imu.getVelocityState();
-		out.printf("%0.3f %0.3f %0.3f %0.3f\n", state.roll, state.pitch, state.yaw, imu.getCPUUsage());
+		out.printf("%0.3f %0.3f\n", state.roll, velstate.roll);
 	}
 }
 

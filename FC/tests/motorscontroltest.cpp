@@ -110,7 +110,10 @@ int main(int argc, char **argv) {
 				logger.write((uint8_t *)&entry, sizeof(entry));
 			}
 			
-			Task::sleep(5);
+			IMU::State state = imu.getState();
+			IMU::State velstate = imu.getVelocityState();
+			out.printf("%f %f\n", control.getRollCorrection(), control.getPitchCorrection());
+			Task::sleep(25);
 		}
 		
 		control.stop();
@@ -118,21 +121,29 @@ int main(int argc, char **argv) {
 		out.print("Push enter\n");
 		while (out.getch() != '\r') { }
 		
-		out.print("Log dump:");
-		LogReader reader(eeprom, 0);
-		struct LogEntry entry;
-		while (reader.read((uint8_t *)&entry, sizeof(entry)) == sizeof(entry)) {
-			int i;
-			for (i=0;i<6;i++) {
-				out.printf("%.3f ", entry.analogs.array[i]);
+		out.print("Press y to dump log");
+		if (out.getch() == 'y') {
+			out.print("\nLog dump:");
+			LogReader reader(eeprom, 0);
+			struct LogEntry entry;
+			while (reader.read((uint8_t *)&entry, sizeof(entry)) == sizeof(entry)) {
+				int i;
+				for (i=0;i<6;i++) {
+					out.printf("%.3f ", entry.analogs.array[i]);
+				}
+				out.printf("%.3f %.3f %.3f ", entry.state.roll, entry.state.pitch, entry.state.yaw);
+				out.printf("%.3f\n", entry.throttle);
 			}
-			out.printf("%.3f %.3f %.3f ", entry.state.roll, entry.state.pitch, entry.state.yaw);
-			out.printf("%.3f\n", entry.throttle);
 		}
-		
 		docalibrate("Roll", &controlconfig.roll_config);
 		docalibrate("Pitch", &controlconfig.pitch_config);
 		docalibrate("Yaw", &controlconfig.yaw_config);
+		
+		out.printf("Current stick values: %f %f\n", controlconfig.rollpitch_stickfactor, controlconfig.yaw_stickfactor);
+		out.printf("Stick: ");
+		static char buf[50];
+		out.getline(buf, sizeof(buf));
+		sscanf(buf, "%f %f", &controlconfig.rollpitch_stickfactor, &controlconfig.yaw_stickfactor);
 	}
 }
 static void docalibrate(const char *type, PID::Config *conf) {
